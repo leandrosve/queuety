@@ -1,0 +1,38 @@
+html {
+  /* Primary */
+  --primary-50: #f7f5fe;
+  --primary-100: #e6e0ff;
+  --primary-200: hsl(252, 88%, 85%);
+  --primary-300: hsl(252, 88%, 75%);
+  --primary-400: #8a6ff6;
+  --primary-500: hsl(252, 88%, 65%);
+  --primary-600: hsl(252, 88%, 60%);
+  --primary-700: hsl(252, 88%, 58%);
+  --primary-800: hsl(252, 88%, 55%);
+  --primary-900: hsl(252, 88%, 53%);
+}
+html[data-theme='light'] {
+  --bg-500: hsl(0, 0%, 100%);
+  --bg-400: #ffffff; /* Skeleton */
+  --bg-300: #ffffff; /* Cards and Navbar*/
+  --bg-200: #eeeaff;
+  --bg-100: #f7f5fe; /* Background */
+
+  --bg-alpha-100: #ffffffbf;
+
+  --text-500: #343434;
+  --text-300: #5c5c5c;
+}
+
+html[data-theme='dark'] {
+  --bg-500: hsl(252.6, 26.4%, 28.2%);
+  --bg-400: hsl(240, 30%, 25%);
+  --bg-300: hsl(240, 30%, 20.8%);
+  --bg-200: hsl(235.4, 31%, 16.5%);
+  --bg-100: rgb(15, 13, 13);
+
+  --bg-alpha-100: hsla(240, 14.3%, 12.4%, 0.63);
+
+  --text-500: #f2f1f1;
+  --text-300: #c9c9c9;
+}
