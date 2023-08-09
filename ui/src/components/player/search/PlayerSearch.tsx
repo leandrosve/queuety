@@ -14,7 +14,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-import YoutubeAPIService, { YoutubeVideoDetail } from '../../../services/api/YoutubeAPIService';
+import YoutubeService, { YoutubeVideoDetail } from '../../../services/api/YoutubeService';
 import { BsSearch, BsX } from 'react-icons/bs';
 import PlayerSearchVideoDetail from './PlayerSearchVideoDetail';
 
@@ -53,7 +53,7 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
     }
     const id = match[2];
     setLoadingDetails(true);
-    const res = await YoutubeAPIService.getVideoDetails(id);
+    const res = await YoutubeService.getVideoDetails(id);
     setLoadingDetails(false);
     if (res.hasError) {
       setVideoDetails(null);

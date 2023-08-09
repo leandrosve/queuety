@@ -6,12 +6,13 @@ import PlayerSearch from './components/player/search/PlayerSearch';
 import theme from './lib/chakra/chakraTheme';
 import Layout from './components/layout/Layout';
 import PlayerDesktopView from './components/player/desktop/PlayerDesktopView';
+import ConnectionHostView from './components/connection/ConnectionHostView';
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
       <Layout>
-        <PlayerDesktopView />
+        <ConnectionHostView />
       </Layout>
     </ChakraProvider>
   );

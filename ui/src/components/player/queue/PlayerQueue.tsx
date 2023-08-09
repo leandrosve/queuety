@@ -1,6 +1,6 @@
 import { Button, Flex, Input, Text } from '@chakra-ui/react';
 import React, { useRef, useState } from 'react';
-import YoutubeAPIService from '../../../services/api/YoutubeAPIService';
+import YoutubeService from '../../../services/api/YoutubeService';
 
 interface VideoDetails {
   id: string;

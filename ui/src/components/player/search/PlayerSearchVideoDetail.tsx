@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, IconButton, Image, Link, Text } from '@chakra-ui/react';
-import { YoutubeVideoDetail } from '../../../services/api/YoutubeAPIService';
+import { YoutubeVideoDetail } from '../../../services/api/YoutubeService';
 import { LuPlay, LuListPlus, LuListEnd, LuExternalLink, LuYoutube } from 'react-icons/lu';
 import FormatUtils from '../../../utils/FormatUtils';
 import { BsYoutube } from 'react-icons/bs';
