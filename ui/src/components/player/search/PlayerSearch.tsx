@@ -1,28 +1,33 @@
 import {
   Button,
   Collapse,
-  Flex, Icon,
-  IconButton, Input,
+  Flex,
+  Icon,
+  IconButton,
+  Input,
   InputGroup,
   InputLeftElement,
-  InputRightElement, Modal,
+  InputRightElement,
+  Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
-  ModalOverlay, ScaleFade,
+  ModalOverlay,
+  ScaleFade,
   Spinner,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import YoutubeService, { YoutubeVideoDetail } from '../../../services/api/YoutubeService';
 import { BsSearch, BsX } from 'react-icons/bs';
 import PlayerSearchVideoDetail from './PlayerSearchVideoDetail';
+import { useTranslation } from 'react-i18next';
 
-const getErrorMessage = (errorCode: string) => {
-  if (errorCode === 'video_not_found') return 'Video was not found';
-  if (errorCode === 'malformed_url') return 'The provided URL does not correspond to a Youtube Video';
-  return 'Something went wrong';
+const getErrorCode = (errorCode: string) => {
+  if (['video_not_found', 'malformed_url'].includes(errorCode)) return errorCode;
+  return 'unknown';
 };
+
 interface Props {
   onPlay: (videoId: string) => void;
   onPlayNext: (videoId: string) => void;
@@ -65,11 +70,13 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
   };
   console.count('re render');
 
+  const { t } = useTranslation();
+
   return (
     <>
       <Button display='flex' justifyContent='start' gap={5} onClick={() => setIsOpen(true)}>
         <BsSearch />
-        <Text>Pega aquí la URL del video</Text>
+        <Text>{t('playerSearch.pasteUrl')}</Text>
       </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <ModalOverlay />
@@ -85,7 +92,7 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
                 onBlur={() => setInputFocus(false)}
                 ref={inputRef}
                 value={inputValue}
-                placeholder='Pega aquí la URL del video'
+                placeholder={t('playerSearch.pasteUrl')}
                 onChange={(e) => handleInputChange(e.target.value)}
               />
               {!!inputValue && (
@@ -110,12 +117,12 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
               <Collapse in={(inputFocus && !inputValue) || !inputValue || !!error}>
                 {((inputFocus && !inputValue) || !inputValue) && (
                   <Text as='span' fontWeight='normal' fontSize='sm'>
-                    Por ej: https://www.youtube.com/watch?v=zz5ksvYBfEc
+                    {t('playerSearch.example')} https://www.youtube.com/watch?v=zz5ksvYBfEc
                   </Text>
                 )}
                 {error && (
                   <Text as='span' color='red.300' _light={{ color: 'red.600' }} fontSize='sm'>
-                    {getErrorMessage(error)}
+                    {t(`playerSearch.errors.${getErrorCode(error)}`)}
                   </Text>
                 )}
               </Collapse>

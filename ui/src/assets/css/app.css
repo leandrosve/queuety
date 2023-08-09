@@ -15,13 +15,11 @@
   -webkit-text-size-adjust: 100%;
 
   min-width: 100vw;
-  min-height: 100vh;
 }
 
 .layout {
   place-items: center;
   min-width: 100vw;
-  min-height: 100vh;
   position: relative;
   display: flex;
   flex-direction: column;
