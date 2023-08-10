@@ -3,6 +3,11 @@ export default {
     common: {
       test: 'testing!',
     },
+    time: {
+      days_ago: '{{days}} days ago',
+      months_ago: '{{days}} months ago',
+      years_ago: '{{days}} years ago',
+    },
     layout: {
       theme: {
         switch: 'Switch between dark and light theme',
@@ -16,6 +21,12 @@ export default {
         malformed_url: 'The provided URL does not correspond to a Youtube Video',
         unknown: 'Sorry, something went wrong',
       },
+    },
+    playerQueue: {
+      next: 'Next',
+      queue: 'Queue',
+      playNow: 'Play now',
+      remove: 'Remove'
     },
   },
 };

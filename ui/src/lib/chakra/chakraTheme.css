@@ -1,0 +1,10 @@
+.chakra-menu__menu-list{
+
+}
+.chakra-menu__menuitem:hover{
+    background: var(--bg-alpha-200);
+}
+
+.chakra-menu__menuitem:active{
+    background: var(--bg-alpha-300);
+}

@@ -3,7 +3,7 @@ import APIService, { APIResponse } from './APIService';
 export interface YoutubeVideoDetail {
   id: string;
   title: string;
-  embeddable: string;
+  embeddable: boolean;
   channelId: string;
   channelTitle: string;
   channelThumbnail: string;

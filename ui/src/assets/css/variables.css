@@ -13,26 +13,32 @@ html {
 }
 html[data-theme='light'] {
   --bg-500: hsl(0, 0%, 100%);
-  --bg-400: #ffffff; /* Skeleton */
+  --bg-400: #e9e8e8; /* Skeleton */
   --bg-300: #ffffff; /* Cards and Navbar*/
   --bg-200: #eeeaff;
   --bg-100: #f7f5fe; /* Background */
 
-  --bg-alpha-100: #ffffffbf;
+  --bg-alpha-100: #ffffffea;
+  --bg-alpha-200: rgba(229, 228, 228, 0.68);
+  --bg-alpha-300: rgba(209, 209, 209, 0.68);
 
+
+  --text-600: #000000;
   --text-500: #343434;
   --text-300: #5c5c5c;
 }
 
 html[data-theme='dark'] {
-  --bg-500: hsl(252.6, 26.4%, 28.2%);
-  --bg-400: hsl(240, 30%, 25%);
+  --bg-500: #2c2c36;
+  --bg-400: #2c2c36;
   --bg-300: hsl(240, 30%, 20.8%);
   --bg-200: hsl(235.4, 31%, 16.5%);
   --bg-100: rgb(15, 13, 13);
 
   --bg-alpha-100: hsla(240, 14.3%, 12.4%, 0.63);
-
+  --bg-alpha-200: hsla(240, 10%, 25%, 0.63);
+  --bg-alpha-300: hsla(240, 9%, 33%, 0.63);
+  --text-600: #ffffff;
   --text-500: #f2f1f1;
   --text-300: #c9c9c9;
 }

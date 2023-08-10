@@ -7,7 +7,7 @@ interface Props {
 }
 
 const PlayerBackdrop = ({ videoId, state }: Props) => {
-  const animate = useMemo(() => [[YT.PlayerState.PLAYING, YT.PlayerState.BUFFERING].includes(state)], [state]);
+  const animate = useMemo(() => [YT.PlayerState.PLAYING, YT.PlayerState.BUFFERING].includes(state), [state]);
   return (
     <Flex className={`player-backdrop ${animate ? 'animate' : ''}`}>
       <div className='player-backdrop__image-container'>

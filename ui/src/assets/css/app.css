@@ -13,8 +13,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-
-  min-width: 100vw;
 }
 
 .layout {
@@ -25,8 +23,16 @@
   flex-direction: column;
   justify-content: stretch;
   align-items: stretch;
+  align-self: stretch;
 }
 
+.app {
+  display: flex;
+  flex-direction: column;
+  
+  min-width: 100vw;
+  min-height: 100vh;
+}
 html[data-theme='dark'] .app {
   background: rgb(15, 13, 13);
 }

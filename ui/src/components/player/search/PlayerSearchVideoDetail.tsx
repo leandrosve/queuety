@@ -3,6 +3,7 @@ import { YoutubeVideoDetail } from '../../../services/api/YoutubeService';
 import { LuPlay, LuListPlus, LuListEnd, LuExternalLink, LuYoutube } from 'react-icons/lu';
 import FormatUtils from '../../../utils/FormatUtils';
 import { BsYoutube } from 'react-icons/bs';
+import { useTranslation } from 'react-i18next';
 interface Props {
   video: YoutubeVideoDetail;
   onClose: () => void;
@@ -12,6 +13,7 @@ interface Props {
   onPlayLast: (videoId: string) => void;
 }
 const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: Props) => {
+  const { t } = useTranslation();
   const handlePlay = (mode: 'now' | 'last' | 'next') => {
     onPlay(video.id);
     // no va a servir esto
@@ -59,11 +61,11 @@ const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClos
               {video.channelTitle}
             </Text>
           </Flex>
-          <Flex alignItems='center' gap={3} wrap='wrap' fontSize='sm'>
+          <Flex alignItems='center' gap={3} wrap='wrap' fontSize='sm' color='text.300'>
             <Text as='span' flexShrink={0}>
               {FormatUtils.shortenNumber(video.viewCount)} views
             </Text>
-            <Text as='span'>{video.publishedAt}</Text>
+            <Text as='span'>{FormatUtils.timeAgo(new Date(video.publishedAt))}</Text>
           </Flex>
         </Flex>
       </Flex>

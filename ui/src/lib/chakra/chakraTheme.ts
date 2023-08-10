@@ -1,6 +1,11 @@
 import { extendTheme } from '@chakra-ui/react';
+import { menuTheme } from './components/menuTheme';
+import './chakraTheme.css';
 
 const theme = extendTheme({
+  components: {
+    Menu: menuTheme,
+  },
   fonts: {
     heading: 'var(--font-family)',
     body: 'var(--font-family)',
@@ -9,7 +14,7 @@ const theme = extendTheme({
     global: {
       body: {
         bg: 'var(--bg-100)',
-        color: 'var(--text-500)'
+        color: 'var(--text-500)',
       },
     },
   },
@@ -29,6 +34,7 @@ const theme = extendTheme({
     text: {
       300: 'var(--text-300)',
       500: 'var(--text-500)',
+      600: 'var(--text-600)',
     },
 
     bg: {
@@ -37,10 +43,11 @@ const theme = extendTheme({
       300: 'var(--bg-300)',
       400: 'var(--bg-400)',
       500: 'var(--bg-500)',
-
     },
     bgAlpha: {
       100: 'var(--bg-alpha-100)',
+      200: 'var(--bg-alpha-200)',
+      300: 'var(--bg-alpha-300)',
     },
   },
 });

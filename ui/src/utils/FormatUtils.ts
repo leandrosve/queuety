@@ -1,4 +1,16 @@
+import i18next from 'i18next';
+
 export default class FormatUtils {
+  private static DATE_UNITS = {
+    year: 31_536_000,
+    month: 2_592_000,
+    week: 604_800,
+    day: 86400,
+    hour: 3600,
+    minute: 60,
+    second: 1,
+  };
+
   public static formatDuration(totalSeconds: number) {
     const hours = Math.floor(totalSeconds / 3600);
     totalSeconds %= 3600;
@@ -10,30 +22,38 @@ export default class FormatUtils {
     return final;
   }
 
+  public static timeAgo(date: Date) {
+    let lang = i18next.language;
+    if (!['en', 'es'].includes(lang)) lang = 'en';
+    const secondsDiff = (Date.now() - date.getTime()) / 1000;
+    let value: number = 0;
+    let timeUnit: Intl.RelativeTimeFormatUnit = 'day';
+    for (const [unit, secondsInUnit] of Object.entries(this.DATE_UNITS)) {
+      if (secondsDiff >= secondsInUnit || unit === 'second') {
+        value = Math.floor(secondsDiff / secondsInUnit) * -1;
+        timeUnit = unit as Intl.RelativeTimeFormatUnit;
+        break;
+      }
+    }
+
+    const formatter = new Intl.RelativeTimeFormat(lang, { numeric: 'always', style: 'long', localeMatcher: 'best fit' });
+    return formatter.format(value, timeUnit);
+  }
+
   public static shortenNumber(number: number): string {
-    // 2 decimal places => 100, 3 => 1000, etc
     const decPlaces = Math.pow(10, 1);
-    // Enumerate number abbreviations
     var abbrev = ['K', 'M', 'B', 'T'];
-    // Go through the array backwards, so we do the largest first
     for (var i = abbrev.length - 1; i >= 0; i--) {
-      // Convert array index to "1000", "1000000", etc
       var size = Math.pow(10, (i + 1) * 3);
-      // If the number is bigger or equal do the abbreviation
       if (size <= number) {
-        // Here, we multiply by decPlaces, round, and then divide by decPlaces.
-        // This gives us nice rounding to a particular decimal place.
         number = Math.round((number * decPlaces) / size) / decPlaces;
-        // Handle special case where we round up to the next abbreviation
         if (number == 1000 && i < abbrev.length - 1) {
           number = 1;
           i++;
         }
-        // Add the letter for the abbreviation
         return `${Math.floor(number)}${abbrev[i]}`;
       }
     }
-
     return number.toString();
   }
 }

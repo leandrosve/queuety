@@ -17,5 +17,11 @@ export default {
         unknown: 'Lo sentimos, algo salió mal',
       },
     },
+    playerQueue: {
+      next: 'Siguiente',
+      queue: 'En cola',
+      playNow: 'Reproducir',
+      remove: 'Eliminar'
+    },
   },
 };
