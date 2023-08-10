@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PlayerProvider from '../PlayerProvider';
+import PlayerScriptProvider from '../PlayerScriptProvider';
 import Player from '../Player';
 import { Flex } from '@chakra-ui/react';
 import PlayerSearch from '../search/PlayerSearch';
@@ -9,9 +9,9 @@ const PlayerDesktopView = () => {
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
       <PlayerSearch onPlay={(v) => setVideoId(v)} onPlayLast={(v) => setVideoId(v)} onPlayNext={(v) => setVideoId(v)} />
-      <PlayerProvider>
+      <PlayerScriptProvider>
         <Player videoId={videoId} />
-      </PlayerProvider>
+      </PlayerScriptProvider>
     </Flex>
   );
 };

@@ -7,11 +7,13 @@
   transition: background 200ms ease;
 }
 .player-queue-item:hover .player-queue-drag,
-.player-queue-item.menu-open .player-queue-drag {
+.player-queue-item.menu-open .player-queue-drag,
+.player-queue-item.is-dragging .player-queue-drag {
   opacity: 1;
 }
 
 .player-queue-item:hover,
-.player-queue-item.menu-open {
+.player-queue-item.menu-open,
+.player-queue-item.is-dragging {
   background: var(--bg-alpha-200);
 }

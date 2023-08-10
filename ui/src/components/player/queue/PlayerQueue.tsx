@@ -8,27 +8,38 @@ import { LuAlignJustify, LuChevronDown, LuChevronUp, LuMoreVertical, LuTrash2 } 
 import './playerQueue.css';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import DragAndDropList from '../../common/DragAndDropList';
 
 const PlayerQueue = () => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const { t } = useTranslation();
+
   return (
     <Flex
-      as='ul'
       direction='column'
       position='fixed'
       bottom={0}
       right={'1rem'}
-      bg='bgAlpha.100'
-      backdropFilter='blur(5px)'
       padding={5}
       borderTopRadius='md'
+      overflow='hidden'
       width={'600px'}
       maxWidth={'95vw'}
       boxShadow='base'
       userSelect={isExpanded ? 'auto' : 'none'}
       cursor={isExpanded ? 'auto' : 'pointer'}
       onClick={isExpanded ? undefined : () => setIsExpanded(true)}
+      _before={{
+        content: '""',
+        bg: 'bgAlpha.100',
+        backdropFilter: 'blur(5px)',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: -1,
+      }}
     >
       <Flex justifyContent='space-between'>
         <Flex direction='column' gap={1}>
@@ -51,25 +62,21 @@ const PlayerQueue = () => {
           onClick={() => setIsExpanded((p) => !p)}
         />
       </Flex>
-
       <Collapse in={isExpanded}>
-        <Flex as='ul' direction='column' gap={1} paddingTop={5}>
-          {queueMocks.map((video) => (
-            <PlayerQueueItem video={video} key={video.id} isPlaying />
-          ))}
+        <Flex direction='column' gap={0} paddingTop={5}>
+          <DragAndDropList items={queueMocks} renderItem={(i, isDragging) => <PlayerQueueItem video={i} isDragging={isDragging} />}/>
         </Flex>
       </Collapse>
     </Flex>
   );
 };
 
-const PlayerQueueItem = ({ video, isPlaying }: { video: YoutubeVideoDetail; isPlaying?: boolean }) => {
+export const PlayerQueueItem = ({ video, isPlaying, isDragging }: { video: YoutubeVideoDetail; isPlaying?: boolean; isDragging?: boolean }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <Flex
-      as='li'
-      className={classNames('player-queue-item', { 'menu-open': isMenuOpen })}
+      className={classNames('player-queue-item', { 'menu-open': isMenuOpen, 'is-dragging': isDragging })}
       cursor='pointer'
       userSelect='none'
       gap={2}
@@ -78,15 +85,10 @@ const PlayerQueueItem = ({ video, isPlaying }: { video: YoutubeVideoDetail; isPl
       direction={{ base: 'column', md: 'row' }}
       alignItems='start'
       position='relative'
+      height={'80px' /* Must be hardcoded so the d&d placeholder does not mess up*/}
     >
-      <Box position='relative'>
-        <Image
-          width={{ base: '90px', md: '120px' }}
-          objectFit='cover'
-          borderRadius='sm'
-          aspectRatio={'16/9'}
-          src={`https://img.youtube.com/vi/${video.id}/default.jpg`}
-        />
+      <Box position='relative' flexShrink={0}>
+        <Image width='120px' objectFit='cover' borderRadius='sm' aspectRatio={'16/9'} src={`https://img.youtube.com/vi/${video.id}/default.jpg`} />
         {isPlaying && (
           <Icon as={BsFillPlayFill} borderRadius='full' paddingX={1} position='absolute' bottom='.2rem' left='.2rem' background='bgAlpha.100' />
         )}
@@ -138,8 +140,8 @@ const PlayerQueueItem = ({ video, isPlaying }: { video: YoutubeVideoDetail; isPl
             icon={<Icon as={LuMoreVertical} />}
           />
           <MenuList>
-            <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4}/>}>{t('playerQueue.playNow')}</MenuItem>
-            <MenuItem  icon={<Icon as={LuTrash2} boxSize={4}/>}>{t('playerQueue.remove')}</MenuItem>
+            <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4} />}>{t('playerQueue.playNow')}</MenuItem>
+            <MenuItem icon={<Icon as={LuTrash2} boxSize={4} />}>{t('playerQueue.remove')}</MenuItem>
           </MenuList>
         </Menu>
         <IconButton color='text.600' variant='link' aria-label='drag' padding={3}>
