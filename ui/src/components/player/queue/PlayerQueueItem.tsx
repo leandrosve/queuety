@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Box, Flex, Heading, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Spinner, Text } from '@chakra-ui/react';
 import FormatUtils from '../../../utils/FormatUtils';
 import { BsDot, BsFillPlayFill } from 'react-icons/bs';
@@ -20,12 +20,19 @@ interface Props {
 }
 export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRemove, onPlay }: Props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
+  useEffect(() => {
+    if (isCurrent) {
+      ref.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [isCurrent]);
   return (
     <Flex
       className={classNames('player-queue-item', { 'menu-open': isMenuOpen, 'is-dragging': isDragging })}
       cursor='pointer'
       userSelect='none'
+      ref={ref}
       gap={2}
       borderRadius='sm'
       onClick={onPlay}
@@ -47,7 +54,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         {isCurrent && <StateIndicator />}
       </Box>
       <Flex direction='column' gap={1}>
-        <Heading display='inline' size='sm' noOfLines={1}>
+        <Heading display='inline' size='sm' noOfLines={1} title={video.title}>
           {video.title}
         </Heading>
         <Flex alignItems='center' gap={2}>
@@ -91,7 +98,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
             icon={<Icon as={LuMoreVertical} />}
           />
           <MenuList onClick={(e) => e.stopPropagation()}>
-            <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4} />} onClick={onPlay} >
+            <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4} />} onClick={onPlay}>
               {t('playerQueue.playNow')}
             </MenuItem>
             <MenuItem icon={<Icon as={LuTrash2} boxSize={4} />} onClick={onRemove}>

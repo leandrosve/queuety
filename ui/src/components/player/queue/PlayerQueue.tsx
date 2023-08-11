@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import queueMocks from './queueMocks';
-import { Button, Collapse, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
+import { Box, Button, Collapse, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 import './playerQueue.css';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
       padding={5}
       borderTopRadius='md'
       overflow='hidden'
-      width={'600px'}
+      width={'500px'}
       maxWidth={'95vw'}
       boxShadow='base'
       zIndex='var(--z-index-queue)'
@@ -53,7 +53,7 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
       <Flex justifyContent='space-between' gap={2}>
         <Flex direction='column' gap={1}>
           {currentItem && (
-            <Flex>
+            <Flex noOfLines={2} title={currentItem.video.title}>
               {t('playerQueue.playing')}: {currentItem.video.title}
             </Flex>
           )}
@@ -83,7 +83,8 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
         />
       </Flex>
       <Collapse in={isExpanded}>
-        <Flex direction='column' gap={0} paddingTop={5}>
+        <Box paddingTop={5}>
+        <Flex direction='column' gap={0} maxHeight={300} overflow='hidden' overflowY='auto'>
           <DragAndDropList
             items={queue}
             onReorder={onUpdate}
@@ -97,7 +98,7 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
               />
             )}
           />
-        </Flex>
+        </Flex></Box>
       </Collapse>
     </Flex>
   );

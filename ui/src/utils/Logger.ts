@@ -1,6 +1,6 @@
 export default class Logger {
   private static log(color: string, background: string, ...objects: any[]) {
-    console.log('%c' + objects, `background-color: ${background};color: ${color}`);
+    console.log('%c', ...objects, `background-color: ${background};color: ${color}`);
   }
 
   public static info(...objects: any[]) {

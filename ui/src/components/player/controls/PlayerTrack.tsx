@@ -1,8 +1,9 @@
-import { Box, Button, Flex, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, Tooltip } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { Flex, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, Tooltip } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import FormatUtils from '../../../utils/FormatUtils';
-import { BsFillPlayFill, BsPauseFill } from 'react-icons/bs';
+import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
+import { usePlayerQueueContext } from '../../../context/PlayerQueueContext';
 
 interface Props {
   duration: number;
@@ -23,6 +24,8 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
   const [isDragging, setIsDragging] = useState(false);
   const [draggingValue, setDraggingValue] = useState(currentTime || 0);
 
+  const { goNext, goPrevious } = usePlayerQueueContext();
+
   const handleChangeEnd = (value: number) => {
     setTime(value);
     setIsDragging(false);
@@ -34,7 +37,7 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
     let interval: number;
     if (state === YT.PlayerState.PLAYING) {
       interval = setInterval(() => {
-        setTime((p) => p + (0.1 * playbackRate));
+        setTime((p) => p + 0.1 * playbackRate);
       }, 100);
     }
     return () => clearInterval(interval);
@@ -43,6 +46,13 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
   return (
     <Flex direction='column' alignItems='center' gap={3}>
       <Flex gap={5}>
+        <IconButton
+          rounded='full'
+          icon={<Icon as={BsSkipStartFill} boxSize={5} />}
+          aria-label='skip forward'
+          variant='ghost'
+          onClick={() => goPrevious()}
+        />
         <IconButton
           rounded='full'
           icon={<Icon as={TbRewindBackward10} boxSize={5} />}
@@ -67,6 +77,13 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
           aria-label='rewind forward'
           variant='ghost'
           onClick={() => onForward(10)}
+        />
+        <IconButton
+          rounded='full'
+          icon={<Icon as={BsSkipEndFill} boxSize={5} />}
+          aria-label='skip forward'
+          variant='ghost'
+          onClick={() => goNext()}
         />
       </Flex>
       <Slider
@@ -93,7 +110,7 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
           isOpen={showTooltip}
           label={FormatUtils.formatDuration(isDragging ? draggingValue : time)}
         >
-          <SliderThumb opacity={0} pointerEvents={'none'}/>
+          <SliderThumb opacity={0} pointerEvents={'none'} />
         </Tooltip>
       </Slider>
       <Flex justifyContent='space-between' alignSelf='stretch'>

@@ -35,12 +35,10 @@ const Content = () => {
     addNextToQueue,
     updateQueue,
     removeFromQueue,
-    goNext
   } = usePlayerQueueContext();
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
       <PlayerSearch onPlay={addNowToQueue} onPlayLast={addLastToQueue} onPlayNext={addNextToQueue} />
-      <Button onClick={goNext}>go next</Button>
       <PlayerQueue
         currentItem={currentItem}
         currentIndex={currentIndex}
@@ -50,7 +48,7 @@ const Content = () => {
         onRemove={removeFromQueue}
         onPlay={updateCurrentItem}
       />
-      {currentItem ? <Player videoId={currentItem.video?.id} /> : <Welcome />}
+      {currentItem ? <Player queueItem={currentItem} /> : <Welcome />}
     </Flex>
   );
 };

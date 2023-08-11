@@ -22,6 +22,8 @@ export type PlayerQueueContextProps = {
   removeFromQueue: (id: string) => void;
   clearQueue: () => void;
   goNext: () => void;
+  goPrevious: () => void;
+
 };
 
 export const PlayerQueueContext = React.createContext<PlayerQueueContextProps>({
@@ -36,117 +38,109 @@ export const PlayerQueueContext = React.createContext<PlayerQueueContextProps>({
   removeFromQueue: () => {},
   clearQueue: () => {},
   goNext: () => {},
+  goPrevious: () => {},
 });
 
-const getStoredQueue = (): QueueItem[] => {
-  const q = localStorage.getItem('queue');
-  if (q) return JSON.parse(q) as QueueItem[];
-  return [];
+const getInitialQueueInfo = (): QueueInfo => {
+  const q = localStorage.getItem('queueInfo');
+  if (q) return JSON.parse(q) as QueueInfo;
+  return { items: [], current: null, status: QueueStatus.UNSTARTED };
 };
 
-const getInitialCurrentItem = (): QueueItem | null => {
-  const q = localStorage.getItem('queueCurrentItem');
-  if (q) return JSON.parse(q) as QueueItem;
-  return null;
-};
+interface QueueInfo {
+  items: QueueItem[];
+  current: QueueItem | null;
+  status: QueueStatus;
+}
 
 export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
-  const [currentItem, setCurrentItem] = useState<QueueItem | null>(getInitialCurrentItem());
-  const [queue, setQueue] = useState<QueueItem[]>(getStoredQueue());
-  const [queueStatus, setQueueStatus] = useState<QueueStatus>(QueueStatus.ACTIVE);
-
-  const handleSetCurrentItem = (value: QueueItem) => {
-    setCurrentItem(value);
-    setQueueStatus(QueueStatus.ACTIVE);
-  };
-
+  const [queueInfo, setQueueInfo] = useState<QueueInfo>(getInitialQueueInfo());
   /* Only to export it, do not use this inside this provider*/
   const currentIndex = useMemo(() => {
-    if (!currentItem) return -1;
-    return queue.findIndex((i) => i.id == currentItem.id);
-  }, [queue, currentItem]);
+    if (!queueInfo.current) return -1;
+    return queueInfo.items.findIndex((i) => i.id == queueInfo.current?.id);
+  }, [queueInfo]);
 
   const clearQueue = () => {
-    setQueue((p) => p.filter((i) => i.id == currentItem?.id));
+    setQueueInfo((p) => ({ ...p, items: p.items.filter((i) => i.id === p.current?.id) }));
   };
 
   const updateQueue = (value: QueueItem[]) => {
-    setQueue(value);
+    setQueueInfo((p) => ({ ...p, items: value }));
   };
 
   const updateCurrentItem = (value: QueueItem) => {
-    const found = queue.find((item) => item.id == value.id);
-    if (found) handleSetCurrentItem(found);
+    setQueueInfo((p) => {
+      const found = p.items.find((item) => item.id == value.id);
+      if (!found) return p;
+      return { ...p, current: found };
+    });
   };
 
   const goNext = () => {
-    const index = currentItem ? queue.findIndex((i) => i.id == currentItem.id) : -1;
-    const nextItem = queue[index + 1];
-    Logger.info('current was', currentItem?.video.title, 'nextItem', nextItem);
-    if (nextItem) {
-      setCurrentItem(nextItem);
-    }
+    setQueueInfo((p) => {
+      const index = p.current ? p.items.findIndex((i) => i.id === p.current?.id) : -1;
+      const nextItem = p.items[index + 1];
+      Logger.info('Current:', p.current?.video.title, 'Next:', nextItem?.video?.title);
+      if (!nextItem) return p;
+      return { ...p, current: nextItem };
+    });
+  };
+
+  const goPrevious = () => {
+    setQueueInfo((p) => {
+      const index = p.current ? p.items.findIndex((i) => i.id === p.current?.id) : -1;
+      if (index < 1) return p;
+      const previousItem = p.items[index - 1];
+      Logger.info('Current:', p.current?.video.title, 'Previous:', previousItem?.video?.title);
+      return { ...p, current: previousItem };
+    });
   };
 
   const addLastToQueue = (video: YoutubeVideoDetail) => {
-    const uuid = uuidv4();
-    const next = [...queue, { id: uuid, video }];
-    setQueue(next);
-    const item = next.find((i) => i.id == uuid);
-    if (item && queueStatus == QueueStatus.ENDED) {
-      handleSetCurrentItem(item);
-      return;
-    }
+    setQueueInfo((p) => {
+      const newItem = { id: uuidv4(), video };
+      const nextItems = [...p.items, newItem];
+      const newCurrent = p.status === QueueStatus.ENDED ? newItem : p.current;
+      return { items: nextItems, current: newCurrent, status: QueueStatus.ACTIVE };
+    });
   };
 
-  const addNextToQueue = (video: YoutubeVideoDetail) => {
-    if (!currentItem) {
-      addLastToQueue(video);
-      return;
-    }
-    const pos = queue.findIndex((i) => i.id == currentItem.id);
-    let next = [...queue];
-    const uuid = uuidv4();
-    next.splice(pos + 1, 0, { id: uuid, video });
-    next = next.map((i, index) => ({ ...i, order: index }));
-
-    setQueue(next);
-
-    const item = next.find((i) => i.id == uuid);
-    if (item && queueStatus == QueueStatus.ENDED) {
-      handleSetCurrentItem(item);
-      return;
-    }
-
-    return item;
+  const addNextToQueue = (video: YoutubeVideoDetail, playNow?: boolean) => {
+    setQueueInfo((p) => {
+      const index = p.current ? p.items.findIndex((i) => i.id === p.current?.id) : -1;
+      const newItem = { id: uuidv4(), video };
+      const nextItems = [...p.items];
+      nextItems.splice(index + 1, 0, newItem);
+      const newCurrent = playNow || p.status === QueueStatus.ENDED ? newItem : p.current;
+      return { items: nextItems, current: newCurrent, status: QueueStatus.ACTIVE };
+    });
   };
 
   const addNowToQueue = (video: YoutubeVideoDetail) => {
-    const item = addNextToQueue(video);
-    if (item) handleSetCurrentItem(item);
+    addNextToQueue(video, true);
   };
 
   const removeFromQueue = (id: string) => {
-    setQueue((p) => p.filter((i) => i.id !== id));
+    setQueueInfo((p) => {
+      if (p.current?.id === id) return p;
+      return { ...p, items: p.items.filter((i) => i.id !== id) };
+    });
   };
 
   useEffect(() => {
-    localStorage.setItem('queue', JSON.stringify(queue));
-  }, [queue]);
-
-  useEffect(() => {
-    localStorage.setItem('queueCurrentItem', JSON.stringify(currentItem));
-  }, [currentItem]);
-
+    localStorage.setItem('queueInfo', JSON.stringify(queueInfo));
+  }, [queueInfo]);
   return (
     <PlayerQueueContext.Provider
       value={{
-        currentItem,
+        currentItem: queueInfo.current,
         goNext,
+        goPrevious,
         currentIndex,
         clearQueue,
         updateCurrentItem,
-        queue,
+        queue: queueInfo.items,
         updateQueue,
         addNowToQueue,
         addLastToQueue,

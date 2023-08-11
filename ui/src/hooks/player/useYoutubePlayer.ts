@@ -1,8 +1,14 @@
 import { RefObject, useEffect, useState, useRef } from 'react';
 import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
 import { usePlayerQueueContext } from '../../context/PlayerQueueContext';
+import QueueItem from '../../model/player/QueueItem';
 
-const useYoutubePlayer = (containerId: string, videoId: string) => {
+/**
+ *
+ * @param containerId the ID of the container that will become the iframe
+ * @param queueItem the item to play, it's important to differentiate between different items even if they are the same video
+ */
+const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
   const playerRef = useRef<YT.Player>();
   const [isReady, setIsReady] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
@@ -11,11 +17,14 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
   const [playbackRate, setPlaybackRate] = useState<number>(1);
 
   const { updateStatus } = usePlayerStatusContext();
+  const { goNext } = usePlayerQueueContext();
+
   const initialize = async () => {
     new YT.Player(containerId, {
-      videoId: videoId,
+      videoId: queueItem.video.id,
       playerVars: {
         autoplay: 1,
+        start: 0,
         loop: 1,
         mute: 0, // N.B. here the mute settings.
       },
@@ -31,16 +40,22 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
     setIsReady(true);
     playerRef.current = event.target;
     playerRef.current.playVideo();
-
     setDuration(playerRef.current.getDuration() || 0);
     setCurrentTime(playerRef.current.getCurrentTime() || 0);
     setPlaybackRate(playerRef.current.getPlaybackRate() || 1);
   };
 
   const onStateChange = (event: YT.OnStateChangeEvent) => {
-    setCurrentTime(playerRef.current?.getCurrentTime() || 0);
-    setDuration(playerRef.current?.getDuration() || 0);
     setState(playerRef.current?.getPlayerState() || YT.PlayerState.UNSTARTED);
+    if (event.data !== YT.PlayerState.UNSTARTED) {
+      setDuration(playerRef.current?.getDuration() || 0);
+      setCurrentTime(playerRef.current?.getCurrentTime() || 0);
+    }
+
+    if (event.data === YT.PlayerState.ENDED) {
+      setCurrentTime(playerRef.current?.getDuration() || 0);
+      goNext();
+    }
   };
 
   const onPlaybackRateChange = (e: YT.OnPlaybackRateChangeEvent) => {
@@ -69,11 +84,12 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
   };
 
   useEffect(() => {
-    if (isReady) {
-      console.log('NO PLEASE');
-      playerRef.current?.loadVideoById(videoId);
+    if (isReady && queueItem) {
+      setCurrentTime(0);
+      playerRef.current?.stopVideo();
+      playerRef.current?.loadVideoById(queueItem.video.id, 0.01);
     }
-  }, [videoId]);
+  }, [queueItem]);
 
   // Esto ta mal
   useEffect(() => {
