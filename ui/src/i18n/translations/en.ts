@@ -2,6 +2,8 @@ export default {
   translation: {
     common: {
       test: 'testing!',
+      copy: 'Copy',
+      copied: 'Copied!',
     },
     time: {
       days_ago: '{{days}} days ago',
@@ -30,5 +32,9 @@ export default {
       remove: 'Remove',
       clear: 'Clear'
     },
+    connection: {
+      connectDevice: 'Connect Device',
+      connectDescription: 'To connect a new device, you must scan the following QR code from the device you wish to connect:'
+    }
   },
 };

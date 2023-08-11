@@ -1,11 +1,14 @@
 import { Children, PropsWithChildren, useState } from 'react';
 import PlayerScriptProvider from '../PlayerScriptProvider';
 import Player from '../Player';
-import { Button, Flex } from '@chakra-ui/react';
+import { Button, Flex, Icon } from '@chakra-ui/react';
 import PlayerSearch from '../search/PlayerSearch';
 import { PlayerQueueProvider, usePlayerQueueContext } from '../../../context/PlayerQueueContext';
 import PlayerQueue from '../queue/PlayerQueue';
 import { PlayerStatusProvider } from '../../../context/PlayerStatusContext';
+import { BsPhone } from 'react-icons/bs';
+import { TbDeviceMobilePlus } from 'react-icons/tb';
+import ConnectionHostModal from '../../connection/ConnectionHostModal';
 
 const PlayerDesktopView = () => {
   return (

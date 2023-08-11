@@ -86,7 +86,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         height={'100%'}
         width={'130px'}
       >
-        <Menu placement='left-start' isLazy autoSelect={false} onOpen={() => setIsMenuOpen(true)} onClose={() => setIsMenuOpen(false)}>
+        <Menu strategy='fixed' placement='left-start' isLazy autoSelect={false} onOpen={() => setIsMenuOpen(true)} onClose={() => setIsMenuOpen(false)}>
           <MenuButton
             as={IconButton}
             rounded='full'
@@ -97,11 +97,11 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
             onClick={(e) => e.stopPropagation()}
             icon={<Icon as={LuMoreVertical} />}
           />
-          <MenuList onClick={(e) => e.stopPropagation()}>
+          <MenuList onClick={(e) => e.stopPropagation()} >
             <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4} />} onClick={onPlay}>
               {t('playerQueue.playNow')}
             </MenuItem>
-            <MenuItem icon={<Icon as={LuTrash2} boxSize={4} />} onClick={onRemove}>
+            <MenuItem icon={<Icon as={LuTrash2} boxSize={4} />} onClick={onRemove} isDisabled={isCurrent}>
               {t('playerQueue.remove')}
             </MenuItem>
           </MenuList>

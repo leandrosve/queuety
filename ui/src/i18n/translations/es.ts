@@ -2,6 +2,8 @@ export default {
   translation: {
     common: {
       test: 'probando!',
+      copy: 'Copiar',
+      copied: 'Copiado!',
     },
     layout: {
       theme: {
@@ -23,7 +25,11 @@ export default {
       queue: 'En cola',
       playNow: 'Reproducir',
       remove: 'Eliminar',
-      clear: 'Limpiar cola'
+      clear: 'Limpiar cola',
+    },
+    connection: {
+      connectDevice: 'Conectar Dispositivo',
+      connectDescription: 'Para conectar un nuevo dispositivo debes escanear el siguiente código QR desde el dispositivo que quieres conectar:',
     },
   },
 };

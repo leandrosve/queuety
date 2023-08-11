@@ -31,9 +31,10 @@ html[data-theme='light'] {
 }
 
 html[data-theme='dark'] {
+  --bg-500: #4c4c5c;
   --bg-500: #2c2c36;
   --bg-400: #2c2c36;
-  --bg-300: hsl(240, 30%, 20.8%);
+  --bg-300: #1f1f25;
   --bg-200: hsl(235.4, 31%, 16.5%);
   --bg-100: rgb(15, 13, 13);
 

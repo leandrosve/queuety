@@ -1,7 +1,7 @@
 import { IconButton, Tooltip } from '@chakra-ui/react';
 import { TbClipboard, TbClipboardCheck } from 'react-icons/tb';
 import React, { useState, useEffect } from 'react';
-
+import {useTranslation} from 'react-i18next';
 interface Props {
   value: string;
   tooltip?: string;
@@ -9,7 +9,7 @@ interface Props {
 }
 const CopyToClipboard = ({ value, tooltip, copiedTooltip }: Props) => {
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
-
+  const {t} = useTranslation();
   useEffect(() => {
     const id = setTimeout(() => {
       setShowCopiedTooltip(false);
@@ -19,8 +19,8 @@ const CopyToClipboard = ({ value, tooltip, copiedTooltip }: Props) => {
 
   return (
     <Tooltip
-      label={showCopiedTooltip ? copiedTooltip || 'Código copiado!' : tooltip || 'Copiar'}
-      placement={showCopiedTooltip ? 'right' : 'bottom'}
+      label={showCopiedTooltip ? copiedTooltip || t('common.copied') : tooltip ||  t('common.copy')}
+      placement='right'
       isOpen={showCopiedTooltip ? true : undefined}
       hasArrow
     >
