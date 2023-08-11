@@ -6,6 +6,11 @@
 .player-queue-item {
   transition: background 200ms ease;
 }
+
+.player-queue-item.current {
+  border: 1px solid red;
+}
+
 .player-queue-item:hover .player-queue-drag,
 .player-queue-item.menu-open .player-queue-drag,
 .player-queue-item.is-dragging .player-queue-drag {
@@ -17,3 +22,5 @@
 .player-queue-item.is-dragging {
   background: var(--bg-alpha-200);
 }
+
+

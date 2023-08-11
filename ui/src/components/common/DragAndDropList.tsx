@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, OnDragEndResponder } from 'react-beautiful-dnd';
-import queueMocks from '../player/queue/queueMocks';
-import { PlayerQueueItem } from '../player/queue/PlayerQueue';
 
 const reorder = <T,>(list: T[], startIndex: number, endIndex: number) => {
   const result = Array.from(list);
@@ -17,11 +15,10 @@ interface DraggableItem {
 interface Props<T extends DraggableItem> {
   items: T[];
   renderItem: (item: T, isDragging?: boolean) => JSX.Element;
+  onReorder?: (items: T[]) => void;
 }
 
-const DragAndDropList = <T extends DraggableItem>({ items: initialItems, renderItem }: Props<T>) => {
-  const [items, setItems] = useState<T[]>(initialItems);
-
+const DragAndDropList = <T extends DraggableItem>({ items, onReorder, renderItem }: Props<T>) => {
   const onDragEnd: OnDragEndResponder = (result) => {
     if (!result.destination) {
       return;
@@ -33,7 +30,7 @@ const DragAndDropList = <T extends DraggableItem>({ items: initialItems, renderI
 
     const quotes = reorder(items, result.source.index, result.destination.index);
 
-    setItems(quotes);
+    onReorder?.(quotes);
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>

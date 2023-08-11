@@ -8,6 +8,8 @@ interface Props {
   duration: number;
   onTimeChange: (time: number) => void;
   currentTime?: number; // Seconds
+  playbackRate: number; // Seconds
+
   state: YT.PlayerState;
   onPlay: () => void;
   onPause: () => void;
@@ -15,7 +17,7 @@ interface Props {
   onForward: (seconds: number) => void;
   onRewind: (seconds: number) => void;
 }
-const PlayerTrack = ({ duration, onTimeChange, currentTime, state, onPlay, onPause, onForward, onRewind }: Props) => {
+const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state, onPlay, onPause, onForward, onRewind }: Props) => {
   const [time, setTime] = useState(currentTime || 0);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -32,11 +34,11 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, state, onPlay, onPau
     let interval: number;
     if (state === YT.PlayerState.PLAYING) {
       interval = setInterval(() => {
-        setTime((p) => p + 0.1);
+        setTime((p) => p + (0.1 * playbackRate));
       }, 100);
     }
     return () => clearInterval(interval);
-  }, [state]);
+  }, [state, playbackRate]);
 
   return (
     <Flex direction='column' alignItems='center' gap={3}>

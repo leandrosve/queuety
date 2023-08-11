@@ -1,16 +1,24 @@
 import { useState } from 'react';
 import queueMocks from './queueMocks';
-import { Box, Collapse, Flex, Heading, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Text } from '@chakra-ui/react';
-import FormatUtils from '../../../utils/FormatUtils';
-import { BsDot, BsFillPlayFill } from 'react-icons/bs';
-import { YoutubeVideoDetail } from '../../../services/api/YoutubeService';
-import { LuAlignJustify, LuChevronDown, LuChevronUp, LuMoreVertical, LuTrash2 } from 'react-icons/lu';
+import { Button, Collapse, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
+import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 import './playerQueue.css';
-import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import DragAndDropList from '../../common/DragAndDropList';
+import { PlayerQueueItem } from './PlayerQueueItem';
+import QueueItem from '../../../model/player/QueueItem';
+import { BsDash } from 'react-icons/bs';
 
-const PlayerQueue = () => {
+interface Props {
+  queue: QueueItem[];
+  currentItem?: QueueItem | null;
+  currentIndex: number;
+  onUpdate: (item: QueueItem[]) => void;
+  onRemove: (id: string) => void;
+  onPlay: (item: QueueItem) => void;
+  onClear: () => void;
+}
+const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onPlay, onClear }: Props) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const { t } = useTranslation();
 
@@ -26,6 +34,7 @@ const PlayerQueue = () => {
       width={'600px'}
       maxWidth={'95vw'}
       boxShadow='base'
+      zIndex='var(--z-index-queue)'
       userSelect={isExpanded ? 'auto' : 'none'}
       cursor={isExpanded ? 'auto' : 'pointer'}
       onClick={isExpanded ? undefined : () => setIsExpanded(true)}
@@ -41,19 +50,30 @@ const PlayerQueue = () => {
         zIndex: -1,
       }}
     >
-      <Flex justifyContent='space-between'>
+      <Flex justifyContent='space-between' gap={2}>
         <Flex direction='column' gap={1}>
-          <Flex>
-            {t('playerQueue.next')}: {queueMocks[1].title}
-          </Flex>
-          <Flex alignItems='center'>
-            <Text color='text.300' fontSize='sm'>
-              {t('playerQueue.queue')}:{' '}
-              <Text as='span' letterSpacing={3}>
-                1/{queueMocks.length}
+          {currentItem && (
+            <Flex>
+              {t('playerQueue.playing')}: {currentItem.video.title}
+            </Flex>
+          )}
+            <Flex alignItems='center' gap={1}>
+              <Text color='text.300' fontSize='sm'>
+                {t('playerQueue.queue')}:{' '}
+                <Text as='span' letterSpacing={3}>
+                  {currentIndex + 1}/{queue.length}
+                </Text>
               </Text>
-            </Text>
-          </Flex>
+
+              {isExpanded && queue.length > 1 && (
+                <>
+                  <Icon as={BsDash} aria-hidden transform={'rotate(90)'} />
+                  <Button variant='link' size='sm' onClick={onClear}>
+                    {t('playerQueue.clear')}
+                  </Button>
+                </>
+              )}
+            </Flex>
         </Flex>
         <IconButton
           rounded='full'
@@ -64,90 +84,21 @@ const PlayerQueue = () => {
       </Flex>
       <Collapse in={isExpanded}>
         <Flex direction='column' gap={0} paddingTop={5}>
-          <DragAndDropList items={queueMocks} renderItem={(i, isDragging) => <PlayerQueueItem video={i} isDragging={isDragging} />}/>
+          <DragAndDropList
+            items={queue}
+            onReorder={onUpdate}
+            renderItem={(i, isDragging) => (
+              <PlayerQueueItem
+                video={i.video}
+                isCurrent={currentItem?.id == i.id}
+                isDragging={isDragging}
+                onRemove={() => onRemove(i.id)}
+                onPlay={() => onPlay(i)}
+              />
+            )}
+          />
         </Flex>
       </Collapse>
-    </Flex>
-  );
-};
-
-export const PlayerQueueItem = ({ video, isPlaying, isDragging }: { video: YoutubeVideoDetail; isPlaying?: boolean; isDragging?: boolean }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t } = useTranslation();
-  return (
-    <Flex
-      className={classNames('player-queue-item', { 'menu-open': isMenuOpen, 'is-dragging': isDragging })}
-      cursor='pointer'
-      userSelect='none'
-      gap={2}
-      borderRadius='sm'
-      padding={1}
-      direction={{ base: 'column', md: 'row' }}
-      alignItems='start'
-      position='relative'
-      height={'80px' /* Must be hardcoded so the d&d placeholder does not mess up*/}
-    >
-      <Box position='relative' flexShrink={0}>
-        <Image width='120px' objectFit='cover' borderRadius='sm' aspectRatio={'16/9'} src={`https://img.youtube.com/vi/${video.id}/default.jpg`} />
-        {isPlaying && (
-          <Icon as={BsFillPlayFill} borderRadius='full' paddingX={1} position='absolute' bottom='.2rem' left='.2rem' background='bgAlpha.100' />
-        )}
-        <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
-          {FormatUtils.formatDuration(video.duration)}
-        </Text>
-      </Box>
-      <Flex direction='column' gap={1}>
-        <Heading display='inline' size='sm' noOfLines={1}>
-          {video.title}
-        </Heading>
-        <Flex alignItems='center' gap={2}>
-          <Image borderRadius='full' width='25px' objectFit='cover' aspectRatio={'1/1'} src={video.channelThumbnail} />
-          <Text as='span' fontWeight='bold' fontSize='sm'>
-            {video.channelTitle}
-          </Text>
-        </Flex>
-        <Flex alignItems='center' gap={1} wrap='wrap' fontSize='xs' color='text.300'>
-          <Text as='span' flexShrink={0}>
-            {FormatUtils.shortenNumber(video.viewCount)} views
-          </Text>
-
-          <Text as='span' display='inline-flex' alignItems='center'>
-            <Icon aria-hidden as={BsDot} display='inline' width={3} height={3} mb='-3px' />
-            {FormatUtils.timeAgo(new Date(video.publishedAt))}
-          </Text>
-        </Flex>
-      </Flex>
-      <Box
-        position='absolute'
-        display='flex'
-        alignItems='center'
-        className={classNames('player-queue-drag')}
-        justifyContent='end'
-        right={0}
-        top={0}
-        bgGradient='linear(to-l, bg.400,bg.400, transparent)'
-        height={'100%'}
-        width={'130px'}
-      >
-        <Menu placement='left-start' isLazy autoSelect={false} onOpen={() => setIsMenuOpen(true)} onClose={() => setIsMenuOpen(false)}>
-          <MenuButton
-            as={IconButton}
-            rounded='full'
-            color='text.600'
-            variant='ghost'
-            aria-label='drag'
-            padding={3}
-            icon={<Icon as={LuMoreVertical} />}
-          />
-          <MenuList>
-            <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4} />}>{t('playerQueue.playNow')}</MenuItem>
-            <MenuItem icon={<Icon as={LuTrash2} boxSize={4} />}>{t('playerQueue.remove')}</MenuItem>
-          </MenuList>
-        </Menu>
-        <IconButton color='text.600' variant='link' aria-label='drag' padding={3}>
-          <Icon as={LuAlignJustify} />
-        </IconButton>
-      </Box>
     </Flex>
   );
 };

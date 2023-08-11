@@ -1,4 +1,6 @@
 import { RefObject, useEffect, useState, useRef } from 'react';
+import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
+import { usePlayerQueueContext } from '../../context/PlayerQueueContext';
 
 const useYoutubePlayer = (containerId: string, videoId: string) => {
   const playerRef = useRef<YT.Player>();
@@ -6,7 +8,9 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [state, setState] = useState<YT.PlayerState>(YT.PlayerState.UNSTARTED);
+  const [playbackRate, setPlaybackRate] = useState<number>(1);
 
+  const { updateStatus } = usePlayerStatusContext();
   const initialize = async () => {
     new YT.Player(containerId, {
       videoId: videoId,
@@ -18,6 +22,7 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
       events: {
         onReady,
         onStateChange,
+        onPlaybackRateChange,
       },
     });
   };
@@ -26,15 +31,20 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
     setIsReady(true);
     playerRef.current = event.target;
     playerRef.current.playVideo();
+
     setDuration(playerRef.current.getDuration() || 0);
     setCurrentTime(playerRef.current.getCurrentTime() || 0);
+    setPlaybackRate(playerRef.current.getPlaybackRate() || 1);
   };
 
   const onStateChange = (event: YT.OnStateChangeEvent) => {
     setCurrentTime(playerRef.current?.getCurrentTime() || 0);
     setDuration(playerRef.current?.getDuration() || 0);
-
     setState(playerRef.current?.getPlayerState() || YT.PlayerState.UNSTARTED);
+  };
+
+  const onPlaybackRateChange = (e: YT.OnPlaybackRateChangeEvent) => {
+    setPlaybackRate(e.data);
   };
 
   const onTimeChange = (time: number) => {
@@ -65,6 +75,11 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
     }
   }, [videoId]);
 
+  // Esto ta mal
+  useEffect(() => {
+    updateStatus({ state, currentTime, playbackRate });
+  }, [state, currentTime]);
+
   useEffect(() => {
     initialize();
   }, []);
@@ -75,6 +90,7 @@ const useYoutubePlayer = (containerId: string, videoId: string) => {
     duration,
     currentTime,
     state,
+    playbackRate,
     controls: {
       onTimeChange,
       onPlay,

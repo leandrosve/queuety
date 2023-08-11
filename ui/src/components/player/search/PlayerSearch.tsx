@@ -29,9 +29,9 @@ const getErrorCode = (errorCode: string) => {
 };
 
 interface Props {
-  onPlay: (videoId: string) => void;
-  onPlayNext: (videoId: string) => void;
-  onPlayLast: (videoId: string) => void;
+  onPlay: (video: YoutubeVideoDetail) => void;
+  onPlayNext: (video: YoutubeVideoDetail) => void;
+  onPlayLast: (video: YoutubeVideoDetail) => void;
 }
 const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -68,7 +68,6 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
     setError('');
     setVideoDetails(res.data);
   };
-  console.count('re render');
 
   const { t } = useTranslation();
 
@@ -139,7 +138,11 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
             <ScaleFade initialScale={0.9} in={!loadingDetails && !!videoDetails} unmountOnExit>
               {!!videoDetails && (
                 <PlayerSearchVideoDetail
-                  onClose={() => setIsOpen(false)}
+                  onClose={() => {
+                    setIsOpen(false);
+                    setInputValue('');
+                    setVideoDetails(null);
+                  }}
                   video={videoDetails}
                   onPlay={onPlay}
                   onPlayLast={onPlayLast}

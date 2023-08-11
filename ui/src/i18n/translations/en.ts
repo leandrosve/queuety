@@ -24,9 +24,11 @@ export default {
     },
     playerQueue: {
       next: 'Next',
+      playing: 'Now playing',
       queue: 'Queue',
       playNow: 'Play now',
-      remove: 'Remove'
+      remove: 'Remove',
+      clear: 'Clear'
     },
   },
 };

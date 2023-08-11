@@ -10,6 +10,8 @@ html {
   --primary-700: hsl(252, 88%, 58%);
   --primary-800: hsl(252, 88%, 55%);
   --primary-900: hsl(252, 88%, 53%);
+
+  --z-index-queue: 10;
 }
 html[data-theme='light'] {
   --bg-500: hsl(0, 0%, 100%);

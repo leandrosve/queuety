@@ -19,9 +19,11 @@ export default {
     },
     playerQueue: {
       next: 'Siguiente',
+      playing: 'Reproduciendo',
       queue: 'En cola',
       playNow: 'Reproducir',
-      remove: 'Eliminar'
+      remove: 'Eliminar',
+      clear: 'Limpiar cola'
     },
   },
 };

@@ -1,33 +1,44 @@
 import { Box, Button, Flex, Heading, IconButton, Image, Link, Text } from '@chakra-ui/react';
 import { YoutubeVideoDetail } from '../../../services/api/YoutubeService';
-import { LuPlay, LuListPlus, LuListEnd, LuExternalLink, LuYoutube } from 'react-icons/lu';
+import { LuPlay, LuListPlus, LuListEnd } from 'react-icons/lu';
 import FormatUtils from '../../../utils/FormatUtils';
 import { BsYoutube } from 'react-icons/bs';
 import { useTranslation } from 'react-i18next';
+import Logger from '../../../utils/Logger';
 interface Props {
   video: YoutubeVideoDetail;
   onClose: () => void;
 
-  onPlay: (videoId: string) => void;
-  onPlayNext: (videoId: string) => void;
-  onPlayLast: (videoId: string) => void;
+  onPlay: (video: YoutubeVideoDetail) => void;
+  onPlayNext: (video: YoutubeVideoDetail) => void;
+  onPlayLast: (video: YoutubeVideoDetail) => void;
 }
 const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: Props) => {
-  const { t } = useTranslation();
+  useTranslation();
   const handlePlay = (mode: 'now' | 'last' | 'next') => {
-    onPlay(video.id);
-    // no va a servir esto
+    switch (mode) {
+      case 'now': {
+        onPlay(video);
+        break;
+      }
+      case 'last': {
+        onPlayLast(video);
+        break;
+      }
+      case 'next':
+        onPlayNext(video);
+    }
     onClose();
   };
   return (
     <Box>
       <Flex gap={3} direction={{ base: 'column', md: 'row' }} alignItems='start'>
-        <Box position='relative'>
+        <Box position='relative' flexShrink={0}>
           <Image
             width={{ base: '100%', md: '250px' }}
             objectFit='cover'
             aspectRatio={'16/9'}
-            src={`https://img.youtube.com/vi/${video.id}/sddefault.jpg`}
+            src={video.thumbnail}
           />
           <IconButton
             as='a'
