@@ -4,6 +4,7 @@ import FormatUtils from '../../../utils/FormatUtils';
 import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
 import { usePlayerQueueContext } from '../../../context/PlayerQueueContext';
+import PlayerControls from './PlayerControls';
 
 interface Props {
   duration: number;
@@ -24,8 +25,6 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
   const [isDragging, setIsDragging] = useState(false);
   const [draggingValue, setDraggingValue] = useState(currentTime || 0);
 
-  const { goNext, goPrevious } = usePlayerQueueContext();
-
   const handleChangeEnd = (value: number) => {
     setTime(value);
     setIsDragging(false);
@@ -34,7 +33,7 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
   useEffect(() => setTime(currentTime || 0), [currentTime]);
 
   useEffect(() => {
-    let interval: number;
+    let interval: NodeJS.Timer;
     if (state === YT.PlayerState.PLAYING) {
       interval = setInterval(() => {
         setTime((p) => p + 0.1 * playbackRate);
@@ -45,47 +44,7 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
 
   return (
     <Flex direction='column' alignItems='center' gap={3}>
-      <Flex gap={5}>
-        <IconButton
-          rounded='full'
-          icon={<Icon as={BsSkipStartFill} boxSize={5} />}
-          aria-label='skip forward'
-          variant='ghost'
-          onClick={() => goPrevious()}
-        />
-        <IconButton
-          rounded='full'
-          icon={<Icon as={TbRewindBackward10} boxSize={5} />}
-          aria-label='rewind'
-          variant='ghost'
-          onClick={() => onRewind(10)}
-        />
-        <IconButton
-          rounded='full'
-          variant='ghost'
-          onClick={() => {
-            state != YT.PlayerState.PLAYING ? onPlay() : onPause();
-          }}
-          icon={<Icon as={state != YT.PlayerState.PLAYING ? BsFillPlayFill : BsPauseFill} boxSize={7} />}
-          aria-label={state != YT.PlayerState.PLAYING ? 'play' : 'pause'}
-        >
-          Toggle Play
-        </IconButton>
-        <IconButton
-          rounded='full'
-          icon={<Icon as={TbRewindForward10} boxSize={5} />}
-          aria-label='rewind forward'
-          variant='ghost'
-          onClick={() => onForward(10)}
-        />
-        <IconButton
-          rounded='full'
-          icon={<Icon as={BsSkipEndFill} boxSize={5} />}
-          aria-label='skip forward'
-          variant='ghost'
-          onClick={() => goNext()}
-        />
-      </Flex>
+      <PlayerControls state={state} playbackRate={playbackRate} onPlay={onPlay} onPause={onPause} onForward={onForward} onRewind={onRewind} />
       <Slider
         aria-label='slider-ex-4'
         defaultValue={30}

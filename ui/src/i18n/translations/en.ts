@@ -20,7 +20,8 @@ export default {
       example: 'e.g.',
       errors: {
         video_not_found: "Sorry, we couldn't find the request video",
-        malformed_url: 'The provided URL does not correspond to a Youtube Video',
+        malformed_url: 'The provided URL does not correspond to a YouTube Video',
+        shorts_url: 'Sorry, unfortunately shorts cannot be watched outside YouTube',
         unknown: 'Sorry, something went wrong',
       },
     },

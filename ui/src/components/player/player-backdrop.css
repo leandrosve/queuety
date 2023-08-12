@@ -1,13 +1,14 @@
 .player-backdrop {
   width: 100vw;
+  height: 100vh;
   max-width: 100vw;
-  max-height: 90vh;
+  max-height: 100vh;
   z-index: -1;
   align-items: center;
   justify-content: center;
   background-color: var(--bg-100);
   overflow: hidden;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   transition: opacity 1s normal ease;
@@ -40,12 +41,12 @@
 }
 
 .player-backdrop__blur {
-  backdrop-filter: blur(70px);
   height: 100%;
   width: 100%;
   z-index: 1;
   position: absolute;
   left: 0;
+  backdrop-filter: blur(70px);
 }
 
 html[data-theme='light'] .player-backdrop__blur {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { createHash } from 'crypto';
+import { createHash, sign, createSign } from 'crypto';
 
 @Injectable()
 export class ConnectionService {
@@ -9,8 +9,19 @@ export class ConnectionService {
     this.seed = process.env.CONNECTION_CODE_SEED || createHash('md5').digest('hex');
   }
 
-  getSessionCode() {
-    const code = createHash('sha256').update(`${this.seed}${new Date().getTime()}`).digest('hex');
-    return { code };
+  /**
+   * Generates a unique code that represents the room where the player sync will occur
+   */
+  getPlayerRoomId() {
+    const roomId = 'player-' + createHash('sha256').update(`${this.seed}${new Date().getTime()}`).digest('hex');
+    return { roomId };
+  }
+
+  /**
+   * Generates a unique code that represents the room where the handshake prior to the player sync occurs
+   */
+  getAuthRoomId() {
+    const roomId = 'auth-' + createHash('md5').update(`${this.seed}${new Date().getTime()}`).digest('hex');
+    return { roomId };
   }
 }

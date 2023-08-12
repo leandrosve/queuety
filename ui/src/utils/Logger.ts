@@ -1,6 +1,6 @@
 export default class Logger {
-  private static log(color: string, background: string, ...objects: any[]) {
-    console.log('%c', ...objects, `background-color: ${background};color: ${color}`);
+  private static log(color: string, background: string, objects: any[]) {
+    console.log('%c' + objects.map(o => o instanceof Object ? JSON.stringify(o, null, 4) : o).join(", "),  `background-color: ${background};color: ${color}`);
   }
 
   public static info(...objects: any[]) {

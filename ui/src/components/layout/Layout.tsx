@@ -1,19 +1,19 @@
-import { Button, Flex, Icon, IconButton, Text, useColorMode } from '@chakra-ui/react';
-import i18next from 'i18next';
-import React, { PropsWithChildren } from 'react';
-import { HiMoon, HiSun } from 'react-icons/hi';
+import { Flex } from '@chakra-ui/react';
+import { PropsWithChildren } from 'react';
 import NavbarDesktop from './navbar/NavbarDesktop';
+import NavbarMobile from './navbar/NavbarMobile';
 
-const Layout = ({ children }: PropsWithChildren) => {
+interface Props extends PropsWithChildren {
+  isMobile?: boolean;
+}
+const Layout = ({ children, isMobile }: Props) => {
   return (
-    <div className='app'>
-      <Flex className='layout' gap={3} grow={1} zIndex={1}>
-        <NavbarDesktop />
-        <Flex grow={1} alignItems='start' justifyContent='center'>
-          {children}
-        </Flex>
+    <Flex className='layout' gap={3} grow={1} zIndex={1}>
+      {isMobile ? <NavbarMobile /> : <NavbarDesktop />}
+      <Flex grow={1} alignItems='start' justifyContent='center'>
+        {children}
       </Flex>
-    </div>
+    </Flex>
   );
 };
 

@@ -16,6 +16,7 @@ export default {
       errors: {
         video_not_found: 'Lo sentimos, no pudimos encontrar el video',
         malformed_url: 'La URL no corresponde a un video de YouTube',
+        shorts_url: 'Lo sentimos, los shorts solo pueden reproducirse directamente desde YouTube',
         unknown: 'Lo sentimos, algo salió mal',
       },
     },

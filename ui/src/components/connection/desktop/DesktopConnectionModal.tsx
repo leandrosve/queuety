@@ -1,6 +1,4 @@
 import {
-  Box,
-  Button,
   Flex,
   Heading,
   Icon,
@@ -14,46 +12,21 @@ import {
   Spinner,
   Text,
 } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import QRCode from 'react-qr-code';
-import ConnectionService from '../../services/api/ConnectionService';
-import CopyToClipboard from '../common/CopyToClipboard';
+import CopyToClipboard from '../../common/CopyToClipboard';
 import { LuRefreshCcw } from 'react-icons/lu';
 import { TbDeviceMobilePlus } from 'react-icons/tb';
 import { useTranslation } from 'react-i18next';
+import { useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
-const ConnectionHostModal = ({ isOpen, onClose }: Props) => {
-  const [code, setCode] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
+const DesktopConnectionModal = ({ isOpen, onClose }: Props) => {
   const { t } = useTranslation();
-  const onCopy = () => {};
+  const { connection, regenAuthRoom } = useDesktopConnectionContext();
 
-  const retrieveCode = async (forceRegenerate?: boolean) => {
-    if (!forceRegenerate) {
-      const localCode = ConnectionService.getLocalCode();
-      if (localCode) {
-        setCode(localCode);
-        setLoading(false);
-        return;
-      }
-    }
-    setLoading(true);
-    const res = await ConnectionService.getConnectionCode();
-    if (res.hasError) {
-      setLoading(false);
-
-      return;
-    }
-    setCode(res.data.code);
-    ConnectionService.saveLocalCode(res.data.code);
-    setLoading(false);
-  };
-  useEffect(() => {
-    retrieveCode();
-  }, []);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -68,13 +41,17 @@ const ConnectionHostModal = ({ isOpen, onClose }: Props) => {
         <ModalBody>
           <Flex direction='column' alignItems='center' gap={3} justifyContent='center' paddingBottom={5}>
             <Text>{t('connection.connectDescription')}</Text>
-            <Flex gap={5} background='bg.500' padding={4} boxShadow='sm' borderRadius='md'>
+            <Flex gap={5} background='bgAlpha.200' padding={4} boxShadow='sm' borderRadius='md'>
               <Flex boxSize={224} justifyContent='center' alignItems='center'>
-                {loading ? <Spinner /> : <QRCode size={224} value={code} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />}
+                {connection.authRoom.loading ? (
+                  <Spinner />
+                ) : (
+                  <QRCode size={224} value={connection.authRoom.id || ''} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />
+                )}
               </Flex>
               <Flex direction='column' gap={3} alignSelf='stretch'>
-                <CopyToClipboard value={code} />
-                <IconButton aria-label='redo' icon={<LuRefreshCcw />} onClick={() => retrieveCode(true)}>
+                <CopyToClipboard value={connection.authRoom.id || ''} />
+                <IconButton aria-label='redo' icon={<LuRefreshCcw />} onClick={() => regenAuthRoom()}>
                   Regen
                 </IconButton>
               </Flex>
@@ -86,4 +63,4 @@ const ConnectionHostModal = ({ isOpen, onClose }: Props) => {
   );
 };
 
-export default ConnectionHostModal;
+export default DesktopConnectionModal;

@@ -7,7 +7,7 @@ import { TbDeviceMobilePlus } from 'react-icons/tb';
 import DesktopConnectionModal from '../../connection/desktop/DesktopConnectionModal';
 import { useState } from 'react';
 
-const NavbarDesktop = () => {
+const NavbarMobile = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const currentLanguage = i18next.language;
   const { t } = useTranslation();
@@ -18,11 +18,7 @@ const NavbarDesktop = () => {
       <Text as='span' color='text.300' fontWeight='bold'>
         Queuety
       </Text>
-
       <Flex gap={3}>
-        <Button onClick={() => setIsConnectionModalOpen(true)} leftIcon={<Icon as={TbDeviceMobilePlus} boxSize={5} />}>
-          {t('connection.connectDevice')}
-        </Button>
         <DesktopConnectionModal isOpen={isConnectionModalOpen} onClose={() => setIsConnectionModalOpen(false)} />
         <Button color='text.300' variant='ghost' onClick={() => i18next.changeLanguage(currentLanguage == 'en' ? 'es' : 'en')}>
           {currentLanguage}
@@ -40,4 +36,4 @@ const NavbarDesktop = () => {
   );
 };
 
-export default NavbarDesktop;
+export default NavbarMobile;

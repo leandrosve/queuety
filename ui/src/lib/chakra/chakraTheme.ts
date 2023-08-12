@@ -2,11 +2,15 @@ import { extendTheme } from '@chakra-ui/react';
 import { menuTheme } from './components/menuTheme';
 import './chakraTheme.css';
 import { inputTheme } from './components/inputTheme';
+import { buttonTheme } from './components/buttonTheme';
+import { skeletonTheme } from './components/skeletonTheme';
 
 const theme = extendTheme({
   components: {
     Menu: menuTheme,
     Input: inputTheme,
+    Button: buttonTheme,
+    Skeleton: skeletonTheme,
   },
   fonts: {
     heading: 'var(--font-family)',

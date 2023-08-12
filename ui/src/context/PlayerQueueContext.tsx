@@ -41,36 +41,36 @@ export const PlayerQueueContext = React.createContext<PlayerQueueContextProps>({
   goPrevious: () => {},
 });
 
-const getInitialQueueInfo = (): QueueInfo => {
-  const q = localStorage.getItem('queueInfo');
-  if (q) return JSON.parse(q) as QueueInfo;
+const getInitialQueueInfo = (): Queue => {
+  const q = localStorage.getItem('queue');
+  if (q) return JSON.parse(q) as Queue;
   return { items: [], current: null, status: QueueStatus.UNSTARTED };
 };
 
-interface QueueInfo {
+interface Queue {
   items: QueueItem[];
   current: QueueItem | null;
   status: QueueStatus;
 }
 
 export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
-  const [queueInfo, setQueueInfo] = useState<QueueInfo>(getInitialQueueInfo());
+  const [queue, setQueue] = useState<Queue>(getInitialQueueInfo());
   /* Only to export it, do not use this inside this provider*/
   const currentIndex = useMemo(() => {
-    if (!queueInfo.current) return -1;
-    return queueInfo.items.findIndex((i) => i.id == queueInfo.current?.id);
-  }, [queueInfo]);
+    if (!queue.current) return -1;
+    return queue.items.findIndex((i) => i.id == queue.current?.id);
+  }, [queue]);
 
   const clearQueue = () => {
-    setQueueInfo((p) => ({ ...p, items: p.items.filter((i) => i.id === p.current?.id) }));
+    setQueue((p) => ({ ...p, items: p.items.filter((i) => i.id === p.current?.id) }));
   };
 
   const updateQueue = (value: QueueItem[]) => {
-    setQueueInfo((p) => ({ ...p, items: value }));
+    setQueue((p) => ({ ...p, items: value }));
   };
 
   const updateCurrentItem = (value: QueueItem) => {
-    setQueueInfo((p) => {
+    setQueue((p) => {
       const found = p.items.find((item) => item.id == value.id);
       if (!found) return p;
       return { ...p, current: found };
@@ -78,7 +78,7 @@ export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
   };
 
   const goNext = () => {
-    setQueueInfo((p) => {
+    setQueue((p) => {
       const index = p.current ? p.items.findIndex((i) => i.id === p.current?.id) : -1;
       const nextItem = p.items[index + 1];
       Logger.info('Current:', p.current?.video.title, 'Next:', nextItem?.video?.title);
@@ -88,7 +88,7 @@ export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
   };
 
   const goPrevious = () => {
-    setQueueInfo((p) => {
+    setQueue((p) => {
       const index = p.current ? p.items.findIndex((i) => i.id === p.current?.id) : -1;
       if (index < 1) return p;
       const previousItem = p.items[index - 1];
@@ -98,21 +98,21 @@ export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
   };
 
   const addLastToQueue = (video: YoutubeVideoDetail) => {
-    setQueueInfo((p) => {
+    setQueue((p) => {
       const newItem = { id: uuidv4(), video };
       const nextItems = [...p.items, newItem];
-      const newCurrent = p.status === QueueStatus.ENDED ? newItem : p.current;
+      const newCurrent = (p.status === QueueStatus.ENDED || p.items.length === 0) ? newItem : p.current;
       return { items: nextItems, current: newCurrent, status: QueueStatus.ACTIVE };
     });
   };
 
   const addNextToQueue = (video: YoutubeVideoDetail, playNow?: boolean) => {
-    setQueueInfo((p) => {
+    setQueue((p) => {
       const index = p.current ? p.items.findIndex((i) => i.id === p.current?.id) : -1;
       const newItem = { id: uuidv4(), video };
       const nextItems = [...p.items];
       nextItems.splice(index + 1, 0, newItem);
-      const newCurrent = playNow || p.status === QueueStatus.ENDED ? newItem : p.current;
+      const newCurrent = (playNow || p.status === QueueStatus.ENDED || p.items.length === 0) ? newItem : p.current;
       return { items: nextItems, current: newCurrent, status: QueueStatus.ACTIVE };
     });
   };
@@ -122,25 +122,25 @@ export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
   };
 
   const removeFromQueue = (id: string) => {
-    setQueueInfo((p) => {
+    setQueue((p) => {
       if (p.current?.id === id) return p;
       return { ...p, items: p.items.filter((i) => i.id !== id) };
     });
   };
 
   useEffect(() => {
-    localStorage.setItem('queueInfo', JSON.stringify(queueInfo));
-  }, [queueInfo]);
+    localStorage.setItem('queue', JSON.stringify(queue));
+  }, [queue]);
   return (
     <PlayerQueueContext.Provider
       value={{
-        currentItem: queueInfo.current,
+        currentItem: queue.current,
         goNext,
         goPrevious,
         currentIndex,
         clearQueue,
         updateCurrentItem,
-        queue: queueInfo.items,
+        queue: queue.items,
         updateQueue,
         addNowToQueue,
         addLastToQueue,

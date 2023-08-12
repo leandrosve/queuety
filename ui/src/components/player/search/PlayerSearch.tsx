@@ -24,7 +24,7 @@ import PlayerSearchVideoDetail from './PlayerSearchVideoDetail';
 import { useTranslation } from 'react-i18next';
 
 const getErrorCode = (errorCode: string) => {
-  if (['video_not_found', 'malformed_url'].includes(errorCode)) return errorCode;
+  if (['video_not_found', 'malformed_url', 'shorts_url'].includes(errorCode)) return errorCode;
   return 'unknown';
 };
 
@@ -53,6 +53,10 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
     var match = url.match(regExp);
 
     if (!match || match[2].length !== 11) {
+      if (url.includes("/shorts/")) {
+        setError('shorts_url')
+        return;
+      }
       setError('malformed_url');
       return;
     }

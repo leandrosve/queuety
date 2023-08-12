@@ -26,6 +26,7 @@ export class IOBasicGateway implements OnGatewayConnection {
     client.emit('connection', client.id);
   }
 
+  // Example
   @SubscribeMessage('send-message')
   private onSendMessage(
     @ConnectedSocket() client: Socket,
@@ -46,6 +47,52 @@ export class IOBasicGateway implements OnGatewayConnection {
       if (r !== client.id) client.leave(r);
     });
     client.join(room);
+    return true;
+  }
+
+  // First attempt to implement this
+  // Beforehand Note: I definetely should have researched this more before starting to implement this
+  @SubscribeMessage('join-auth-room')
+  private onJoinAuthRoom(@ConnectedSocket() client: Socket, @MessageBody('authRoomId') authRoomId: string) {
+    if (!authRoomId || !authRoomId.startsWith('auth-')) {
+      this.logger.warn(`${authRoomId} is not a valid auth room ID`);
+      return false;
+    }
+    client.join(authRoomId);
+    this.logger.log(`${client.id} connected to auth room ${authRoomId}`);
+    return true;
+  }
+
+  @SubscribeMessage('send-auth-request')
+  private onSendAuthRequest(@ConnectedSocket() client: Socket, @MessageBody('authRoomId') authRoomId: string) {
+    this.logger.log(`${client.id} sent auth request to auth room ${authRoomId}`);
+
+    client.to(authRoomId).emit('receive-auth-request', { clientId: client.id });
+    return true;
+  }
+
+  @SubscribeMessage('send-auth-confirmation')
+  private onAuthConfirmation(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('clientId') clientId: string,
+    @MessageBody('playerRoomId') playerRoomId: string,
+    @MessageBody('accepted') accepted: boolean
+  ) {
+    this.logger.log(`${client.id} confirmed auth request to player room ${playerRoomId}`);
+
+    client.to(clientId).emit('receive-auth-confirmation', { playerRoomId, accepted });
+    return true;
+  }
+
+  @SubscribeMessage('join-player-room')
+  private onJoinPlayerRoom(@ConnectedSocket() client: Socket, @MessageBody('playerRoomId') playerRoomId: string) {
+    if (!playerRoomId || !playerRoomId.startsWith('player-')) {
+      this.logger.warn(`${playerRoomId} is not a valid player room ID`);
+      return false;
+    }
+    client.join(playerRoomId);
+    this.logger.log(`${client.id} connected to player room ${playerRoomId}`);
+
     return true;
   }
 }
