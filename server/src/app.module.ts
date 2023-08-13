@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { YoutubeModule } from './modules/youtube/youtube.module';
 import { ConnectionModule } from './modules/connection/connection.module';
-import { IOBasicModule } from './modules/io/basic/io.basic.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
-  imports: [YoutubeModule, ConnectionModule, IOBasicModule],
+  imports: [YoutubeModule, ConnectionModule, AuthModule],
   controllers: [],
   providers: [],
 })

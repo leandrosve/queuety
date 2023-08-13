@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useDesktopConnectionContext } from '../../context/DesktopConnectionContext';
 import useSocketConnection from './useSocketConnection';
 import Logger from '../../utils/Logger';
+import AuthResponseDTO, { AuthResponseStatus } from '../../model/auth/AuthResponseDTO';
 
 interface AuthRequest {
   clientId: string;
 }
+
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
   const { socket, isReady, connectionId } = useSocketConnection(true);
@@ -23,7 +25,9 @@ const useDesktopAuth = () => {
   };
 
   const authorizeRequest = (clientId: string, accepted: boolean) => {
-    socket.emit('send-auth-confirmation', { accepted, clientId, connection: accepted ? connection.playerRoom.id : null }, () => {
+    const status = accepted ? AuthResponseStatus.AUTHORIZED : AuthResponseStatus.DENIED;
+    const payload: AuthResponseDTO = { status, clientId, playerRoomId: connection.playerRoom.id };
+    socket.emit('send-auth-confirmation', payload, () => {
       setAuthRequests((p) => p.filter((i) => i.clientId !== clientId));
     });
   };
@@ -34,6 +38,7 @@ const useDesktopAuth = () => {
       socket.on('receive-auth-request', onAuthRequest);
     }
   }, [socket, isReady, connection.authRoom]);
+
   return {
     joinedAuthRoom,
     isSocketReady: isReady,

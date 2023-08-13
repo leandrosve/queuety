@@ -1,19 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder().setTitle('Queuety API Docs').setVersion('1.0').addTag('queuety').build();
-  app.enableCors({origin: "http://localhost:5173"});
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors({ origin: 'http://localhost:5173' });
   app.setGlobalPrefix('/api');
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
+  await app.listen(3334);
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  await app.listen(3334);
-  const logger = new Logger('Queuety');
-  logger.log(`Docs: ${await app.getUrl()}/docs`, `Docs (local):  http://localhost:3334/docs`);
 
-  
+  new Logger('Queuety').log(`Docs: ${await app.getUrl()}/docs`, `Docs (local):  http://localhost:3334/docs`);
 }
 bootstrap();

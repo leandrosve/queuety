@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { socket } from '../../socket';
 import Logger from '../../utils/Logger';
+import AuthResponseDTO, { AuthResponseStatus } from '../../model/auth/AuthResponseDTO';
+import MobileAuthService from '../../services/api/auth/MobileAuthService';
 
 export enum Status {
   UNSTARTED = 'UNSTARTED',
@@ -17,7 +19,7 @@ export enum Status {
   TIMEOUT = 'TIMEOUT',
 }
 
-const CONFIRMATION_TIMEOUT = 5_000; // ms
+const CONFIRMATION_TIMEOUT = 25_000; // ms
 
 const useMobileAuth = (authRoomId: string) => {
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
@@ -26,8 +28,9 @@ const useMobileAuth = (authRoomId: string) => {
 
   const [status, setStatus] = useState<Status>(Status.UNSTARTED);
 
+  const authService = useMemo(() => new MobileAuthService(), []);
+
   const onTrigger = (authRoom: string) => {
-    console.log('ON TRIGGER', authRoom);
     if (!isSocketReady || !authRoom) return;
     joinAuthRoom(authRoom);
   };
@@ -35,7 +38,7 @@ const useMobileAuth = (authRoomId: string) => {
 
   const connectToSocket = () => {
     setStatus(Status.CONNECTING_TO_SOCKET);
-    socket.connect();
+    authService.connect();
   };
 
   const onSocketConnected = (connectId: string) => {
@@ -47,11 +50,10 @@ const useMobileAuth = (authRoomId: string) => {
 
   // Join Auth Room
 
-  const joinAuthRoom = (roomId: string) => {
+  const joinAuthRoom = async (roomId: string) => {
     setStatus(Status.JOINING_AUTH_ROOM);
-    socket.emit('join-auth-room', { authRoomId: roomId }, (success: boolean) => {
-      if (success) onJoinedAuthRoom();
-    });
+    const ok = await authService.joinAuthRoom(roomId);
+    if (ok) onJoinedAuthRoom();
   };
 
   const onJoinedAuthRoom = () => {
@@ -60,20 +62,19 @@ const useMobileAuth = (authRoomId: string) => {
   };
 
   // Send Auth Request
-  const sendAuthRequest = () => {
+  const sendAuthRequest = async () => {
     setStatus(Status.SENDING_AUTH_REQUEST);
-    socket.emit('send-auth-request', { authRoomId: authRoomId }, (sent: boolean) => {
-      if (sent) {
-        console.log({ authRoomId });
-        setStatus(Status.SENT_AUTH_REQUEST);
-      }
-    });
+    const ok = await authService.sendAuthRequest(authRoomId);
+    if (ok) setStatus(Status.SENT_AUTH_REQUEST);
   };
 
-  const onAuthConfirmation = (confirmation: { accepted: boolean; playerRoomId: string }) => {
-    console.log({ confirmation });
-    setStatus(confirmation.accepted ? Status.AUTH_REQUEST_ACCEPTED : Status.AUTH_REQUEST_DENIED);
-    if (!confirmation.accepted) return;
+  const onAuthConfirmation = (confirmation: AuthResponseDTO) => {
+    if (confirmation.status !== AuthResponseStatus.AUTHORIZED) {
+      setStatus(Status.AUTH_REQUEST_DENIED);
+      return;
+    }
+    if (!confirmation.playerRoomId) return;
+    setStatus(Status.AUTH_REQUEST_ACCEPTED);
     setPlayerRoomId(confirmation.playerRoomId);
     joinPlayerRoom(confirmation.playerRoomId);
   };
@@ -81,29 +82,24 @@ const useMobileAuth = (authRoomId: string) => {
   // Join Player Room
   const joinPlayerRoom = (playerRoomId: string) => {
     setStatus(Status.JOINED_PLAYER_ROOM);
-    socket.emit('join-player-room', { playerRoomId }, (res: boolean) => {
-      if (res) setStatus(Status.JOINED_PLAYER_ROOM);
-    });
+    authService.joinPlayerRoom(playerRoomId, () => setStatus(Status.JOINED_PLAYER_ROOM));
   };
 
   const onTimeout = () => {
-    socket.off('receive-auth-confirmation');
+    authService.onConfirmationTimeout();
     setStatus(Status.TIMEOUT);
   };
 
   const onDisconnected = () => setIsSocketReady(false);
 
   useEffect(() => {
-    socket.on('connection', onSocketConnected);
-    socket.on('disconnect', onDisconnected);
-    socket.once('receive-auth-confirmation', onAuthConfirmation);
+    authService.onConnected(onSocketConnected);
+    authService.onDisconnected(onDisconnected);
+    authService.onAuthConfirmation(onAuthConfirmation);
 
     connectToSocket();
     return () => {
-      console.log('disconnect');
-      socket.off('connection', onSocketConnected);
-      socket.off('disconnect', onDisconnected);
-      socket.off('receive-auth-confirmation', onAuthConfirmation);
+      authService.cleanup();
     };
   }, []);
 
