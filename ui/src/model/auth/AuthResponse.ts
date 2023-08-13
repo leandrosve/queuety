@@ -4,7 +4,7 @@ export enum AuthResponseStatus {
   DENIED = 'DENIED',
 }
 
-export default interface AuthResponseDTO {
+export default interface AuthResponse {
   playerRoomId?: string | null;
   status: AuthResponseStatus;
   clientId: string;

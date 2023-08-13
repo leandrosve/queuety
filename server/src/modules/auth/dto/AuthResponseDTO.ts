@@ -7,7 +7,7 @@ export class AuthResponseDTO {
 
   @IsNotEmpty()
   @IsIn(['AUTHORIZED', 'DENIED', 'PENDING'])
-  status: string;
+  status: 'AUTHORIZED' | 'DENIED' | 'PENDING';
 
   @IsString()
   playerRoomId: string;

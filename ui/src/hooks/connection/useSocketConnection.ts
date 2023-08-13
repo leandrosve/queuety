@@ -25,7 +25,6 @@ const useSocketConnection = (autoConnect?: boolean) => {
     socket.on('disconnect', onDisconnected);
 
     return () => {
-      console.log('disconnect');
       socket.off('connection', onSocketConnected);
       socket.off('disconnect', onDisconnected);
     };

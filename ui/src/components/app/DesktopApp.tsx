@@ -15,6 +15,7 @@ const DesktopApp = () => {
     <Providers>
       <Layout>
         <DesktopConnectionView />
+        <Content/>
       </Layout>
     </Providers>
   );

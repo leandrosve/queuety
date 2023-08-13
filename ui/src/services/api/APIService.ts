@@ -1,3 +1,5 @@
+import Logger from '../../utils/Logger';
+
 type APISuccessfulResponse<T> = {
   status: number;
   data: T;
@@ -19,7 +21,7 @@ interface Options {
 }
 
 export default class APIService {
-  protected static BASE_URL = 'http://localhost:3334/api';
+  protected static BASE_URL = 'http://192.168.0.226:3334/api';
 
   protected static PATH: string;
 
@@ -57,7 +59,7 @@ export default class APIService {
       }
       return { status: res.status, error: responseBody['error'] || 'unknown', hasError: true } as APIErrorResponse<T>;
     } catch (err) {
-      console.log(err);
+      Logger.danger(err);
       return { status: 400, hasError: true, error: 'unknown' };
     }
   }

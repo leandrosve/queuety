@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { socket } from '../../socket';
+import { useEffect, useMemo, useState } from 'react';
 import Logger from '../../utils/Logger';
-import AuthResponseDTO, { AuthResponseStatus } from '../../model/auth/AuthResponseDTO';
+import AuthResponse, { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import MobileAuthService from '../../services/api/auth/MobileAuthService';
 
-export enum Status {
+export enum MobileAuthStatus {
   UNSTARTED = 'UNSTARTED',
   CONNECTING_TO_SOCKET = 'CONNECTING_TO_SOCKET',
   CONNECTED_TO_SOCKET = 'CONNECTED_TO_SOCKET',
@@ -12,6 +11,7 @@ export enum Status {
   JOINED_AUTH_ROOM = 'JOINED_AUTH_ROOM',
   SENDING_AUTH_REQUEST = 'SENDING_AUTH_REQUEST',
   SENT_AUTH_REQUEST = 'SENT_AUTH_REQUEST',
+  AUTH_REQUEST_PENDING = 'AUTH_REQUEST_PENDING',
   AUTH_REQUEST_ACCEPTED = 'AUTH_REQUEST_ACCEPTED',
   AUTH_REQUEST_DENIED = 'AUTH_REQUEST_DENIED',
   JOINING_PLAYER_ROOM = 'JOINING_PLAYER_ROOM',
@@ -19,75 +19,93 @@ export enum Status {
   TIMEOUT = 'TIMEOUT',
 }
 
+export enum AuthError {}
+
 const CONFIRMATION_TIMEOUT = 25_000; // ms
 
-const useMobileAuth = (authRoomId: string) => {
-  const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
-  const [connectionId, setConnectionId] = useState<string>('');
-  const [playerRoomId, setPlayerRoomId] = useState<string>('');
-
-  const [status, setStatus] = useState<Status>(Status.UNSTARTED);
-
+const useMobileAuth = () => {
   const authService = useMemo(() => new MobileAuthService(), []);
 
+  const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
+  const [connectionId, setConnectionId] = useState<string>('');
+  const [playerRoomId, setPlayerRoomId] = useState<string | null>(authService.getSavedPlayerRoom());
+  const [authRoomId, setAuthRoomId] = useState<string | null>();
+
+  const [status, setStatus] = useState<MobileAuthStatus>(MobileAuthStatus.UNSTARTED);
+
+  const [error, setError] = useState<string | null>(null);
+
   const onTrigger = (authRoom: string) => {
+    authRoom = authRoom.trim();
     if (!isSocketReady || !authRoom) return;
+    setAuthRoomId(authRoom);
     joinAuthRoom(authRoom);
   };
   // Initial Connection
 
   const connectToSocket = () => {
-    setStatus(Status.CONNECTING_TO_SOCKET);
+    setStatus(MobileAuthStatus.CONNECTING_TO_SOCKET);
     authService.connect();
   };
 
   const onSocketConnected = (connectId: string) => {
     setConnectionId(connectId);
-    setStatus(Status.CONNECTED_TO_SOCKET);
+    setStatus(MobileAuthStatus.CONNECTED_TO_SOCKET);
     setIsSocketReady(true);
+
+    if (playerRoomId) {
+      joinPlayerRoom(playerRoomId);
+    }
     //joinAuthRoom(authRoomId); uncomment this after testing
   };
 
   // Join Auth Room
 
-  const joinAuthRoom = async (roomId: string) => {
-    setStatus(Status.JOINING_AUTH_ROOM);
-    const ok = await authService.joinAuthRoom(roomId);
-    if (ok) onJoinedAuthRoom();
+  const joinAuthRoom = async (authRoomId: string) => {
+    setStatus(MobileAuthStatus.JOINING_AUTH_ROOM);
+    const ok = await authService.joinAuthRoom(authRoomId);
+    if (ok) {
+      setStatus(MobileAuthStatus.JOINED_AUTH_ROOM);
+      sendAuthRequest(authRoomId);
+    } else {
+      setError('invalid_auth_room');
+    }
   };
-
-  const onJoinedAuthRoom = () => {
-    setStatus(Status.JOINED_AUTH_ROOM);
-    sendAuthRequest();
-  };
-
   // Send Auth Request
-  const sendAuthRequest = async () => {
-    setStatus(Status.SENDING_AUTH_REQUEST);
-    const ok = await authService.sendAuthRequest(authRoomId);
-    if (ok) setStatus(Status.SENT_AUTH_REQUEST);
+  const sendAuthRequest = async (authRoomId: string) => {
+    setStatus(MobileAuthStatus.SENDING_AUTH_REQUEST);
+    const ok = await authService.sendAuthRequest({ authRoomId, nickname: 'qsy' });
+    if (ok) setStatus(MobileAuthStatus.SENT_AUTH_REQUEST);
   };
 
-  const onAuthConfirmation = (confirmation: AuthResponseDTO) => {
-    if (confirmation.status !== AuthResponseStatus.AUTHORIZED) {
-      setStatus(Status.AUTH_REQUEST_DENIED);
+  const onAuthResponse = (response: AuthResponse) => {
+    if (response.status === AuthResponseStatus.PENDING) {
+      setStatus(MobileAuthStatus.AUTH_REQUEST_PENDING);
       return;
     }
-    if (!confirmation.playerRoomId) return;
-    setStatus(Status.AUTH_REQUEST_ACCEPTED);
-    setPlayerRoomId(confirmation.playerRoomId);
-    joinPlayerRoom(confirmation.playerRoomId);
+    if (response.status === AuthResponseStatus.DENIED) {
+      setStatus(MobileAuthStatus.AUTH_REQUEST_DENIED);
+      return;
+    }
+    if (!response.playerRoomId) return;
+    setStatus(MobileAuthStatus.AUTH_REQUEST_ACCEPTED);
+    setPlayerRoomId(response.playerRoomId);
+    joinPlayerRoom(response.playerRoomId);
   };
 
   // Join Player Room
-  const joinPlayerRoom = (playerRoomId: string) => {
-    setStatus(Status.JOINED_PLAYER_ROOM);
-    authService.joinPlayerRoom(playerRoomId, () => setStatus(Status.JOINED_PLAYER_ROOM));
+  const joinPlayerRoom = async (playerRoomId: string) => {
+    setStatus(MobileAuthStatus.JOINING_PLAYER_ROOM);
+    const ok = await authService.joinPlayerRoom(playerRoomId);
+    if (ok) {
+      setStatus(MobileAuthStatus.JOINED_PLAYER_ROOM);
+      authService.savePlayerRoom(playerRoomId);
+    }
   };
 
   const onTimeout = () => {
     authService.onConfirmationTimeout();
-    setStatus(Status.TIMEOUT);
+    setStatus(MobileAuthStatus.TIMEOUT);
   };
 
   const onDisconnected = () => setIsSocketReady(false);
@@ -95,8 +113,7 @@ const useMobileAuth = (authRoomId: string) => {
   useEffect(() => {
     authService.onConnected(onSocketConnected);
     authService.onDisconnected(onDisconnected);
-    authService.onAuthConfirmation(onAuthConfirmation);
-
+    authService.onAuthConfirmation(onAuthResponse);
     connectToSocket();
     return () => {
       authService.cleanup();
@@ -106,7 +123,7 @@ const useMobileAuth = (authRoomId: string) => {
   useEffect(() => {
     Logger.info(status);
     let timeout: number;
-    if (status === Status.SENT_AUTH_REQUEST) {
+    if (status === MobileAuthStatus.SENT_AUTH_REQUEST) {
       timeout = setTimeout(() => {
         onTimeout();
       }, CONFIRMATION_TIMEOUT);
@@ -114,14 +131,9 @@ const useMobileAuth = (authRoomId: string) => {
     return () => clearTimeout(timeout);
   }, [status]);
 
-  useEffect(() => {
-    if (authRoomId && authRoomId.startsWith('auth-')) {
-      onTrigger(authRoomId);
-    }
-  }, [authRoomId]);
-
   return {
     status,
+    error,
     isSocketReady,
     connectionId,
     authRoomId,

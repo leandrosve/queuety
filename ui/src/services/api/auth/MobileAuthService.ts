@@ -1,53 +1,34 @@
-import { Socket } from 'socket.io-client';
-import { createSocket } from '../../../socket';
-import AuthResponseDTO from '../../../model/auth/AuthResponseDTO';
+import AuthResponse from '../../../model/auth/AuthResponse';
+import AuthService from './AuthService';
+import AuthRequest from '../../../model/auth/AuthRequest';
 
-export default class MobileAuthService {
-  private socket: Socket;
-
-  constructor() {
-    this.socket = createSocket(false);
-  }
-
-  public connect() {
-    this.socket.connect();
-  }
-
+export default class MobileAuthService extends AuthService {
   public cleanup() {
     this.socket.off('connection');
     this.socket.off('disconnect');
-    this.socket.off('receive-auth-confirmation');
+    console.log("disabled auth response");
+    this.socket.off('receive-auth-response');
   }
 
-  public joinAuthRoom(authRoomId: string): Promise<boolean> {
+  public sendAuthRequest(request: Omit<AuthRequest, 'clientId'>): Promise<boolean> {
     return new Promise((resolve) => {
-      this.socket.emit('join-auth-room', { authRoomId }, (res: boolean) => resolve(res));
+      this.socket.emit('send-auth-request', request, (res: boolean) => resolve(res));
     });
   }
 
-  public sendAuthRequest(authRoomId: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      this.socket.emit('send-auth-request', { authRoomId }, (res: boolean) => resolve(res));
-    });
-  }
-
-  public joinPlayerRoom(playerRoomId: string, onSuccess: () => void, onError?: () => void) {
-    this.socket.emit('join-auth-room', { playerRoomId }, (res: boolean) => (res ? onSuccess : onError)?.());
-  }
-
-  public onConnected(callback: (clientId: string) => void) {
-    this.socket.on('connection', callback);
-  }
-
-  public onDisconnected(callback: () => void) {
-    this.socket.on('disconnect', callback);
-  }
-
-  public onAuthConfirmation(callback: (res: AuthResponseDTO) => void) {
-    this.socket.once('receive-auth-confirmation', callback);
+  public onAuthConfirmation(callback: (res: AuthResponse) => void) {
+    this.socket.on('receive-auth-response', callback);
   }
 
   public onConfirmationTimeout() {
-    this.socket.off('receive-auth-confirmation');
+    this.socket.off('receive-auth-response');
+  }
+
+  public savePlayerRoom(playerRoomId: string) {
+    localStorage.setItem('playerRoomId', playerRoomId);
+  }
+
+  public getSavedPlayerRoom() {
+    return localStorage.getItem('playerRoomId');
   }
 }

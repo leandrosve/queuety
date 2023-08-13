@@ -3,8 +3,9 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, We
 import { Server as SocketServer, Socket } from 'socket.io';
 import { instrument } from '@socket.io/admin-ui';
 import { AuthResponseDTO } from './dto/AuthResponseDTO';
+import { AuthRequestDTO } from './dto/AuthRequestDTO';
 
-@WebSocketGateway(3333, { cors: { origin: ['http://localhost:5173', 'ws://admin.socket.io'] } })
+@WebSocketGateway(3333, { cors: { origin: ['http://localhost:5173', 'ws://admin.socket.io', 'http://192.168.0.226:5173'] } })
 export class AuthGateway implements OnGatewayConnection {
   private readonly logger = new Logger(AuthGateway.name);
 
@@ -66,9 +67,9 @@ export class AuthGateway implements OnGatewayConnection {
    * @param authRoomId
    */
   @SubscribeMessage('send-auth-request')
-  private onSendAuthRequest(@ConnectedSocket() client: Socket, @MessageBody('authRoomId') authRoomId: string) {
-    this.logger.log(`${client.id} sent auth request to auth room ${authRoomId}`);
-    client.to(authRoomId).emit('receive-auth-request', { clientId: client.id });
+  private onSendAuthRequest(@ConnectedSocket() client: Socket, @MessageBody() request: AuthRequestDTO) {
+    this.logger.log(`${client.id} sent auth request to auth room ${request.authRoomId}`);
+    client.to(request.authRoomId).emit('receive-auth-request', {...request, clientId: client.id});
     return true;
   }
 
@@ -76,13 +77,14 @@ export class AuthGateway implements OnGatewayConnection {
    * Sends the authorization response personally from the Desktop client to the indicated Mobile client
    * @param {AuthResponseDTO} body
    */
-  @SubscribeMessage('send-auth-confirmation')
-  private onAuthConfirmation(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() body: AuthResponseDTO, 
-  ) {
-    this.logger.log(`${client.id} confirmed auth request to player room ${body.playerRoomId}`);
-    client.to(body.clientId).emit('receive-auth-confirmation', body);
+  @SubscribeMessage('send-auth-response')
+  private onAuthResponse(@ConnectedSocket() client: Socket, @MessageBody() body: AuthResponseDTO) {
+    if (body.status === 'DENIED') {
+      this.logger.warn(`${client.id} denied auth request to join client ${body.clientId} to player room ${body.playerRoomId}`);
+    } else if (body.status === 'AUTHORIZED') {
+      this.logger.log(`${client.id} authorized request to join client ${body.clientId} to player room ${body.playerRoomId}`);
+    }
+    client.to(body.clientId).emit('receive-auth-response', body);
     return true;
   }
 }
