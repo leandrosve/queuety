@@ -27,8 +27,8 @@ const MobileConnectionDebugModal = () => {
   return (
     <Modal isOpen={isOpen} onClose={() => toggleOpen(false)}>
       <ModalOverlay />
-      <ModalCloseButton/>
-      <ModalContent bg='bg.100'>
+      <ModalCloseButton />
+      <ModalContent>
         <ModalBody>
           <Flex direction='column' gap={3}>
             <Heading>Mobile</Heading>

@@ -14,7 +14,7 @@ interface Props {
   onPlayLast: (video: YoutubeVideoDetail) => void;
 }
 const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: Props) => {
-  useTranslation();
+  const {t} = useTranslation();
   const handlePlay = (mode: 'now' | 'last' | 'next') => {
     switch (mode) {
       case 'now': {
@@ -82,13 +82,13 @@ const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClos
       </Flex>
       <Flex gap={2} justifyContent={{ base: 'start', md: 'space-between' }} paddingY={3} wrap='wrap'>
         <Button leftIcon={<LuPlay />} onClick={() => handlePlay('now')}>
-          Reproducir ahora
+          {t('playerSearch.playNow')}
         </Button>
         <Button leftIcon={<LuListPlus />} onClick={() => handlePlay('next')}>
-          Reproducir a continuacion
+        {t('playerSearch.playNext')}
         </Button>
         <Button leftIcon={<LuListEnd />} onClick={() => handlePlay('last')}>
-          Reproducir al final
+        {t('playerSearch.playLast')}
         </Button>
       </Flex>
     </Box>

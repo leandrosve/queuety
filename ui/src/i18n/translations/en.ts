@@ -4,6 +4,7 @@ export default {
       test: 'testing!',
       copy: 'Copy',
       copied: 'Copied!',
+      save: 'Save',
     },
     time: {
       days_ago: '{{days}} days ago',
@@ -18,6 +19,9 @@ export default {
     playerSearch: {
       pasteUrl: 'Paste here the URL of the video',
       example: 'e.g.',
+      playNow: 'Play now',
+      playNext: 'Add as next in queue',
+      playLast: 'Add to queue',
       errors: {
         video_not_found: "Sorry, we couldn't find the request video",
         malformed_url: 'The provided URL does not correspond to a YouTube Video',
@@ -31,11 +35,44 @@ export default {
       queue: 'Queue',
       playNow: 'Play now',
       remove: 'Remove',
-      clear: 'Clear'
+      clear: 'Clear',
     },
     connection: {
       connectDevice: 'Connect Device',
-      connectDescription: 'To connect a new device, you must scan the following QR code from the device you wish to connect:'
-    }
+      connectDescription: 'To connect a new device, you must scan the following QR code from the device you wish to connect:',
+    },
+    settings: {
+      settings: 'Settings',
+      general: 'General',
+      displayName: { title: 'Display Name', description: "How you'll be presented to other devices" },
+      language: 'Language',
+      appearance: 'Appearance',
+      fontSize: 'Font Size',
+      fontSizes: {
+        xs: 'xs',
+        sm: 'sm',
+        md: 'md',
+        lg: 'lg',
+        xl: 'xl',
+      },
+      fontFamily: {
+        title: 'Font Family',
+        description: 'Some fonts may not work as expected depending on the selected language',
+      },
+      glassTheme: {
+        title: 'Glass Theme',
+        description: 'Disable glass mode if you find it difficult to read text',
+      },
+      colorMode: 'Color Mode',
+      colorModes: {
+        light: 'Light',
+        dark: 'Dark',
+      },
+      connections: 'Connections',
+      devices: {
+        title: 'Connected Devices',
+        description: 'Do not ask me to authorize new devices',
+      },
+    },
   },
 };

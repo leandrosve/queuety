@@ -53,7 +53,7 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state,
         onChange={(v) => setDraggingValue(v)}
         onChangeEnd={handleChangeEnd}
         onChangeStart={() => setIsDragging(true)}
-        colorScheme='red'
+        colorScheme='primary'
         value={isDragging ? draggingValue : time}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}

@@ -1,16 +1,18 @@
 import { Box, Flex, Skeleton, Spinner } from '@chakra-ui/react';
 import useYoutubePlayer from '../../hooks/player/useYoutubePlayer';
-import PlayerTrack from './controls/PlayerTrack';
 import PlayerBackdrop from './PlayerBackdrop';
 import './player.css';
 import QueueItem from '../../model/player/QueueItem';
 import PlayerControls from './controls/PlayerControls';
+import { useEffect } from 'react';
+
 interface Props {
   queueItem: QueueItem;
 }
 const Player = ({ queueItem }: Props) => {
   const { duration, state, currentTime, isReady, playbackRate, controls } = useYoutubePlayer('player-container', queueItem);
 
+  useEffect(() => console.log('READY CHANGED'), [isReady]);
   return (
     <Flex direction='column' gap={3} width={{ base: '95vw', md: 750, lg: 900 }} paddingBottom='100px'>
       <Box>

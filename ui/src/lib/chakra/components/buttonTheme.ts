@@ -14,6 +14,14 @@ const ghost = defineStyle({
   },
 });
 
+const outline = defineStyle({
+  _light: {
+    borderColor: 'borders.100',
+    _hover: { background: 'blackAlpha.100' },
+    _active: { background: 'blackAlpha.100' },
+  },
+});
+
 export const buttonTheme = defineStyleConfig({
-  variants: { solid, ghost },
+  variants: { solid, ghost, outline },
 });

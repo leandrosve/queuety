@@ -5,13 +5,14 @@ const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpe
 /* Some extra styling done in css file */
 const baseStyle = definePartsStyle({
   list: {
-    py: '2',
+    p: '2',
     borderRadius: 'xl',
     border: 'none',
     bg: 'bg.500',
   },
   item: {
     bg: 'transparent',
+    borderRadius: 'lg',
   },
 });
 export const menuTheme = defineMultiStyleConfig({ baseStyle });

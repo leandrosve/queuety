@@ -1,4 +1,4 @@
-import { extendTheme } from '@chakra-ui/react';
+import { defineStyleConfig, extendTheme } from '@chakra-ui/react';
 import { menuTheme } from './components/menuTheme';
 import './chakraTheme.css';
 import { inputTheme } from './components/inputTheme';
@@ -11,6 +11,9 @@ const theme = extendTheme({
     Input: inputTheme,
     Button: buttonTheme,
     Skeleton: skeletonTheme,
+    FormLabel: defineStyleConfig({
+      baseStyle: { fontWeight: 'bold' },
+    }),
   },
   fonts: {
     heading: 'var(--font-family)',
@@ -54,6 +57,9 @@ const theme = extendTheme({
       100: 'var(--bg-alpha-100)',
       200: 'var(--bg-alpha-200)',
       300: 'var(--bg-alpha-300)',
+    },
+    borders: {
+      100: 'var(--border-color)',
     },
   },
 });

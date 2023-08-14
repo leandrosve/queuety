@@ -1,0 +1,16 @@
+export default [
+  'Roboto',
+  'Lato',
+  'Montserrat',
+  'Raleway',
+  'Poppins',
+  'Source Sans Pro',
+  'Ubuntu',
+  'Noto Sans',
+  'Oswald',
+  'Merriweather',
+  'Quicksand',
+  'Playfair Display',
+  'Work Sans',
+  'Josefin Sans',
+];

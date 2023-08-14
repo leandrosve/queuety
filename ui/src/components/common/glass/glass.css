@@ -1,0 +1,19 @@
+.glass-container {
+  background: var(--bg-alpha-100)!important;
+  backdrop-filter: blur(10px)!important;
+}
+
+html[data-glass="false"] .glass-container {
+  background: var(--bg-300)!important;
+  backdrop-filter: none!important;
+}
+
+.glass-container.as-before{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: -1;
+}

@@ -5,7 +5,7 @@ const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpe
 
 const baseStyle = definePartsStyle({
   field: {
-    _placeholder: { color: 'text.300' },
+    _placeholder: { color: 'text.300' },  
   },
 });
 

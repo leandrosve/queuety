@@ -5,11 +5,16 @@ import './i18n/i18n';
 import DesktopApp from './components/app/DesktopApp';
 import { SettingsProvider } from './context/SettingsContext';
 import MobileApp from './components/app/MobileApp';
+import { useEffect, useState } from 'react';
 
 function App() {
-  // Set SSR to false, otherwise it's wrong the first render
-  const [isMobile] = useMediaQuery('(max-width: 800px)', { fallback: false, ssr: false });
-
+  // This damn hooks always run twice for some reason
+  const [initialized, setInitialized] = useState(false);
+  const [isMobile] = useMediaQuery('(max-width: 800px)', { fallback: false });
+  useEffect(() => {
+    setInitialized(true);
+  }, [isMobile]);
+  if (!initialized) return null;
   return (
     <ChakraProvider theme={theme}>
       <SettingsProvider>

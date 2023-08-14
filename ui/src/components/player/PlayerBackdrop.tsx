@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 interface Props {
   videoId?: string;
   image?: string;
-  state: PlayerState;
+  state: number;
 }
 
 enum PlayerState {

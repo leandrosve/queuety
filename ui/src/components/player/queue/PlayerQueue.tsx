@@ -8,6 +8,7 @@ import DragAndDropList from '../../common/DragAndDropList';
 import { PlayerQueueItem } from './PlayerQueueItem';
 import QueueItem from '../../../model/player/QueueItem';
 import { BsDash } from 'react-icons/bs';
+import GlassContainer from '../../common/glass/GlassContainer';
 
 interface Props {
   queue: QueueItem[];
@@ -23,40 +24,25 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
   const { t } = useTranslation();
 
   return (
-    <Flex
-      direction='column'
-      position='fixed'
-      bottom={0}
-      right={'1rem'}
-      padding={5}
-      borderTopRadius='md'
-      overflow='hidden'
-      width={'500px'}
-      maxWidth={'95vw'}
-      boxShadow='base'
-      zIndex='var(--z-index-queue)'
-      userSelect={isExpanded ? 'auto' : 'none'}
-      cursor={isExpanded ? 'auto' : 'pointer'}
-      onClick={isExpanded ? undefined : () => setIsExpanded(true)}
-      _before={{
-        content: '""',
-        bg: 'bgAlpha.100',
-        backdropFilter: 'blur(5px)',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: -1,
-      }}
-    >
-      <Flex justifyContent='space-between' gap={2}>
-        <Flex direction='column' gap={1}>
-          {currentItem && (
-            <Flex noOfLines={2} title={currentItem.video.title}>
-              {t('playerQueue.playing')}: {currentItem.video.title}
-            </Flex>
-          )}
+    <Flex position='fixed' bottom={0} right={'1rem'} zIndex='var(--z-index-queue)' borderTopRadius='md' overflow='hidden'>
+      <GlassContainer asBefore />
+      <Flex
+        direction='column'
+        padding={5}
+        width={'500px'}
+        maxWidth={'95vw'}
+        boxShadow='base'
+        userSelect={isExpanded ? 'auto' : 'none'}
+        cursor={isExpanded ? 'auto' : 'pointer'}
+        onClick={isExpanded ? undefined : () => setIsExpanded(true)}
+      >
+        <Flex justifyContent='space-between' gap={2}>
+          <Flex direction='column' gap={1}>
+            {currentItem && (
+              <Flex noOfLines={2} title={currentItem.video.title}>
+                {t('playerQueue.playing')}: {currentItem.video.title}
+              </Flex>
+            )}
             <Flex alignItems='center' gap={1}>
               <Text color='text.300' fontSize='sm'>
                 {t('playerQueue.queue')}:{' '}
@@ -74,32 +60,34 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
                 </>
               )}
             </Flex>
-        </Flex>
-        <IconButton
-          rounded='full'
-          icon={isExpanded ? <LuChevronDown /> : <LuChevronUp />}
-          aria-label='expand/collapse'
-          onClick={() => setIsExpanded((p) => !p)}
-        />
-      </Flex>
-      <Collapse in={isExpanded}>
-        <Box paddingTop={5}>
-        <Flex direction='column' gap={0} maxHeight={300} overflow='hidden' overflowY='auto'>
-          <DragAndDropList
-            items={queue}
-            onReorder={onUpdate}
-            renderItem={(i, isDragging) => (
-              <PlayerQueueItem
-                video={i.video}
-                isCurrent={currentItem?.id == i.id}
-                isDragging={isDragging}
-                onRemove={() => onRemove(i.id)}
-                onPlay={() => onPlay(i)}
-              />
-            )}
+          </Flex>
+          <IconButton
+            rounded='full'
+            icon={isExpanded ? <LuChevronDown /> : <LuChevronUp />}
+            aria-label='expand/collapse'
+            onClick={() => setIsExpanded((p) => !p)}
           />
-        </Flex></Box>
-      </Collapse>
+        </Flex>
+        <Collapse in={isExpanded}>
+          <Box paddingTop={5}>
+            <Flex direction='column' gap={0} maxHeight={300} overflow='hidden' overflowY='auto'>
+              <DragAndDropList
+                items={queue}
+                onReorder={onUpdate}
+                renderItem={(i, isDragging) => (
+                  <PlayerQueueItem
+                    video={i.video}
+                    isCurrent={currentItem?.id == i.id}
+                    isDragging={isDragging}
+                    onRemove={() => onRemove(i.id)}
+                    onPlay={() => onPlay(i)}
+                  />
+                )}
+              />
+            </Flex>
+          </Box>
+        </Collapse>
+      </Flex>
     </Flex>
   );
 };

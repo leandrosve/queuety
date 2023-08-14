@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import en from './translations/en';
 import es from './translations/es';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import pt from './translations/pt';
+import jp from './translations/jp';
 
 i18n
   .use(LanguageDetector)
@@ -14,7 +16,10 @@ i18n
     resources: {
       en: en,
       es: es,
+      pt: pt,
+      jp: jp,
     },
+    supportedLngs: ['en', 'es', 'pt', 'jp'],
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape

@@ -11,7 +11,7 @@ const MobileConnectionView = () => {
   useEffect(() => {
     if (!auth.isSocketReady) return;
     setTimeout(() => {
-      auth.onTrigger('auth-5675552a2d08194386f1fbdf5e65686e');
+      //auth.onTrigger('auth-5675552a2d08194386f1fbdf5e65686e');
     }, 3000);
   }, [auth.isSocketReady]);
 
