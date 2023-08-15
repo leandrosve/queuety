@@ -9,6 +9,8 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorIcon,
+  FormErrorMessage,
   FormLabel,
   Heading,
   Input,
@@ -29,14 +31,14 @@ import { useTranslation } from 'react-i18next';
 import { FontSize, useSettingsContext } from '../../context/SettingsContext';
 import AutoAvatar from '../common/AutoAvatar';
 import i18next from 'i18next';
-import { useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import SelectMenu from '../common/SelectMenu';
 import GlassModal from '../common/glass/GlassModal';
 import { LuLanguages } from 'react-icons/lu';
 import { BiText } from 'react-icons/bi';
 import fonts from '../../data/fonts';
 import languages from '../../data/languages';
-import AuthorizedDevices from '../connection/desktop/AuthorizedDevices';
+import AllowedUserList from '../connection/desktop/AllowedUserList';
 
 interface Props {
   isOpen: boolean;
@@ -46,10 +48,11 @@ interface Props {
 
 const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
   const { t } = useTranslation();
-  const ref = useRef<HTMLDivElement>(null);
   const { colorMode, setColorMode } = useColorMode();
-
   const { settings, setNickname, setFontSize, setGlassMode, setFontFamily } = useSettingsContext();
+  const [nicknameValue, setNicknameValue] = useState(settings.nickname);
+  const nicknameError = useMemo(() => !nicknameValue || nicknameValue.length < 3 || nicknameValue.length > 100, [nicknameValue]);
+
   return (
     <GlassModal
       isOpen={isOpen}
@@ -66,7 +69,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
       <Box gap={3} paddingTop={0}>
         <Accordion allowToggle defaultIndex={0}>
           <Group title={t('settings.general')} borderTopWidth={0} borderColor='transparent'>
-            <FormControl>
+            <FormControl isInvalid={nicknameError}>
               <FormLabel mb={0}>{t('settings.displayName.title')}</FormLabel>
               <Text mb={2} fontSize='sm'>
                 {t('settings.displayName.description')}
@@ -81,15 +84,17 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
                     borderRightRadius={0}
                     borderLeftRadius='40px'
                     placeholder={t('settings.displayName.title')}
-                    value={settings.nickname}
-                    onChange={(e) => setNickname(e.target.value)}
+                    value={nicknameValue}
+                    onChange={(e) => setNicknameValue(e.target.value)}
                   />
                 </InputGroup>
-
-                <Button borderLeftRadius={0} border='1px' borderLeftWidth={0} borderColor='borders.100'>
-                  {t('common.save')}{' '}
+                <Button isDisabled={nicknameError} onClick={() => setNickname(nicknameValue)} borderLeftRadius={0} border='1px' borderLeftWidth={0} borderColor='borders.100'>
+                  {t('common.save')}
                 </Button>
               </Flex>
+              <FormErrorMessage fontSize='xs'>
+                <FormErrorIcon /> {t('settings.displayName.invalid')}
+              </FormErrorMessage>
             </FormControl>
             <FormControl>
               <FormLabel>{t('settings.language')}</FormLabel>
@@ -102,7 +107,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
               />
             </FormControl>
           </Group>
-          <Group title={t('settings.appearance')} _last={{borderBottom:'none'}}>
+          <Group title={t('settings.appearance')} _last={{ borderBottom: 'none' }}>
             <FormControl>
               <FormLabel>{t('settings.fontFamily.title')}</FormLabel>
               <Text mb={2} fontSize='sm'>
@@ -167,7 +172,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
           </Group>
           {!isMobile && (
             <Group title={t('settings.connections')} borderBottomColor='transparent'>
-              <AuthorizedDevices />
+              <AllowedUserList />
             </Group>
           )}
         </Accordion>

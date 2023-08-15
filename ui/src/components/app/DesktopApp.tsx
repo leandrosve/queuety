@@ -12,6 +12,8 @@ import DesktopConnectionView from '../connection/desktop/DesktopConnectionView';
 import PlayerBackdrop from '../player/PlayerBackdrop';
 import AuthorizationRequests from '../connection/desktop/AuthorizationRequests';
 import { DesktopAuthProvider } from '../../context/DesktopAuthContext';
+import { AuthRequestsProvider } from '../../context/AuthRequestsContext';
+import { AllowedUsersProvider } from '../../context/AllowedUsersContext';
 
 const DesktopApp = () => {
   return (
@@ -26,13 +28,17 @@ const DesktopApp = () => {
 
 const Providers = ({ children }: PropsWithChildren) => (
   <DesktopConnectionProvider>
-    <DesktopAuthProvider>
-      <PlayerScriptProvider>
-        <PlayerQueueProvider>
-          <PlayerStatusProvider>{children}</PlayerStatusProvider>
-        </PlayerQueueProvider>
-      </PlayerScriptProvider>
-    </DesktopAuthProvider>
+    <AuthRequestsProvider>
+      <AllowedUsersProvider>
+        <DesktopAuthProvider>
+          <PlayerScriptProvider>
+            <PlayerQueueProvider>
+              <PlayerStatusProvider>{children}</PlayerStatusProvider>
+            </PlayerQueueProvider>
+          </PlayerScriptProvider>
+        </DesktopAuthProvider>
+      </AllowedUsersProvider>
+    </AuthRequestsProvider>
   </DesktopConnectionProvider>
 );
 

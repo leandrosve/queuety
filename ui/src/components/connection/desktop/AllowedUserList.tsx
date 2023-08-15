@@ -1,15 +1,18 @@
 import { Box, Button, Flex, FormControl, FormLabel, IconButton, Stack, Switch, Text } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import AutoAvatar from '../../common/AutoAvatar';
 import { LuTrash2 } from 'react-icons/lu';
 import { useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
 import { useTranslation } from 'react-i18next';
 import FormatUtils from '../../../utils/FormatUtils';
+import { useAllowedUsersContext } from '../../../context/AllowedUsersContext';
 
-const AuthorizedDevices = () => {
-  const { authUsers, toggleAutoAuth, connection } = useDesktopConnectionContext();
+const AllowedUserList = () => {
+  const { toggleAutoAuth, connection } = useDesktopConnectionContext();
+  const allowedUsers = useAllowedUsersContext();
   const { t } = useTranslation(undefined, { keyPrefix: 'settings' });
-  const isEmpty = useMemo(() => !authUsers.list.length, [authUsers]);
+  const isEmpty = useMemo(() => !allowedUsers.list.length, [allowedUsers]);
+
   return (
     <>
       <FormControl>
@@ -28,22 +31,15 @@ const AuthorizedDevices = () => {
           </FormLabel>
 
           {!isEmpty && (
-            <Button variant='ghost' size='xs' fontWeight='medium' height='min-content' padding={2} onClick={() => authUsers.clear()}>
+            <Button variant='ghost' size='xs' fontWeight='medium' height='min-content' padding={2} onClick={() => allowedUsers.clear()}>
               {t('authorizedDevices.revokeAll')}
             </Button>
           )}
         </Flex>
         {!isEmpty ? (
           <Stack spacing={0} maxHeight={250} overflow='hidden' overflowY='auto' mt={1}>
-            {authUsers.list.reverse().map((user) => (
-              <Flex
-                key={user.userId}
-                gap={3}
-                alignItems='center'
-                paddingRight={2}
-                _notLast={{ borderBottom: '1px', borderColor: 'borders.100' }}
-                py={2}
-              >
+            {allowedUsers.list.map((user, index) => (
+              <Flex key={index} gap={3} alignItems='center' paddingRight={2} _notLast={{ borderBottom: '1px', borderColor: 'borders.100' }} py={2}>
                 <AutoAvatar size='sm' name={user.nickname} boxSize='30px' />
                 <Stack spacing={0}>
                   <Text fontSize='sm' as='span' fontWeight='bold' lineHeight='short'>
@@ -56,7 +52,7 @@ const AuthorizedDevices = () => {
                     {FormatUtils.timeAgo(user.joinedAt)}
                   </Text>
                 </Stack>
-                <IconButton onClick={() => authUsers.remove(user)} marginLeft='auto' aria-label='delete' icon={<LuTrash2 />} size='sm' />
+                <IconButton onClick={() => allowedUsers.remove(user)} marginLeft='auto' aria-label='delete' icon={<LuTrash2 />} size='sm' />
               </Flex>
             ))}
           </Stack>
@@ -68,4 +64,4 @@ const AuthorizedDevices = () => {
   );
 };
 
-export default AuthorizedDevices;
+export default AllowedUserList;

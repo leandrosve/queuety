@@ -16,7 +16,6 @@ export type DesktopAuthContextProps = {
     id: string | null;
     joined: boolean;
   };
-  authRequests: Dictionary<AuthRequest>;
   authorizeRequest: (request: AuthRequest, status: AuthResponseStatus) => Promise<void>;
 };
 
@@ -32,7 +31,6 @@ const initial = {
     id: '',
     joined: false,
   },
-  authRequests: { add: () => {}, remove: () => {}, clear: () => {}, data: {}, list: [] },
   authorizeRequest: async () => {},
 };
 

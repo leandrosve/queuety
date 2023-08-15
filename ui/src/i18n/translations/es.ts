@@ -35,7 +35,11 @@ export default {
     settings: {
       settings: 'Configuración',
       general: 'General',
-      displayName: { title: 'Nombre', description: 'Como serás presentado a los demás dispositivos' },
+      displayName: {
+        title: 'Nombre',
+        description: 'Como serás presentado a los demás dispositivos',
+        invalid: 'Debe tener entre 3 y 100 carácteres',
+      },
       language: 'Idioma',
       languages: {
         en: 'Inglés',
@@ -74,7 +78,7 @@ export default {
         title: 'Dispositivos Autorizados',
         empty: 'Aún no has autorizado ningún dispositivo',
         revoke: 'Eliminar',
-        revokeAll: 'Eliminar todos'
+        revokeAll: 'Eliminar todos',
       },
     },
   },

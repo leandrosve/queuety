@@ -12,7 +12,7 @@ const AutoAvatar = (props: AvatarProps) => {
     }
     const position = hash % 9;
     return COLORS[position];
-  }, []);
+  }, [props.name]);
   return (
     <Avatar
       fontWeight='bold'

@@ -28,7 +28,7 @@ const NavbarDesktop = () => {
           {t('connection.connectDevice')}
         </Button>
         <DesktopConnectionModal isOpen={isConnectionModalOpen} onClose={() => setIsConnectionModalOpen(false)} />
-        <SelectMenu hideChevron hideTriggerValue icon={<LuLanguages />} value={i18next.language} onChange={(v) => i18next.changeLanguage(v)} options={languages} />
+        <SelectMenu hideChevron hideTriggerValue variant='ghost' icon={<LuLanguages />} value={i18next.language} onChange={(v) => i18next.changeLanguage(v)} options={languages} />
         <IconButton
           rounded='full'
           color='text.300'

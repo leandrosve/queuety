@@ -109,6 +109,7 @@ const useMobileAuth = () => {
     setStatus(MobileAuthStatus.JOINING_PLAYER_ROOM);
     const ok = await authService.joinPlayerRoom(playerRoomId);
     if (ok) {
+      history.pushState(null, '', location.origin);
       setStatus(MobileAuthStatus.JOINED_PLAYER_ROOM);
       authService.savePlayerRoom(playerRoomId);
     }

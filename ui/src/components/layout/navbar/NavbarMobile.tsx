@@ -24,6 +24,7 @@ const NavbarMobile = () => {
         <SelectMenu
           hideChevron
           hideTriggerValue
+          variant='ghost'
           icon={<LuLanguages />}
           value={i18next.language}
           onChange={(v) => i18next.changeLanguage(v)}

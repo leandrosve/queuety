@@ -6,7 +6,6 @@ export default class MobileAuthService extends AuthService {
   public cleanup() {
     this.socket.off('connection');
     this.socket.off('disconnect');
-    console.log("disabled auth response");
     this.socket.off('receive-auth-response');
   }
 

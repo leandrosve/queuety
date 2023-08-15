@@ -1,6 +1,5 @@
 import React, { useState, PropsWithChildren, useEffect, useContext } from 'react';
 import ConnectionService from '../services/api/ConnectionService';
-import useAuthorizedUsers, { AuthorizedUser } from '../hooks/connection/useAuthorizedUsers';
 
 export interface ConnectionData {
   playerRoom: RoomData;
@@ -20,20 +19,12 @@ interface RoomData {
 export type DesktopConnectionContextProps = {
   connection: ConnectionData;
   regenAuthRoom: () => void;
-  authUsers: {
-    list: AuthorizedUser[];
-    add: (user: AuthorizedUser) => void;
-    remove: (user: AuthorizedUser) => void;
-    clear: () => void;
-    get: (userId: string) => AuthorizedUser | null;
-  };
   toggleAutoAuth: () => void;
 };
 
 const DesktopConnectionContext = React.createContext<DesktopConnectionContextProps>({
   connection: { playerRoom: { id: null }, authRoom: { id: null }, settings: { automatic: false } },
   regenAuthRoom: () => {},
-  authUsers: { list: [], add: () => {}, remove: () => {}, clear: () => {}, get: () => null },
   toggleAutoAuth: () => {},
 });
 
@@ -57,7 +48,6 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   const [playerRoom, setPlayerRoom] = useState<RoomData>(getInitialPlayerRoom());
   const [authRoom, setAuthRoom] = useState<RoomData>(getInitialAuthRoom());
   const [settings, setSettings] = useState<Settings>(getInitialSettings());
-  const authUsers = useAuthorizedUsers();
 
   const retrievePlayerRoomId = async () => {
     setPlayerRoom({ id: null, loading: true });
@@ -91,9 +81,7 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   }, [playerRoom, authRoom, settings]);
 
   return (
-    <DesktopConnectionContext.Provider
-      value={{ connection: { playerRoom, authRoom, settings }, regenAuthRoom: retrieveAuthRoomId, authUsers, toggleAutoAuth }}
-    >
+    <DesktopConnectionContext.Provider value={{ connection: { playerRoom, authRoom, settings }, regenAuthRoom: retrieveAuthRoomId, toggleAutoAuth }}>
       {children}
     </DesktopConnectionContext.Provider>
   );

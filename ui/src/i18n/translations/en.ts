@@ -44,7 +44,11 @@ export default {
     settings: {
       settings: 'Settings',
       general: 'General',
-      displayName: { title: 'Display Name', description: "How you'll be presented to other devices" },
+      displayName: {
+        title: 'Display Name',
+        description: "How you'll be presented to other devices",
+        invalid: 'Must be between 3 and 100 characters long',
+      },
       language: 'Language',
       appearance: 'Appearance',
       fontSize: 'Font Size',

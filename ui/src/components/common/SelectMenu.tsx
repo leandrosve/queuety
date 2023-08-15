@@ -1,4 +1,4 @@
-import { Button, Flex, Menu, MenuButton, MenuItem, MenuList, Portal, forwardRef } from '@chakra-ui/react';
+import { Button, ButtonProps, Flex, Menu, MenuButton, MenuItem, MenuList, Portal, forwardRef } from '@chakra-ui/react';
 import { LuCheck, LuChevronDown } from 'react-icons/lu';
 import { RefObject, ReactNode, useMemo } from 'react';
 
@@ -14,6 +14,7 @@ interface Props {
   maxHeight?: string | number;
   hideTriggerValue?: boolean;
   hideChevron?: boolean;
+  variant?: string;
 }
 const SelectMenu = ({
   value,
@@ -27,15 +28,16 @@ const SelectMenu = ({
   maxHeight,
   containerRef,
   onChange,
+  variant,
 }: Props) => {
   const triggerValue = useMemo(() => {
     if (hideTriggerValue) return null;
     return options.find(([val]) => val === (value ?? defaultValue))?.[1] || placeholder;
-  }, [options, defaultValue, placeholder, hideTriggerValue]);
+  }, [options, defaultValue, placeholder, hideTriggerValue, value]);
   return (
     <Menu strategy='absolute' autoSelect={false} computePositionOnMount placement='bottom-start'>
       <MenuButton
-        variant='outline'
+        variant={variant ?? 'outline'}
         as={Button}
         rightIcon={!hideChevron ? <LuChevronDown /> : undefined}
         width={triggerWidth}

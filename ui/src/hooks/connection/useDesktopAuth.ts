@@ -5,18 +5,21 @@ import { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import DesktopAuthService from '../../services/api/auth/DesktopAuthService';
 import Logger from '../../utils/Logger';
 import AuthRequest from '../../model/auth/AuthRequest';
-import useDictionary from '../common/useDictionary';
+import { useAuthRequestsContext } from '../../context/AuthRequestsContext';
+import { useAllowedUsersContext } from '../../context/AllowedUsersContext';
 
 const useDesktopAuth = () => {
-  const { connection, authUsers } = useDesktopConnectionContext();
+  const { connection } = useDesktopConnectionContext();
+
   const { socket, isReady, connectionId } = useSocketConnection(true);
   const [joinedAuthRoom, setJoinedAuthRoom] = useState(false);
   const [joinedPlayerRoom, setJoinedPlayerRoom] = useState(false);
   const authService = useMemo(() => new DesktopAuthService(socket), []);
-  const authRequests = useDictionary<AuthRequest>((i) => i.clientId);
+  const authRequests = useAuthRequestsContext();
+  const allowedUsers = useAllowedUsersContext();
   // Need to access these inside the socket callback :(
   const acceptAutomatic = useRef(connection.settings.automatic);
-  const authUsersRef = useRef(authUsers);
+  const allowedUsersRef = useRef(allowedUsers);
 
   const joinAuthRoom = async (roomId: string) => {
     const ok = await authService.joinAuthRoom(roomId);
@@ -29,7 +32,7 @@ const useDesktopAuth = () => {
   };
 
   const onAuthRequested = async (request: AuthRequest) => {
-    if (acceptAutomatic.current || authUsersRef.current.get(request.userId)) {
+    if (acceptAutomatic.current || allowedUsersRef.current.get(request.userId)) {
       authorizeRequest(request, AuthResponseStatus.AUTHORIZED);
       return;
     }
@@ -42,11 +45,15 @@ const useDesktopAuth = () => {
     const playerRoomId = status == AuthResponseStatus.AUTHORIZED ? connection.playerRoom.id : null;
     const response = { status, clientId: request.clientId, playerRoomId };
 
-    const ok = await authService.sendAuthResponse(response);
-    if (ok && status !== AuthResponseStatus.PENDING) {
-      // Remove request from list
+    await authService.sendAuthResponse(response);
+
+    // Remove request from list
+    if (status !== AuthResponseStatus.PENDING) {
       authRequests.remove(request);
-      authUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date() });
+    }
+    if (status == AuthResponseStatus.AUTHORIZED) {
+      // Add to the list of authorized users
+      allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date() });
     }
   };
 
@@ -66,9 +73,10 @@ const useDesktopAuth = () => {
   useEffect(() => {
     acceptAutomatic.current = connection.settings.automatic;
   }, [connection.settings.automatic]);
+
   useEffect(() => {
-    authUsersRef.current = authUsers;
-  }, [authUsers]);
+    allowedUsersRef.current = allowedUsers;
+  }, [allowedUsers]);
 
   return {
     joinedAuthRoom,
@@ -82,7 +90,6 @@ const useDesktopAuth = () => {
       id: connection?.playerRoom.id,
       joined: joinedPlayerRoom,
     },
-    authRequests,
     authorizeRequest,
   };
 };

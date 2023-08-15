@@ -22,13 +22,21 @@ const getInitialData = <T>(accesor: (item: T) => string, initialData?: Record<st
     return record;
   }, {} as Record<string, T>);
 };
+
+export const dictionaryDefaults:Dictionary<any> = {
+  data: {},
+  list: [],
+  add: () => {},
+  remove: () => {},
+  clear: () => {},
+};
+
 const useDictionary = <T>(keyAccessor: (item: T) => string, initialData?: Record<string, T>, options?: DictionaryOptions): Dictionary<T> => {
   const [data, setData] = useState<Record<string, T>>(getInitialData(keyAccessor, initialData, options?.localStorageKey));
   const list = useMemo(() => Object.values(data), [data]);
   const [initialized, setInitialized] = useState<boolean>(false);
 
   const add = (item: T) => {
-    console.log("add", add)
     setData((p) => ({ ...p, [keyAccessor(item)]: item }));
   };
 

@@ -37,6 +37,7 @@ const DesktopConnectionModal = ({ isOpen, onClose }: Props) => {
           <Icon as={TbDeviceMobilePlus} /> {t('connection.connectDevice')}
         </Heading>
       }
+      contentProps={{ minWidth: 600 }}
       hasCloseButton
     >
       <Flex direction='column' alignItems='center' gap={3} justifyContent='center' paddingBottom={5}>
@@ -46,7 +47,7 @@ const DesktopConnectionModal = ({ isOpen, onClose }: Props) => {
             {connection.authRoom.loading ? (
               <Spinner />
             ) : (
-              <QRCode size={224} value={connection.authRoom.id || ''} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />
+              <QRCode size={224} value={`${location.origin}/?auth=${connection.authRoom.id}`} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />
             )}
           </Flex>
           <Flex direction='column' gap={3} alignSelf='stretch'>

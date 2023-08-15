@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Socket, io } from 'socket.io-client';
 import { createSocket } from '../../socket';
 
 const useSocketConnection = (autoConnect?: boolean) => {
