@@ -7,4 +7,7 @@ export class AuthRequestDTO {
 
   @IsNotEmpty()
   authRoomId: string;
+
+  @IsNotEmpty()
+  userId: string;
 }

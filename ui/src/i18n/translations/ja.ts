@@ -47,7 +47,7 @@ export default {
         en: '英語',
         es: 'スペイン語',
         pt: 'ポルトガル語',
-        jp: '日本語',
+        ja: '日本語',
       },
       appearance: '外観',
       fontSize: 'フォントサイズ',

@@ -8,6 +8,7 @@ export type MobileAuthContextProps = {
   connectionId: string;
   authRoomId: string | null | undefined;
   playerRoomId: string | null;
+  userId: string | null;
   onTrigger: (authRoom: string) => void;
 };
 
@@ -17,13 +18,13 @@ const MobileAuthContext = React.createContext<MobileAuthContextProps>({
   isSocketReady: false,
   connectionId: '',
   authRoomId: null,
+  userId: null,
   playerRoomId: null,
   onTrigger: () => {},
 });
 
 export const MobileAuthProvider = ({ children }: PropsWithChildren) => {
   const data = useMobileAuth();
-
   return <MobileAuthContext.Provider value={data}>{children}</MobileAuthContext.Provider>;
 };
 

@@ -13,6 +13,8 @@ html {
 
 
   --z-index-queue: 10;
+  --z-index-toast: 15;
+
   --z-index-select: 10000;
 }
 html[data-theme='light'] {
@@ -43,6 +45,8 @@ html[data-theme='dark'] {
   --bg-200: hsl(235.4, 31%, 16.5%);
   --bg-100: rgb(15, 13, 13);
 
+  --border-color: rgb(255, 255, 255, 0.16);
+  --chakra-colors-chakra-border-color: rgb(255, 255, 255, 0.16)!important;
 
   --bg-alpha-100: hsla(240, 14.3%, 12.4%, 0.63);
   --bg-alpha-200: hsla(240, 10%, 25%, 0.63);

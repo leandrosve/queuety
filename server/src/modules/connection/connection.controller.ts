@@ -16,4 +16,9 @@ export class ConnectionController {
   getAuthRoomId() {
     return this.connectionService.getAuthRoomId();
   }
+
+  @Post('/user')
+  getUserId() {
+    return this.connectionService.getUserId();
+  }
 }

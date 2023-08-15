@@ -39,6 +39,8 @@ const MobileConnectionDebugModal = () => {
             <Tag wordBreak='break-all'>{auth.authRoomId}</Tag>
             <Text>Player Room:</Text>
             <Tag wordBreak='break-all'>{auth.playerRoomId}</Tag>
+            <Text>User ID:</Text>
+            <Tag wordBreak='break-all'>{auth.userId}</Tag>
             <Text>Connection Step</Text>
             <Tag colorScheme='cyan'>{auth.status}</Tag>
             <Flex>

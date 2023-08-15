@@ -21,8 +21,9 @@ export type SettingsContextProps = {
   setFontFamily: (family: string) => void;
 };
 
+const initial: Settings = { nickname: '', appearance: { fontSize: 'md', glassMode: true, fontFamily: 'Work Sans' } };
 export const SettingsContext = React.createContext<SettingsContextProps>({
-  settings: { nickname: '', appearance: { fontSize: 'md', glassMode: true, fontFamily: '' } },
+  settings: initial,
   setNickname: () => {},
   setFontSize: () => {},
   setGlassMode: () => {},
@@ -31,9 +32,9 @@ export const SettingsContext = React.createContext<SettingsContextProps>({
 
 const getInitialSettings = (): Settings => {
   const settings = localStorage.getItem('settings');
-  if (!settings) return { nickname: NicknameGenerator.generate(), appearance: { fontFamily: 'Work Sans', fontSize: 'md', glassMode: true } };
+  if (!settings) return { ...initial, nickname: NicknameGenerator.generate() };
   const parsedSettings = JSON.parse(settings) as Settings;
-  return parsedSettings;
+  return { ...initial, ...parsedSettings };
 };
 
 const loadFontFamily = (family: string) => {
@@ -80,7 +81,7 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if (settings.appearance.fontFamily) {
-      loadFontFamily(settings.appearance.fontFamily)
+      loadFontFamily(settings.appearance.fontFamily);
     }
   }, []);
   useEffect(() => {

@@ -6,6 +6,10 @@ import { buttonTheme } from './components/buttonTheme';
 import { skeletonTheme } from './components/skeletonTheme';
 
 const theme = extendTheme({
+  config: {
+    initialColorMode: 'dark',
+    useSystemColorMode: false,
+  },
   components: {
     Menu: menuTheme,
     Input: inputTheme,

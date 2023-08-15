@@ -9,13 +9,16 @@ import { PlayerStatusProvider } from '../../context/PlayerStatusContext';
 import { DesktopConnectionProvider } from '../../context/DesktopConnectionContext';
 import Layout from '../layout/Layout';
 import DesktopConnectionView from '../connection/desktop/DesktopConnectionView';
+import PlayerBackdrop from '../player/PlayerBackdrop';
+import AuthorizationRequests from '../connection/desktop/AuthorizationRequests';
+import { DesktopAuthProvider } from '../../context/DesktopAuthContext';
 
 const DesktopApp = () => {
   return (
     <Providers>
       <Layout>
         <DesktopConnectionView />
-        <Content/>
+        <Content />
       </Layout>
     </Providers>
   );
@@ -23,11 +26,13 @@ const DesktopApp = () => {
 
 const Providers = ({ children }: PropsWithChildren) => (
   <DesktopConnectionProvider>
-    <PlayerScriptProvider>
-      <PlayerQueueProvider>
-        <PlayerStatusProvider>{children}</PlayerStatusProvider>
-      </PlayerQueueProvider>
-    </PlayerScriptProvider>
+    <DesktopAuthProvider>
+      <PlayerScriptProvider>
+        <PlayerQueueProvider>
+          <PlayerStatusProvider>{children}</PlayerStatusProvider>
+        </PlayerQueueProvider>
+      </PlayerScriptProvider>
+    </DesktopAuthProvider>
   </DesktopConnectionProvider>
 );
 
@@ -47,7 +52,6 @@ const Content = () => {
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
       <PlayerSearch onPlay={addNowToQueue} onPlayLast={addLastToQueue} onPlayNext={addNextToQueue} />
-
       {!!queue.length && (
         <PlayerQueue
           currentItem={currentItem}
@@ -60,6 +64,7 @@ const Content = () => {
         />
       )}
       {currentItem ? <Player queueItem={currentItem} /> : <Welcome />}
+      <AuthorizationRequests />
     </Flex>
   );
 };
@@ -68,6 +73,7 @@ const Welcome = () => {
   return (
     <Flex direction='column' gap={3} alignItems='center' justifyContent='center' height={500} width={{ base: '95vw', md: 750, lg: 900 }}>
       Welcome!
+      <PlayerBackdrop state={1} image='https://img.freepik.com/free-photo/ultra-detailed-nebula-abstract-wallpaper-4_1562-749.jpg?size=626&ext=jpg' />
     </Flex>
   );
 };

@@ -36,6 +36,7 @@ import { LuLanguages } from 'react-icons/lu';
 import { BiText } from 'react-icons/bi';
 import fonts from '../../data/fonts';
 import languages from '../../data/languages';
+import AuthorizedDevices from '../connection/desktop/AuthorizedDevices';
 
 interface Props {
   isOpen: boolean;
@@ -54,7 +55,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
       isOpen={isOpen}
       onClose={onClose}
       width='500px'
-      minWidth={'500px'}
+      maxWidth={'95vw'}
       title={
         <Heading size='md' display='flex' gap={2} alignItems='center'>
           {t('settings.settings')}
@@ -85,7 +86,9 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
                   />
                 </InputGroup>
 
-                <Button borderLeftRadius={0}>{t('common.save')} </Button>
+                <Button borderLeftRadius={0} border='1px' borderLeftWidth={0} borderColor='borders.100'>
+                  {t('common.save')}{' '}
+                </Button>
               </Flex>
             </FormControl>
             <FormControl>
@@ -99,7 +102,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
               />
             </FormControl>
           </Group>
-          <Group title={t('settings.appearance')}>
+          <Group title={t('settings.appearance')} _last={{borderBottom:'none'}}>
             <FormControl>
               <FormLabel>{t('settings.fontFamily.title')}</FormLabel>
               <Text mb={2} fontSize='sm'>
@@ -162,17 +165,11 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
               </RadioGroup>
             </FormControl>
           </Group>
-          <Group title={t('settings.connections')} borderBottomColor='transparent'>
-            <FormControl>
-              <FormLabel htmlFor='email-alerts' mb='0'>
-                {t('settings.devices.title')}
-              </FormLabel>
-              <Flex justifyContent='space-between'>
-                <Text fontSize='sm'>{t('settings.devices.description')}</Text>
-                <Switch id='email-alerts' colorScheme='primary' />
-              </Flex>
-            </FormControl>
-          </Group>
+          {!isMobile && (
+            <Group title={t('settings.connections')} borderBottomColor='transparent'>
+              <AuthorizedDevices />
+            </Group>
+          )}
         </Accordion>
       </Box>
     </GlassModal>

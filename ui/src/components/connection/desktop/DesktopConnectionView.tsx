@@ -1,10 +1,10 @@
 import { Button, Flex, Heading, Input, Tag, Text } from '@chakra-ui/react';
-import useDesktopAuth from '../../../hooks/connection/useDesktopAuth';
 import { AuthResponseStatus } from '../../../model/auth/AuthResponse';
 import { useCallback, useEffect, useState } from 'react';
+import { useDesktopAuthContext } from '../../../context/DesktopAuthContext';
 
 const DesktopConnectionView = () => {
-  const { connectionId, authRoom, playerRoom, isSocketReady, authRequests, authorizeRequest } = useDesktopAuth();
+  const { connectionId, authRoom, playerRoom, isSocketReady, authRequests, authorizeRequest } = useDesktopAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = (open?: boolean) => {
     setIsOpen((p) => {
@@ -42,13 +42,19 @@ const DesktopConnectionView = () => {
         {playerRoom.id} - {playerRoom.joined ? 'joined' : 'not joined'}
       </Tag>
       <Text>Requests:</Text>
-      {authRequests.map((r, index) => (
+      {authRequests.list.map((r, index) => (
         <Text key={index}>
           {JSON.stringify(r)} <Button onClick={() => authorizeRequest(r, AuthResponseStatus.AUTHORIZED)}>Accept</Button>{' '}
           <Button onClick={() => authorizeRequest(r, AuthResponseStatus.DENIED)}>Deny</Button>
         </Text>
       ))}
-      <Button marginTop={5} onClick={() => {localStorage.clear(); location.reload()}}>
+      <Button
+        marginTop={5}
+        onClick={() => {
+          localStorage.clear();
+          location.reload();
+        }}
+      >
         Clear Storage
       </Button>
     </Flex>

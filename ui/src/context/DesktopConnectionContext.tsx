@@ -1,9 +1,15 @@
 import React, { useState, PropsWithChildren, useEffect, useContext } from 'react';
 import ConnectionService from '../services/api/ConnectionService';
+import useAuthorizedUsers, { AuthorizedUser } from '../hooks/connection/useAuthorizedUsers';
 
 export interface ConnectionData {
   playerRoom: RoomData;
   authRoom: RoomData;
+  settings: Settings;
+}
+
+interface Settings {
+  automatic: boolean;
 }
 
 interface RoomData {
@@ -14,13 +20,24 @@ interface RoomData {
 export type DesktopConnectionContextProps = {
   connection: ConnectionData;
   regenAuthRoom: () => void;
+  authUsers: {
+    list: AuthorizedUser[];
+    add: (user: AuthorizedUser) => void;
+    remove: (user: AuthorizedUser) => void;
+    clear: () => void;
+    get: (userId: string) => AuthorizedUser | null;
+  };
+  toggleAutoAuth: () => void;
 };
 
 const DesktopConnectionContext = React.createContext<DesktopConnectionContextProps>({
-  connection: { playerRoom: { id: null }, authRoom: { id: null } },
+  connection: { playerRoom: { id: null }, authRoom: { id: null }, settings: { automatic: false } },
   regenAuthRoom: () => {},
+  authUsers: { list: [], add: () => {}, remove: () => {}, clear: () => {}, get: () => null },
+  toggleAutoAuth: () => {},
 });
 
+/* TO-DO unify these*/
 const getInitialPlayerRoom = () => {
   const currentConnection = JSON.parse(localStorage.getItem('connection') || '{}');
   return { id: currentConnection?.playerRoomId };
@@ -31,9 +48,16 @@ const getInitialAuthRoom = () => {
   return { id: currentConnection?.authRoomId };
 };
 
+const getInitialSettings = () => {
+  const currentConnection = JSON.parse(localStorage.getItem('connection') || '{}') as ConnectionData;
+  return currentConnection.settings ?? { automatic: false };
+};
+
 export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   const [playerRoom, setPlayerRoom] = useState<RoomData>(getInitialPlayerRoom());
   const [authRoom, setAuthRoom] = useState<RoomData>(getInitialAuthRoom());
+  const [settings, setSettings] = useState<Settings>(getInitialSettings());
+  const authUsers = useAuthorizedUsers();
 
   const retrievePlayerRoomId = async () => {
     setPlayerRoom({ id: null, loading: true });
@@ -49,6 +73,10 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
     setAuthRoom({ id: res.data.roomId });
   };
 
+  const toggleAutoAuth = () => {
+    setSettings((prev) => ({ ...prev, automatic: !prev.automatic }));
+  };
+
   useEffect(() => {
     if (!playerRoom?.id) {
       retrievePlayerRoomId();
@@ -59,11 +87,13 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('connection', JSON.stringify({ playerRoomId: playerRoom.id, authRoomId: authRoom.id }));
-  }, [playerRoom, authRoom]);
+    localStorage.setItem('connection', JSON.stringify({ playerRoomId: playerRoom.id, authRoomId: authRoom.id, settings }));
+  }, [playerRoom, authRoom, settings]);
 
   return (
-    <DesktopConnectionContext.Provider value={{ connection: { playerRoom, authRoom }, regenAuthRoom: retrieveAuthRoomId }}>
+    <DesktopConnectionContext.Provider
+      value={{ connection: { playerRoom, authRoom, settings }, regenAuthRoom: retrieveAuthRoomId, authUsers, toggleAutoAuth }}
+    >
       {children}
     </DesktopConnectionContext.Provider>
   );

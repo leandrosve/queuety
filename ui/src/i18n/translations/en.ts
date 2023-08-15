@@ -70,8 +70,14 @@ export default {
       },
       connections: 'Connections',
       devices: {
-        title: 'Connected Devices',
-        description: 'Do not ask me to authorize new devices',
+        title: 'Automatic Authorization',
+        description: 'Automatically authorize new devices',
+      },
+      authorizedDevices: {
+        title: 'Authorized Devices',
+        empty: "You haven't authorized any devices yet",
+        revoke: 'Revoke',
+        revokeAll: 'Revoke all',
       },
     },
   },

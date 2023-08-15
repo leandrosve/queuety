@@ -41,7 +41,7 @@ export default {
         en: 'Inglés',
         es: 'Español',
         pt: 'Portugués',
-        jp: 'Japonés',
+        ja: 'Japonés',
       },
       appearance: 'Apariencia',
       fontSize: 'Tamaño de fuente',
@@ -53,8 +53,8 @@ export default {
         xl: 'xl',
       },
       fontFamily: {
-        title: 'Font Family',
-        description: 'Some fonts may not work as expected depending on the selected language',
+        title: 'Tipografía',
+        description: 'Algunas fuentes pueden no funcionar correctamente dependiendo del idioma seleccionado',
       },
       glassTheme: {
         title: 'Tema Glass',
@@ -67,8 +67,14 @@ export default {
       },
       connections: 'Conexiones',
       devices: {
-        title: 'Dispositivos connectados',
+        title: 'Autorización automática',
         description: 'Autorizar nuevos dispositivos automáticamente',
+      },
+      authorizedDevices: {
+        title: 'Dispositivos Autorizados',
+        empty: 'Aún no has autorizado ningún dispositivo',
+        revoke: 'Eliminar',
+        revokeAll: 'Eliminar todos'
       },
     },
   },

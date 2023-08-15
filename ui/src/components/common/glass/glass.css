@@ -3,6 +3,9 @@
   backdrop-filter: blur(10px)!important;
 }
 
+html[data-theme="light"][data-glass="true"] .glass-container {
+  backdrop-filter: blur(10px) brightness(4) !important;
+}
 html[data-glass="false"] .glass-container {
   background: var(--bg-300)!important;
   backdrop-filter: none!important;

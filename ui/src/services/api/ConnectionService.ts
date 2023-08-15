@@ -16,13 +16,7 @@ export default class ConnectionService extends APIService {
     return await this.post<Room>(`/auth`);
   }
 
-  // Local
-
-  public static getLocalCode() {
-    return localStorage.getItem('connectionCode');
-  }
-
-  public static saveLocalCode(code: string) {
-    localStorage.setItem('connectionCode', code);
+  public static async getUserId() {
+    return await this.post<{ userId: string }>(`/user`);
   }
 }

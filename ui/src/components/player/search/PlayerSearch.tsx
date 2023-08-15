@@ -83,7 +83,7 @@ const PlayerSearch = ({ onPlay, onPlayNext, onPlayLast }: Props) => {
         <BsSearch />
         <Text>{t('playerSearch.pasteUrl')}</Text>
       </Button>
-      <GlassModal isOpen={isOpen} onClose={() => setIsOpen(false)} width={700} maxWidth='90vw'>
+      <GlassModal contentProps={{ width: 700, maxWidth: '90vw' }} bodyProps={{ padding: 4 }} isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Box paddingBottom={1}>
           <InputGroup>
             <InputLeftElement pointerEvents='none'>

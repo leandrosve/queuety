@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import Logger from '../../utils/Logger';
 import AuthResponse, { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import MobileAuthService from '../../services/api/auth/MobileAuthService';
+import { useSettingsContext } from '../../context/SettingsContext';
+import ConnectionService from '../../services/api/ConnectionService';
 
 export enum MobileAuthStatus {
   UNSTARTED = 'UNSTARTED',
@@ -25,19 +27,28 @@ const CONFIRMATION_TIMEOUT = 25_000; // ms
 
 const useMobileAuth = () => {
   const authService = useMemo(() => new MobileAuthService(), []);
-
+  const { settings } = useSettingsContext();
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
   const [connectionId, setConnectionId] = useState<string>('');
   const [playerRoomId, setPlayerRoomId] = useState<string | null>(authService.getSavedPlayerRoom());
+  const [userId, setUserId] = useState<string>(localStorage.getItem('userId') || '');
+
   const [authRoomId, setAuthRoomId] = useState<string | null>();
 
   const [status, setStatus] = useState<MobileAuthStatus>(MobileAuthStatus.UNSTARTED);
 
   const [error, setError] = useState<string | null>(null);
 
+  const retrieveUserId = async () => {
+    const res = await ConnectionService.getUserId();
+    if (!res.hasError) {
+      setUserId(res.data.userId);
+      localStorage.setItem('userId', res.data.userId);
+    }
+  };
   const onTrigger = (authRoom: string) => {
     authRoom = authRoom.trim();
-    if (!isSocketReady || !authRoom) return;
+    if (!isSocketReady || !authRoom || !userId) return;
     setAuthRoomId(authRoom);
     joinAuthRoom(authRoom);
   };
@@ -74,7 +85,7 @@ const useMobileAuth = () => {
   // Send Auth Request
   const sendAuthRequest = async (authRoomId: string) => {
     setStatus(MobileAuthStatus.SENDING_AUTH_REQUEST);
-    const ok = await authService.sendAuthRequest({ authRoomId, nickname: 'qsy' });
+    const ok = await authService.sendAuthRequest({ authRoomId, nickname: settings.nickname, userId: userId });
     if (ok) setStatus(MobileAuthStatus.SENT_AUTH_REQUEST);
   };
 
@@ -131,6 +142,10 @@ const useMobileAuth = () => {
     return () => clearTimeout(timeout);
   }, [status]);
 
+  useEffect(() => {
+    if (!userId) retrieveUserId();
+  }, []);
+
   return {
     status,
     error,
@@ -138,6 +153,7 @@ const useMobileAuth = () => {
     connectionId,
     authRoomId,
     playerRoomId,
+    userId,
     onTrigger,
   };
 };

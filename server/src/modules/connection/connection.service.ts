@@ -24,4 +24,12 @@ export class ConnectionService {
     const roomId = 'auth-' + createHash('md5').update(`${this.seed}${new Date().getTime()}`).digest('hex');
     return { roomId };
   }
+
+  /**
+   * Generates a unique user id
+   */
+  getUserId() {
+    const userId = 'user-' + createHash('sha256').update(`${this.seed}${new Date().getTime()}`).digest('hex');
+    return { userId };
+  }
 }

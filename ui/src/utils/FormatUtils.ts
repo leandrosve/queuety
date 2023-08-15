@@ -24,7 +24,7 @@ export default class FormatUtils {
 
   public static timeAgo(date: Date) {
     let lang = i18next.language;
-    if (!['en', 'es'].includes(lang)) lang = 'en';
+    if (!['en', 'es', 'pt', 'ja'].includes(lang)) lang = 'en';
     const secondsDiff = (Date.now() - date.getTime()) / 1000;
     let value: number = 0;
     let timeUnit: Intl.RelativeTimeFormatUnit = 'day';
@@ -36,7 +36,7 @@ export default class FormatUtils {
       }
     }
 
-    const formatter = new Intl.RelativeTimeFormat(lang, { numeric: 'always', style: 'long', localeMatcher: 'best fit' });
+    const formatter = new Intl.RelativeTimeFormat([lang], { numeric: 'always', style: 'long', localeMatcher: 'lookup' });
     return formatter.format(value, timeUnit);
   }
 
