@@ -134,7 +134,7 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
   }, [onAccepted]);
 
   return (
-    <Transition key={request.userId} exitDelay={accepted ? 1.5 : 0}>
+    <Transition key={request.userId} exitDelay={accepted ? 2 : 0}>
       <Stack align='center' spacing={3}>
         <Stack align='center' spacing={1}>
           <AutoAvatar name={request.nickname} size='lg' />
@@ -150,14 +150,21 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
           Rechazar
         </Button>
 
-        <Button width='100%' colorScheme='primary' variant='solid' position='relative' onClick={handleAccept}>
-          <Text as='span' opacity={accepted ? 0 : 1} transition='opacity 200ms'>
+        <Button
+          width='100%'
+          colorScheme='primary'
+          variant='solid'
+          position='relative'
+          onClick={handleAccept}
+          transition='background 500ms'
+          background={accepted ? `primary.500` : undefined}
+        >
+          <Text as='span' opacity={accepted ? 0 : 1}>
             Aceptar
           </Text>
           <Box
             visibility={accepted ? 'visible' : 'hidden'}
             opacity={accepted ? 1 : 0}
-            transition='opacity 200ms'
             position='absolute'
             display='flex'
             top={0}
@@ -166,8 +173,9 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
             width='100%'
             alignItems='center'
             justifyContent='center'
+            color={'white'}
           >
-            <Icon as={LuCheckCircle} boxSize={'1.25rem'} />
+            <Icon as={LuCheckCircle} transition='transform 500ms' transform={accepted ? 'scale(1.5)' : 'scale(1)'} />
           </Box>
         </Button>
 

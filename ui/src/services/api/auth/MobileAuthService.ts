@@ -21,6 +21,10 @@ export default class MobileAuthService extends AuthService {
     this.socket.on('receive-auth-response', callback);
   }
 
+  public onAuthRevocation(callback: (res: boolean) => void) {
+    this.socket.on('receive-auth-revocation', callback);
+  }
+
   public onConfirmationTimeout() {
     this.socket.off('receive-auth-response');
   }
@@ -43,5 +47,9 @@ export default class MobileAuthService extends AuthService {
 
   public getSavedPlayerRoom() {
     return localStorage.getItem('playerRoomId');
+  }
+
+  public removeSavedPlayerRoom() {
+    return localStorage.removeItem('playerRoomId');
   }
 }

@@ -4,7 +4,7 @@ import AllowedUser from '../model/auth/AllowedUser';
 
 interface Props {
   add: (user: AllowedUser) => void;
-  remove: (user: AllowedUser) => void;
+  remove: (userId: string) => void;
   clear: () => void;
   get: (userId: string) => AllowedUser | null;
   list: AllowedUser[];

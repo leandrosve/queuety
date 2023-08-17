@@ -26,6 +26,7 @@ export enum AuthError {
   TIMEOUT = 'TIMEOUT',
   HOST_DISCONNECTED = 'HOST_DISCONNECTED',
   INVALID_AUTH_ROOM = 'INVALID_AUTH_ROOM',
+  AUTH_REVOKED = 'AUTH_REVOKED',
 }
 
 export enum HostStatus {
@@ -140,14 +141,26 @@ const useMobileAuth = () => {
     setHostStatus(HostStatus.CONNECTED);
   };
 
+  const onAuthRevocation = () => {
+    Logger.warn('Auth revoked by host');
+    authService.cleanup();
+    setPlayerRoomId(null);
+    authService.removeSavedPlayerRoom();
+    setAuthRoomId(null);
+    setHostStatus(HostStatus.DISCONNECTED);
+    setStatus(MobileAuthStatus.AUTH_REQUEST_DENIED);
+    setError(AuthError.AUTH_REVOKED);
+  };
+
   useEffect(() => {
     if (!userId) return;
     authService.onConnected(onSocketConnected);
     authService.onDisconnected(onDisconnected);
     authService.onAuthConfirmation(onAuthResponse);
+    authService.onAuthRevocation(onAuthRevocation);
     authService.onHostConnected(onHostConnected);
-    authService.onHostReconnected(() => onHostReconnected());
-    authService.onHostDisconnected(() => onHostDisconnected());
+    authService.onHostReconnected(onHostReconnected);
+    authService.onHostDisconnected(onHostDisconnected);
     connectToSocket();
     return () => {
       authService.cleanup();

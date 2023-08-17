@@ -21,6 +21,10 @@ export default class DesktopAuthService extends AuthService {
     return this.emit('send-auth-response', response);
   }
 
+  public sendAuthRevocation(userId: string, clientId: string) {
+    return this.emit('send-auth-revocation', { userId, clientId });
+  }
+
   /**
    * Used to personally notify a user when desktop is connected when they join the room
    */

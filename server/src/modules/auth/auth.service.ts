@@ -7,11 +7,14 @@ import { JoinPlayerRoomRequestDTO } from './dto/JoinPlayerRoomRequestDTO';
 import { AuthRequestDTO } from './dto/AuthRequestDTO';
 import { AuthResponseDTO } from './dto/AuthResponseDTO';
 import { AuthResponseStatus } from './model/AuthResponseStatus';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
+import { Server as SocketServer } from 'socket.io';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-
+  @WebSocketServer()
+  private server: SocketServer;
   private isHost(client: Socket) {
     return !!client.data?.['host'];
   }
@@ -114,7 +117,6 @@ export class AuthService {
 
   public async notifyHostConnection(client: Socket, clientId: string) {
     if (!this.isHost(client)) return;
-    this.logger.log('che, le estoy mandando que me conecte al boludo de ' + clientId);
     await client.to(clientId).emit('host-connected', true);
     return true;
   }
@@ -133,6 +135,11 @@ export class AuthService {
       this.logger.log(`${client.id} authorized request to join client ${dto.clientId}`);
     }
     client.to(dto.clientId).emit('receive-auth-response', dto);
+    return true;
+  }
+
+  public sendAuthRevocation(client: Socket, clientId: string) {
+    client.to(clientId).emit('receive-auth-revocation', clientId);
     return true;
   }
 }

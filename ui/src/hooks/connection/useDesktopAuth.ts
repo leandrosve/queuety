@@ -48,20 +48,37 @@ const useDesktopAuth = () => {
     Logger.info('Response', request.clientId, status);
     const playerRoomId = status == AuthResponseStatus.AUTHORIZED ? connection.playerRoom.id : null;
     const response = { status, clientId: request.clientId, playerRoomId };
+    
+    if (status == AuthResponseStatus.AUTHORIZED) {
+      // Add to the list of authorized users before sending response
+      allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date() });
+    }
 
     const res = await authService.sendAuthResponse(response);
     if (res.hasError) return false;
-
     // Remove request from list
     if (status !== AuthResponseStatus.PENDING) {
       authRequests.remove(request);
     }
-    if (status == AuthResponseStatus.AUTHORIZED) {
-      // Add to the list of authorized users
-      allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date() });
-      return true;
-    }
     return false;
+  };
+
+  const revokeAuthorization = async (userId: string, clientId: string) => {
+    const res = await authService.sendAuthRevocation(userId, clientId);
+    if (res.hasError) return false;
+    allowedUsers.remove(userId);
+    return true;
+  };
+
+  const onUserConnected = (userId: string, clientId: string, reconnected?: boolean) => {
+    if (!allowedUsersRef.current.get(userId)) {
+      revokeAuthorization(userId, clientId);
+      Logger.warn('Unauthorized user tried to connect', { userId });
+      return;
+    }
+    Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}`, { userId, clientId });
+    onlinePrescence.addUnique({ userId, clientId });
+    authService.notifyHostConnection(clientId);
   };
 
   useEffect(() => {
@@ -79,18 +96,11 @@ const useDesktopAuth = () => {
 
   useEffect(() => {
     if (isReady) {
-      authService.onUserConnected((res) => {
-        Logger.success('User Connected', res.userId);
-        onlinePrescence.addUnique(res.userId);
-        authService.notifyHostConnection(res.clientId);
-      });
-      authService.onUserReconnected((res) => {
-        Logger.success('User Reconnected', res.userId);
-        onlinePrescence.addUnique(res.userId);
-      });
+      authService.onUserConnected(res => onUserConnected(res.userId, res.clientId, false));
+      authService.onUserReconnected(res => onUserConnected(res.userId, res.clientId, true));
       authService.onUserDisconnected((res) => {
-        Logger.warn('User Disconnected', res.userId);
-        onlinePrescence.remove(res.userId);
+        Logger.warn('User Disconnected', res);
+        onlinePrescence.remove({ ...res, clientId: '' });
       });
     }
   }, [isReady]);
@@ -116,6 +126,7 @@ const useDesktopAuth = () => {
       joined: joinedPlayerRoom,
     },
     authorizeRequest,
+    revokeAuthorization,
   };
 };
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import AllowedUser from '../../model/auth/AllowedUser';
-import useDictionary from '../common/useDictionary';
 
 interface SerializedAuthorizedUser extends Omit<AllowedUser, 'joinedAt'> {
   joinedAt: string;
@@ -23,8 +22,8 @@ const useAllowedUsers = () => {
     });
   };
 
-  const remove = (user: AllowedUser) => {
-    setList((prev) => prev.filter((u) => u.userId !== user.userId));
+  const remove = (userId: string) => {
+    setList((prev) => prev.filter((u) => u.userId !== userId));
   };
 
   const clear = () => {

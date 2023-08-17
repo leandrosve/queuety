@@ -1,20 +1,15 @@
 import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
-import {
-  ConnectedSocket,
-  MessageBody,
-  OnGatewayConnection, SubscribeMessage,
-  WebSocketGateway
-} from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { AuthResponseDTO } from './dto/AuthResponseDTO';
 import { AuthRequestDTO } from './dto/AuthRequestDTO';
 import { JoinPlayerRoomRequestDTO } from './dto/JoinPlayerRoomRequestDTO';
 import { AuthService } from './auth.service';
 import { BadRequestExceptionFilter } from 'src/common/filters/BadRequestExceptionFilter';
+import { Server as SocketServer } from 'socket.io';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseFilters(BadRequestExceptionFilter)
-
 @WebSocketGateway({ namespace: '/auth', cors: { origin: ['http://localhost:5173', 'ws://admin.socket.io', 'http://192.168.0.226:5173'] } })
 export class AuthGateway implements OnGatewayConnection {
   private readonly logger = new Logger(AuthGateway.name);
@@ -32,7 +27,7 @@ export class AuthGateway implements OnGatewayConnection {
 
   @SubscribeMessage('test-validation')
   private async testValidation(@ConnectedSocket() client: Socket, @MessageBody() dto: JoinPlayerRoomRequestDTO) {
-    return {dto, wtf: true};
+    return { dto, wtf: true };
   }
 
   @SubscribeMessage('join-auth-room')
@@ -63,12 +58,12 @@ export class AuthGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('send-auth-response')
-  private onAuthResponse(@ConnectedSocket() client: Socket, @MessageBody() dto: AuthResponseDTO) {
+  private onSendAuthResponse(@ConnectedSocket() client: Socket, @MessageBody() dto: AuthResponseDTO) {
     return this.authService.sendAuthResponse(client, dto);
   }
 
-  @SubscribeMessage('send-revoke-auth')
-  private onRevokeUserAuth(@ConnectedSocket() client: Socket, @MessageBody() dto: AuthResponseDTO) {
-    return this.authService.sendAuthResponse(client, dto);
+  @SubscribeMessage('send-auth-revocation')
+  private onSendAuthRevocation(@ConnectedSocket() client: Socket, @MessageBody('clientId') clientId: string) {
+    return this.authService.sendAuthRevocation(client, clientId);
   }
 }

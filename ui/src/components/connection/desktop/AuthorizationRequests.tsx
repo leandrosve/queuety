@@ -79,7 +79,14 @@ export const AuthorizationRequestItem = ({ request, onAccept, onDeny }: Authoriz
           <Button opacity={accepted ? 0 : 1} transition='opacity 200ms' onClick={onDeny}>
             Rechazar
           </Button>
-          <Button onClick={handleAccept} variant='solid' colorScheme='primary' position='relative'>
+          <Button
+            onClick={handleAccept}
+            variant='solid'
+            colorScheme='primary'
+            position='relative'
+            transition='background 500ms'
+            background={accepted ? `primary.500` : undefined}
+          >
             <Text as='span' opacity={accepted ? 0 : 1} transition='opacity 200ms'>
               Aceptar
             </Text>
@@ -95,8 +102,9 @@ export const AuthorizationRequestItem = ({ request, onAccept, onDeny }: Authoriz
               width='100%'
               alignItems='center'
               justifyContent='center'
+              color={'white'}
             >
-              <Icon as={LuCheckCircle} boxSize={'1.25rem'} />
+              <Icon as={LuCheckCircle} boxSize={'1.25rem'} transition='transform 500ms' transform={accepted ? 'scale(1.25)' : 'scale(.8)'} />
             </Box>
           </Button>
         </Flex>
