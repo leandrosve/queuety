@@ -1,15 +1,9 @@
 import { Socket } from 'socket.io-client';
-import { createSocket } from '../../../socket';
+import APISocketService from '../APISocketService';
 
-export default class AuthService {
-  protected socket: Socket;
-
+export default class AuthService extends APISocketService {
   constructor(socket?: Socket) {
-    this.socket = socket ?? createSocket(false);
-  }
-
-  public connect() {
-    this.socket.connect();
+    super('/auth', socket);
   }
 
   public cleanup() {
@@ -17,18 +11,12 @@ export default class AuthService {
     this.socket.off('disconnect');
   }
 
-  public joinAuthRoom(authRoomId: string, host?: boolean): Promise<boolean> {
-    return new Promise((resolve) => {
-      this.socket.emit('join-auth-room', { authRoomId, host }, (res: boolean) => {
-        resolve(res);
-      });
-    });
+  public joinAuthRoom(authRoomId: string, host?: boolean) {
+    return this.emit<boolean>('join-auth-room', { authRoomId, host });
   }
 
-  public joinPlayerRoom(playerRoomId: string, host?: boolean, userId?: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      this.socket.emit('join-player-room', { playerRoomId, host, userId }, (res: boolean) => resolve(res));
-    });
+  public joinPlayerRoom(playerRoomId: string, host?: boolean, userId?: string) {
+    return this.emit<boolean>('join-player-room', { playerRoomId, host, userId });
   }
 
   public onConnected(callback: (clientId: string) => void) {

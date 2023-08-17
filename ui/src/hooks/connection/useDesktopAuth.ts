@@ -24,13 +24,15 @@ const useDesktopAuth = () => {
   const allowedUsersRef = useRef(allowedUsers);
 
   const joinAuthRoom = async (roomId: string) => {
-    const ok = await authService.joinAuthRoom(roomId);
-    setJoinedAuthRoom(ok);
+    const res = await authService.joinAuthRoom(roomId);
+    if (res.hasError) return;
+    setJoinedAuthRoom(res.data);
   };
 
   const joinPlayerRoom = async (roomId: string) => {
-    const ok = await authService.joinPlayerRoom(roomId);
-    setJoinedPlayerRoom(ok);
+    const res = await authService.joinPlayerRoom(roomId);
+    if (res.hasError) return;
+    setJoinedPlayerRoom(res.data);
   };
 
   const onAuthRequested = async (request: AuthRequest) => {
@@ -47,7 +49,8 @@ const useDesktopAuth = () => {
     const playerRoomId = status == AuthResponseStatus.AUTHORIZED ? connection.playerRoom.id : null;
     const response = { status, clientId: request.clientId, playerRoomId };
 
-    await authService.sendAuthResponse(response);
+    const res = await authService.sendAuthResponse(response);
+    if (res.hasError) return false;
 
     // Remove request from list
     if (status !== AuthResponseStatus.PENDING) {

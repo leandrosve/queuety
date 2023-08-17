@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsIn, IsString, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsIn, IsString, IsBoolean, Validate, ValidateIf } from 'class-validator';
 
 export class JoinPlayerRoomRequestDTO {
   @IsString()
@@ -6,6 +6,7 @@ export class JoinPlayerRoomRequestDTO {
   playerRoomId: string;
   @IsBoolean()
   host: boolean;
-  @IsBoolean()
+  @IsString()
+  @ValidateIf(i => !i.host)
   userId: string;
 }

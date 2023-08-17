@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsIn, IsString } from 'class-validator';
+import { IsNotEmpty, IsIn, IsString, IsOptional, ValidateIf } from 'class-validator';
 
 export class AuthResponseDTO {
   @IsString()
@@ -9,6 +9,8 @@ export class AuthResponseDTO {
   @IsIn(['AUTHORIZED', 'DENIED', 'PENDING'])
   status: 'AUTHORIZED' | 'DENIED' | 'PENDING';
 
+  @IsOptional()
+  @ValidateIf((o) => o.status == 'AUTHORIZED')
   @IsString()
   playerRoomId: string;
 }

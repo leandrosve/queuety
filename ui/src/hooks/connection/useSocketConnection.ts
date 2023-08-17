@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createSocket } from '../../socket';
 import { Socket } from 'socket.io-client';
 
@@ -13,7 +13,7 @@ export interface SocketConnection {
 const useSocketConnection = (autoConnect?: boolean): SocketConnection => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const [connectionId, setConnectionId] = useState<string>('');
-  const socket = useMemo(() => createSocket(autoConnect), []);
+  const socket = useMemo(() => createSocket(autoConnect, '/auth'), []);
   const [loading, setLoading] = useState<boolean>(false);
 
   const connect = () => {

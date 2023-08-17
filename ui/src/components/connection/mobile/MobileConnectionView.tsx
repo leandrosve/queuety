@@ -1,7 +1,6 @@
-import { Button, Flex, Heading, Input, InputGroup, Spinner, Stack, Tag, Text } from '@chakra-ui/react';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { Button, Flex, Heading, Input, Stack, Text } from '@chakra-ui/react';
+import { useRef, useEffect } from 'react';
 import { useMobileAuthContext } from '../../../context/MobileAuthContext';
-import { MobileAuthStatus } from '../../../hooks/connection/useMobileAuth';
 import PlayerBackdrop from '../../player/PlayerBackdrop';
 import { useSettingsContext } from '../../../context/SettingsContext';
 import AutoAvatar from '../../common/AutoAvatar';
@@ -21,7 +20,6 @@ const MobileConnectionView = () => {
     if (!auth.isSocketReady) return;
     const searchParams = new URLSearchParams(document.location.search);
     let authParam = searchParams.get('auth');
-    console.log({ authParam });
     if (authParam) {
       if (!authParam.startsWith('auth-')) authParam = 'auth-' + authParam;
       auth.onTrigger(authParam);

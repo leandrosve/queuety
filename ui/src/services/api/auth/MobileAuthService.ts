@@ -9,16 +9,12 @@ export default class MobileAuthService extends AuthService {
     this.socket.off('receive-auth-response');
   }
 
-  public sendAuthRequest(request: Omit<AuthRequest, 'clientId'>): Promise<boolean> {
-    return new Promise((resolve) => {
-      this.socket.emit('send-auth-request', request, (res: boolean) => resolve(res));
-    });
+  public sendAuthRequest(request: Omit<AuthRequest, 'clientId'>) {
+    return this.emit<boolean>('send-auth-request', request);
   }
 
-  public notifyUserReconnection(): Promise<boolean> {
-    return new Promise((resolve) => {
-      this.socket.emit('notify-user-reconnection', null, (res: boolean) => resolve(res));
-    });
+  public notifyUserReconnection() {
+    return this.emit<boolean>('notify-user-reconnection');
   }
 
   public onAuthConfirmation(callback: (res: AuthResponse) => void) {
