@@ -56,4 +56,8 @@ export default class FormatUtils {
     }
     return number.toString();
   }
+
+  public static shortenUserId(userId: string) : string {
+    return `#${userId.slice(-5)}`
+  }
 }

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDesktopAuthContext } from '../../../context/DesktopAuthContext';
 
 const DesktopConnectionView = () => {
-  const { connectionId, authRoom, playerRoom, isSocketReady, authRequests, authorizeRequest } = useDesktopAuthContext();
+  const { connectionId, authRoom, playerRoom, isSocketReady, authorizeRequest } = useDesktopAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = (open?: boolean) => {
     setIsOpen((p) => {
@@ -41,13 +41,6 @@ const DesktopConnectionView = () => {
       <Tag>
         {playerRoom.id} - {playerRoom.joined ? 'joined' : 'not joined'}
       </Tag>
-      <Text>Requests:</Text>
-      {authRequests.list.map((r, index) => (
-        <Text key={index}>
-          {JSON.stringify(r)} <Button onClick={() => authorizeRequest(r, AuthResponseStatus.AUTHORIZED)}>Accept</Button>{' '}
-          <Button onClick={() => authorizeRequest(r, AuthResponseStatus.DENIED)}>Deny</Button>
-        </Text>
-      ))}
       <Button
         marginTop={5}
         onClick={() => {

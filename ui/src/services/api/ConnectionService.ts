@@ -19,4 +19,8 @@ export default class ConnectionService extends APIService {
   public static async getUserId() {
     return await this.post<{ userId: string }>(`/user`);
   }
+
+  public static getLinkForAuthRoomId(authRoomId: string) {
+    return `${location.origin}/?auth=${authRoomId.replace('auth-', '')}`;
+  }
 }

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import Logger from '../../utils/Logger';
 import AuthResponse, { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import MobileAuthService from '../../services/api/auth/MobileAuthService';
 import { useSettingsContext } from '../../context/SettingsContext';
 import ConnectionService from '../../services/api/ConnectionService';
+import Logger from '../../utils/Logger';
 
 export enum MobileAuthStatus {
   UNSTARTED = 'UNSTARTED',
@@ -16,14 +16,23 @@ export enum MobileAuthStatus {
   AUTH_REQUEST_PENDING = 'AUTH_REQUEST_PENDING',
   AUTH_REQUEST_ACCEPTED = 'AUTH_REQUEST_ACCEPTED',
   AUTH_REQUEST_DENIED = 'AUTH_REQUEST_DENIED',
+  AUTH_REQUEST_STALED = 'AUTH_REQUEST_STALED',
   JOINING_PLAYER_ROOM = 'JOINING_PLAYER_ROOM',
   JOINED_PLAYER_ROOM = 'JOINED_PLAYER_ROOM',
   TIMEOUT = 'TIMEOUT',
 }
 
-export enum AuthError {}
+export enum AuthError {
+  TIMEOUT = 'TIMEOUT',
+  HOST_DISCONNECTED = 'HOST_DISCONNECTED',
+  INVALID_AUTH_ROOM = 'INVALID_AUTH_ROOM',
+}
 
-const CONFIRMATION_TIMEOUT = 25_000; // ms
+export enum HostStatus {
+  DISCONNECTED = 'DISCONNECTED',
+  CONNECTED = 'CONNECTED',
+  WAITING = 'WAITING',
+}
 
 const useMobileAuth = () => {
   const authService = useMemo(() => new MobileAuthService(), []);
@@ -37,7 +46,8 @@ const useMobileAuth = () => {
 
   const [status, setStatus] = useState<MobileAuthStatus>(MobileAuthStatus.UNSTARTED);
 
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AuthError | null>(null);
+  const [hostStatus, setHostStatus] = useState<HostStatus>(HostStatus.WAITING);
 
   const retrieveUserId = async () => {
     const res = await ConnectionService.getUserId();
@@ -63,11 +73,6 @@ const useMobileAuth = () => {
     setConnectionId(connectId);
     setStatus(MobileAuthStatus.CONNECTED_TO_SOCKET);
     setIsSocketReady(true);
-
-    if (playerRoomId) {
-      joinPlayerRoom(playerRoomId);
-    }
-    //joinAuthRoom(authRoomId); uncomment this after testing
   };
 
   // Join Auth Room
@@ -79,7 +84,7 @@ const useMobileAuth = () => {
       setStatus(MobileAuthStatus.JOINED_AUTH_ROOM);
       sendAuthRequest(authRoomId);
     } else {
-      setError('invalid_auth_room');
+      setError(AuthError.INVALID_AUTH_ROOM);
     }
   };
   // Send Auth Request
@@ -101,13 +106,14 @@ const useMobileAuth = () => {
     if (!response.playerRoomId) return;
     setStatus(MobileAuthStatus.AUTH_REQUEST_ACCEPTED);
     setPlayerRoomId(response.playerRoomId);
+    console.count('ON AUTH RESPONSE');
     joinPlayerRoom(response.playerRoomId);
   };
 
   // Join Player Room
   const joinPlayerRoom = async (playerRoomId: string) => {
     setStatus(MobileAuthStatus.JOINING_PLAYER_ROOM);
-    const ok = await authService.joinPlayerRoom(playerRoomId);
+    const ok = await authService.joinPlayerRoom(playerRoomId, false, userId);
     if (ok) {
       history.pushState(null, '', location.origin);
       setStatus(MobileAuthStatus.JOINED_PLAYER_ROOM);
@@ -115,41 +121,53 @@ const useMobileAuth = () => {
     }
   };
 
-  const onTimeout = () => {
-    authService.onConfirmationTimeout();
-    setStatus(MobileAuthStatus.TIMEOUT);
-  };
-
   const onDisconnected = () => setIsSocketReady(false);
 
+  const onHostDisconnected = () => {
+    Logger.warn('Host disconnected');
+    setStatus((prev) => (prev <= MobileAuthStatus.AUTH_REQUEST_PENDING ? MobileAuthStatus.AUTH_REQUEST_STALED : prev));
+    setHostStatus(HostStatus.DISCONNECTED);
+  };
+
+  const onHostReconnected = () => {
+    Logger.success('Host Re-connected');
+    setHostStatus(HostStatus.CONNECTED);
+    authService.notifyUserReconnection();
+  };
+
+  const onHostConnected = () => {
+    Logger.success('Host Connected');
+    setHostStatus(HostStatus.CONNECTED);
+  };
+
   useEffect(() => {
+    if (!userId) return;
     authService.onConnected(onSocketConnected);
     authService.onDisconnected(onDisconnected);
     authService.onAuthConfirmation(onAuthResponse);
+    authService.onHostConnected(onHostConnected);
+    authService.onHostReconnected(() => onHostReconnected());
+    authService.onHostDisconnected(() => onHostDisconnected());
     connectToSocket();
     return () => {
       authService.cleanup();
     };
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
-    Logger.info(status);
-    let timeout: number;
-    if (status === MobileAuthStatus.SENT_AUTH_REQUEST) {
-      timeout = setTimeout(() => {
-        onTimeout();
-      }, CONFIRMATION_TIMEOUT);
+    if (!userId) {
+      retrieveUserId();
+      return;
     }
-    return () => clearTimeout(timeout);
-  }, [status]);
-
-  useEffect(() => {
-    if (!userId) retrieveUserId();
+    if (playerRoomId) {
+      joinPlayerRoom(playerRoomId);
+    }
   }, []);
 
   return {
     status,
     error,
+    hostStatus,
     isSocketReady,
     connectionId,
     authRoomId,

@@ -16,7 +16,7 @@ export type DesktopAuthContextProps = {
     id: string | null;
     joined: boolean;
   };
-  authorizeRequest: (request: AuthRequest, status: AuthResponseStatus) => Promise<void>;
+  authorizeRequest: (request: AuthRequest, status: AuthResponseStatus) => Promise<boolean>;
 };
 
 const initial = {
@@ -31,7 +31,7 @@ const initial = {
     id: '',
     joined: false,
   },
-  authorizeRequest: async () => {},
+  authorizeRequest: async () => false,
 };
 
 const DesktopAuthContext = React.createContext<DesktopAuthContextProps>(initial);

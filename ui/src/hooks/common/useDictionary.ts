@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface Dictionary<T> {
   add: (item: T) => void;
@@ -8,22 +8,7 @@ export interface Dictionary<T> {
   list: T[];
 }
 
-interface DictionaryOptions {
-  localStorageKey?: string;
-}
-
-const getInitialData = <T>(accesor: (item: T) => string, initialData?: Record<string, T>, localStorageKey?: string) => {
-  if (!localStorageKey) return initialData || {};
-  const res = JSON.parse(localStorage.getItem(localStorageKey) || '[]') as T[];
-  if (!res?.length) return initialData || {};
-  return res.reduce((record, item) => {
-    const key = accesor(item);
-    record[key] = item;
-    return record;
-  }, {} as Record<string, T>);
-};
-
-export const dictionaryDefaults:Dictionary<any> = {
+export const dictionaryDefaults: Dictionary<any> = {
   data: {},
   list: [],
   add: () => {},
@@ -31,10 +16,9 @@ export const dictionaryDefaults:Dictionary<any> = {
   clear: () => {},
 };
 
-const useDictionary = <T>(keyAccessor: (item: T) => string, initialData?: Record<string, T>, options?: DictionaryOptions): Dictionary<T> => {
-  const [data, setData] = useState<Record<string, T>>(getInitialData(keyAccessor, initialData, options?.localStorageKey));
+const useDictionary = <T>(keyAccessor: (item: T) => string, initialData?: Record<string, T>): Dictionary<T> => {
+  const [data, setData] = useState<Record<string, T>>(initialData ?? {});
   const list = useMemo(() => Object.values(data), [data]);
-  const [initialized, setInitialized] = useState<boolean>(false);
 
   const add = (item: T) => {
     setData((p) => ({ ...p, [keyAccessor(item)]: item }));
@@ -51,14 +35,6 @@ const useDictionary = <T>(keyAccessor: (item: T) => string, initialData?: Record
   const clear = () => {
     setData({});
   };
-
-  useEffect(() => {
-    if (initialized && options?.localStorageKey) {
-      localStorage.setItem(options.localStorageKey, JSON.stringify(list));
-      return;
-    }
-    setInitialized(true);
-  }, [list]);
 
   return { data, list, add, remove, clear };
 };

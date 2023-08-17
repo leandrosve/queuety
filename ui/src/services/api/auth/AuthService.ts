@@ -17,15 +17,17 @@ export default class AuthService {
     this.socket.off('disconnect');
   }
 
-  public joinAuthRoom(authRoomId: string): Promise<boolean> {
+  public joinAuthRoom(authRoomId: string, host?: boolean): Promise<boolean> {
     return new Promise((resolve) => {
-      this.socket.emit('join-auth-room', { authRoomId }, (res: boolean) => resolve(res));
+      this.socket.emit('join-auth-room', { authRoomId, host }, (res: boolean) => {
+        resolve(res);
+      });
     });
   }
 
-  public joinPlayerRoom(playerRoomId: string): Promise<boolean> {
+  public joinPlayerRoom(playerRoomId: string, host?: boolean, userId?: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.socket.emit('join-player-room', { playerRoomId }, (res: boolean) => resolve(res));
+      this.socket.emit('join-player-room', { playerRoomId, host, userId }, (res: boolean) => resolve(res));
     });
   }
 

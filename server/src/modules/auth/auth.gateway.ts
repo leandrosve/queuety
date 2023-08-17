@@ -1,9 +1,18 @@
-import { Logger, OnModuleInit } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Logger, OnModuleInit, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  ConnectedSocket,
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { instrument } from '@socket.io/admin-ui';
 import { AuthResponseDTO } from './dto/AuthResponseDTO';
 import { AuthRequestDTO } from './dto/AuthRequestDTO';
+import { JoinPlayerRoomRequestDTO } from './dto/JoinPlayerRoomRequestDTO';
 
 @WebSocketGateway(3333, { cors: { origin: ['http://localhost:5173', 'ws://admin.socket.io', 'http://192.168.0.226:5173'] } })
 export class AuthGateway implements OnGatewayConnection {
@@ -26,6 +35,25 @@ export class AuthGateway implements OnGatewayConnection {
   public handleConnection(client: Socket) {
     this.logger.log(`A new device has connected - clientId: ${client.id}`);
     client.emit('connection', client.id);
+    client.on('disconnecting', () => {
+      this.handleDisconnecting(client);
+    });
+  }
+
+  handleDisconnecting(client: Socket) {
+    const isHost = client.data?.['host'];
+    client.rooms.forEach((room) => {
+      if (room.startsWith('player-')) {
+        if (isHost) {
+          client.to(room).emit('host-disconnected', true);
+          return;
+        }
+        client.to(room).emit('user-disconnected', { userId: client.data?.['userId'] });
+      }
+      if (isHost && room.startsWith('auth-')) {
+        client.to(room).emit('host-disconnected', true);
+      }
+    });
   }
 
   // First attempt to implement this
@@ -41,8 +69,11 @@ export class AuthGateway implements OnGatewayConnection {
       this.logger.warn(`${authRoomId} is not a valid auth room ID`);
       return false;
     }
+    // Leave other auth rooms
+    client.rooms.forEach((room) => room.startsWith('auth-') && client.leave(room));
     await client.join(authRoomId);
     this.logger.log(`${client.id} connected to auth room ${authRoomId}`);
+
     return true;
   }
 
@@ -51,14 +82,57 @@ export class AuthGateway implements OnGatewayConnection {
    *  @param playerRoomId
    */
   @SubscribeMessage('join-player-room')
-  private async onJoinPlayerRoom(@ConnectedSocket() client: Socket, @MessageBody('playerRoomId') playerRoomId: string) {
+  private async onJoinPlayerRoom(@ConnectedSocket() client: Socket, @MessageBody() body: JoinPlayerRoomRequestDTO) {
+    const { playerRoomId, host, userId } = body;
     if (!playerRoomId || !playerRoomId.startsWith('player-')) {
       this.logger.warn(`${playerRoomId} is not a valid player room ID`);
       return false;
     }
     await client.join(playerRoomId);
-    this.logger.log(`${client.id} connected to player room ${playerRoomId}`);
+    this.logger.log(`${client.id} joined player room ${playerRoomId}`);
+    client.data = { ...client.data, host, userId };
+    if (!host) {
+      client.rooms.forEach((room) => room.startsWith('auth-') && client.leave(room));
+    }
+    this.notifyConnectionToRoom(client, playerRoomId);
+    return true;
+  }
 
+  private notifyConnectionToRoom(client: Socket, roomId: string) {
+    if (client.data['host']) {
+      console.log('HOST RECONNECTED');
+      client.to(roomId).emit('host-reconnected', true);
+      return;
+    }
+    if (client.data['userId']) {
+      client.to(roomId).emit('user-connected', { userId: client.data['userId'], clientId: client.id });
+    }
+  }
+
+  private notifyUserReconnection(client: Socket, roomId: string) {
+    if (client.data['userId']) {
+      client.to(roomId).emit('user-reconnected', { userId: client.data['userId'], clientId: client.id });
+    }
+  }
+
+  @SubscribeMessage('notify-user-reconnection')
+  private async notifyUserConnection(@ConnectedSocket() client: Socket) {
+    await client.rooms.forEach((room) => {
+      if (room.startsWith('player-')) {
+        console.log('user reconnection for room', room);
+        this.notifyUserReconnection(client, room);
+      }
+    });
+    return true;
+  }
+
+  /**
+   * When a user joins a player room, the host should notify that it's online
+   */
+  @SubscribeMessage('notify-host-connection')
+  private async notifyHostConnection(@ConnectedSocket() client: Socket, @MessageBody('clientId') clientId: string) {
+    this.logger.log('che, le estoy mandando que me conecte al boludo de ' + clientId);
+    await client.to(clientId).emit('host-connected', true);
     return true;
   }
 
@@ -67,9 +141,9 @@ export class AuthGateway implements OnGatewayConnection {
    * @param authRoomId
    */
   @SubscribeMessage('send-auth-request')
-  private onSendAuthRequest(@ConnectedSocket() client: Socket, @MessageBody() request: AuthRequestDTO) {
+  private async onSendAuthRequest(@ConnectedSocket() client: Socket, @MessageBody() request: AuthRequestDTO) {
     this.logger.log(`${client.id} sent auth request to auth room ${request.authRoomId}`);
-    client.to(request.authRoomId).emit('receive-auth-request', {...request, clientId: client.id});
+    await client.to(request.authRoomId).emit('receive-auth-request', { ...request, clientId: client.id });
     return true;
   }
 
@@ -82,7 +156,7 @@ export class AuthGateway implements OnGatewayConnection {
     if (body.status === 'DENIED') {
       this.logger.warn(`${client.id} denied auth request to join client ${body.clientId} to player room ${body.playerRoomId}`);
     } else if (body.status === 'AUTHORIZED') {
-      this.logger.log(`${client.id} authorized request to join client ${body.clientId} to player room ${body.playerRoomId}`);
+      this.logger.log(`${client.id} authorized request to join client ${body.clientId}`);
     }
     client.to(body.clientId).emit('receive-auth-response', body);
     return true;

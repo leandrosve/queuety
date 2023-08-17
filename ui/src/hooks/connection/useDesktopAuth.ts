@@ -1,22 +1,24 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDesktopConnectionContext } from '../../context/DesktopConnectionContext';
-import useSocketConnection from './useSocketConnection';
 import { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import DesktopAuthService from '../../services/api/auth/DesktopAuthService';
 import Logger from '../../utils/Logger';
 import AuthRequest from '../../model/auth/AuthRequest';
 import { useAuthRequestsContext } from '../../context/AuthRequestsContext';
 import { useAllowedUsersContext } from '../../context/AllowedUsersContext';
+import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
+import { useSocketConnectionContext } from '../../context/SocketConnectionContext';
 
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
-
-  const { socket, isReady, connectionId } = useSocketConnection(true);
+  const { socket, isReady, connectionId } = useSocketConnectionContext();
   const [joinedAuthRoom, setJoinedAuthRoom] = useState(false);
   const [joinedPlayerRoom, setJoinedPlayerRoom] = useState(false);
   const authService = useMemo(() => new DesktopAuthService(socket), []);
   const authRequests = useAuthRequestsContext();
   const allowedUsers = useAllowedUsersContext();
+  const onlinePrescence = useOnlinePrescenceContext();
+
   // Need to access these inside the socket callback :(
   const acceptAutomatic = useRef(connection.settings.automatic);
   const allowedUsersRef = useRef(allowedUsers);
@@ -54,7 +56,9 @@ const useDesktopAuth = () => {
     if (status == AuthResponseStatus.AUTHORIZED) {
       // Add to the list of authorized users
       allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date() });
+      return true;
     }
+    return false;
   };
 
   useEffect(() => {
@@ -65,10 +69,28 @@ const useDesktopAuth = () => {
   }, [socket, isReady, connection.authRoom]);
 
   useEffect(() => {
-    if (connection.playerRoom?.id && socket && isReady) {
+    if (connection.playerRoom?.id && isReady) {
       joinPlayerRoom(connection.playerRoom?.id);
     }
-  }, [socket, isReady, connection.authRoom]);
+  }, [isReady, connection.authRoom]);
+
+  useEffect(() => {
+    if (isReady) {
+      authService.onUserConnected((res) => {
+        Logger.success('User Connected', res.userId);
+        onlinePrescence.addUnique(res.userId);
+        authService.notifyHostConnection(res.clientId);
+      });
+      authService.onUserReconnected((res) => {
+        Logger.success('User Reconnected', res.userId);
+        onlinePrescence.addUnique(res.userId);
+      });
+      authService.onUserDisconnected((res) => {
+        Logger.warn('User Disconnected', res.userId);
+        onlinePrescence.remove(res.userId);
+      });
+    }
+  }, [isReady]);
 
   useEffect(() => {
     acceptAutomatic.current = connection.settings.automatic;

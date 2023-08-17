@@ -44,9 +44,16 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   isMobile?: boolean;
+  defaultSection?: SettingsModalSections | null;
 }
 
-const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
+export enum SettingsModalSections {
+  GENERAL,
+  APPEAREANCE,
+  CONNECTIONS,
+}
+
+const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => {
   const { t } = useTranslation();
   const { colorMode, setColorMode } = useColorMode();
   const { settings, setNickname, setFontSize, setGlassMode, setFontFamily } = useSettingsContext();
@@ -67,7 +74,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
       hasCloseButton
     >
       <Box gap={3} paddingTop={0}>
-        <Accordion allowToggle defaultIndex={0}>
+        <Accordion allowToggle defaultIndex={defaultSection ?? 0}>
           <Group title={t('settings.general')} borderTopWidth={0} borderColor='transparent'>
             <FormControl isInvalid={nicknameError}>
               <FormLabel mb={0}>{t('settings.displayName.title')}</FormLabel>
@@ -88,7 +95,14 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
                     onChange={(e) => setNicknameValue(e.target.value)}
                   />
                 </InputGroup>
-                <Button isDisabled={nicknameError} onClick={() => setNickname(nicknameValue)} borderLeftRadius={0} border='1px' borderLeftWidth={0} borderColor='borders.100'>
+                <Button
+                  isDisabled={nicknameError}
+                  onClick={() => setNickname(nicknameValue)}
+                  borderLeftRadius={0}
+                  border='1px'
+                  borderLeftWidth={0}
+                  borderColor='borders.100'
+                >
                   {t('common.save')}
                 </Button>
               </Flex>
@@ -150,7 +164,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose }: Props) => {
               <FormLabel htmlFor='email-alerts' mb='0'>
                 {t('settings.glassTheme.title')}
               </FormLabel>
-              <Flex justifyContent='space-between' paddingRight={2}>
+              <Flex justifyContent='space-between' paddingRight={2} gap={2}>
                 <Text fontSize='sm'> {t('settings.glassTheme.description')}</Text>
                 <Switch
                   id='glass-mode'

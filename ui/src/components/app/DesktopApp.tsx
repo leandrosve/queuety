@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import PlayerScriptProvider from '../player/PlayerScriptProvider';
 import Player from '../player/Player';
 import { Flex } from '@chakra-ui/react';
@@ -7,40 +7,63 @@ import { PlayerQueueProvider, usePlayerQueueContext } from '../../context/Player
 import PlayerQueue from '../player/queue/PlayerQueue';
 import { PlayerStatusProvider } from '../../context/PlayerStatusContext';
 import { DesktopConnectionProvider } from '../../context/DesktopConnectionContext';
-import Layout from '../layout/Layout';
 import DesktopConnectionView from '../connection/desktop/DesktopConnectionView';
 import PlayerBackdrop from '../player/PlayerBackdrop';
 import AuthorizationRequests from '../connection/desktop/AuthorizationRequests';
 import { DesktopAuthProvider } from '../../context/DesktopAuthContext';
 import { AuthRequestsProvider } from '../../context/AuthRequestsContext';
 import { AllowedUsersProvider } from '../../context/AllowedUsersContext';
+import { OnlinePrescenceProvider } from '../../context/OnlinePrescenceContext';
+import DesktopConnectionModal from '../connection/desktop/DesktopConnectionModal';
+import NavbarDesktop from '../layout/navbar/NavbarDesktop';
+import SettingsModal, { SettingsModalSections } from '../settings/SettingsModal';
+import { combineProviders } from '../../utils/ContextUtils';
+import { SocketConnectionProvider } from '../../context/SocketConnectionContext';
+
+const MainProviders = combineProviders([
+  DesktopConnectionProvider,
+  SocketConnectionProvider,
+  AuthRequestsProvider,
+  AllowedUsersProvider,
+  OnlinePrescenceProvider,
+  DesktopAuthProvider,
+]);
+
+const PlayerProviders = combineProviders([PlayerScriptProvider, PlayerQueueProvider, PlayerStatusProvider]);
 
 const DesktopApp = () => {
+  const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsSection, setSettingsSection] = useState<SettingsModalSections | null>(SettingsModalSections.CONNECTIONS);
+  const onDesktopConnectionModalClosed = (redirectToSettigns?: SettingsModalSections) => {
+    setIsConnectionModalOpen(false);
+    if (redirectToSettigns) {
+      setSettingsSection(redirectToSettigns || null);
+      setIsSettingsModalOpen(true);
+    }
+  };
+  const onSettingsModalClosed = () => {
+    setIsSettingsModalOpen(false);
+    setSettingsSection(null);
+  };
+
   return (
-    <Providers>
-      <Layout>
-        <DesktopConnectionView />
-        <Content />
-      </Layout>
-    </Providers>
+    <MainProviders>
+      <Flex className='layout' gap={3} grow={1} zIndex={1}>
+        <NavbarDesktop onOpenConnectionModal={() => setIsConnectionModalOpen(true)} onOpenSettingsModal={() => setIsSettingsModalOpen(true)} />
+        <Flex grow={1} alignItems='start' justifyContent='center'>
+          <DesktopConnectionView />
+          <DesktopConnectionModal isOpen={isConnectionModalOpen} onClose={onDesktopConnectionModalClosed} />
+          <SettingsModal isOpen={isSettingsModalOpen} onClose={onSettingsModalClosed} defaultSection={settingsSection} />
+          {!isConnectionModalOpen && <AuthorizationRequests />}
+          <PlayerProviders>
+            <Content />
+          </PlayerProviders>
+        </Flex>
+      </Flex>
+    </MainProviders>
   );
 };
-
-const Providers = ({ children }: PropsWithChildren) => (
-  <DesktopConnectionProvider>
-    <AuthRequestsProvider>
-      <AllowedUsersProvider>
-        <DesktopAuthProvider>
-          <PlayerScriptProvider>
-            <PlayerQueueProvider>
-              <PlayerStatusProvider>{children}</PlayerStatusProvider>
-            </PlayerQueueProvider>
-          </PlayerScriptProvider>
-        </DesktopAuthProvider>
-      </AllowedUsersProvider>
-    </AuthRequestsProvider>
-  </DesktopConnectionProvider>
-);
 
 const Content = () => {
   const {
@@ -70,7 +93,6 @@ const Content = () => {
         />
       )}
       {currentItem ? <Player queueItem={currentItem} /> : <Welcome />}
-      <AuthorizationRequests />
     </Flex>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, PropsWithChildren, useEffect, useContext } from 'react';
 import ConnectionService from '../services/api/ConnectionService';
+import useSocketConnection, { SocketConnection } from '../hooks/connection/useSocketConnection';
 
 export interface ConnectionData {
   playerRoom: RoomData;
@@ -19,7 +20,7 @@ interface RoomData {
 export type DesktopConnectionContextProps = {
   connection: ConnectionData;
   regenAuthRoom: () => void;
-  toggleAutoAuth: () => void;
+  toggleAutoAuth: (value?: boolean) => void;
 };
 
 const DesktopConnectionContext = React.createContext<DesktopConnectionContextProps>({
@@ -45,6 +46,7 @@ const getInitialSettings = () => {
 };
 
 export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
+  const socketConnection = useSocketConnection(true);
   const [playerRoom, setPlayerRoom] = useState<RoomData>(getInitialPlayerRoom());
   const [authRoom, setAuthRoom] = useState<RoomData>(getInitialAuthRoom());
   const [settings, setSettings] = useState<Settings>(getInitialSettings());
@@ -63,7 +65,11 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
     setAuthRoom({ id: res.data.roomId });
   };
 
-  const toggleAutoAuth = () => {
+  const toggleAutoAuth = (value?: boolean) => {
+    if (value !== undefined) {
+      setSettings((prev) => ({ ...prev, automatic: value }));
+      return;
+    }
     setSettings((prev) => ({ ...prev, automatic: !prev.automatic }));
   };
 

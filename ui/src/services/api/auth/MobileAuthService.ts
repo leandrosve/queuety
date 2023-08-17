@@ -15,12 +15,30 @@ export default class MobileAuthService extends AuthService {
     });
   }
 
+  public notifyUserReconnection(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.socket.emit('notify-user-reconnection', null, (res: boolean) => resolve(res));
+    });
+  }
+
   public onAuthConfirmation(callback: (res: AuthResponse) => void) {
     this.socket.on('receive-auth-response', callback);
   }
 
   public onConfirmationTimeout() {
     this.socket.off('receive-auth-response');
+  }
+
+  public onHostReconnected(callback: (res: boolean) => void) {
+    this.socket.on('host-reconnected', callback);
+  }
+
+  public onHostDisconnected(callback: (res: AuthResponse) => void) {
+    this.socket.on('host-disconnected', callback);
+  }
+
+  public onHostConnected(callback: (res: boolean) => void) {
+    this.socket.on('host-connected', callback);
   }
 
   public savePlayerRoom(playerRoomId: string) {

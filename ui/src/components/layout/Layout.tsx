@@ -9,7 +9,7 @@ interface Props extends PropsWithChildren {
 const Layout = ({ children, isMobile }: Props) => {
   return (
     <Flex className='layout' gap={3} grow={1} zIndex={1}>
-      {isMobile ? <NavbarMobile /> : <NavbarDesktop />}
+      <NavbarMobile />
       <Flex grow={1} alignItems='start' justifyContent='center'>
         {children}
       </Flex>

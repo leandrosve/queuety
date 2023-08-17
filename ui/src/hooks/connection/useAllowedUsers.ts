@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AllowedUser from '../../model/auth/AllowedUser';
+import useDictionary from '../common/useDictionary';
 
 interface SerializedAuthorizedUser extends Omit<AllowedUser, 'joinedAt'> {
   joinedAt: string;
@@ -17,7 +18,7 @@ const useAllowedUsers = () => {
   const add = (user: AllowedUser) => {
     setList((prev) => {
       const index = prev.findIndex((u) => u.userId === user.userId);
-      if (index < 0) return [...prev, user];
+      if (index < 0) return [user, ...prev];
       return prev.map((i) => (i.userId !== user.userId ? i : user));
     });
   };

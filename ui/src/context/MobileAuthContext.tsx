@@ -1,8 +1,9 @@
 import React, { PropsWithChildren, useContext } from 'react';
-import useMobileAuth, { MobileAuthStatus } from '../hooks/connection/useMobileAuth';
+import useMobileAuth, { HostStatus, MobileAuthStatus } from '../hooks/connection/useMobileAuth';
 
 export type MobileAuthContextProps = {
   status: MobileAuthStatus;
+  hostStatus: HostStatus;
   error: string | null;
   isSocketReady: boolean;
   connectionId: string;
@@ -14,6 +15,7 @@ export type MobileAuthContextProps = {
 
 const MobileAuthContext = React.createContext<MobileAuthContextProps>({
   status: MobileAuthStatus.UNSTARTED,
+  hostStatus: HostStatus.DISCONNECTED,
   error: '',
   isSocketReady: false,
   connectionId: '',

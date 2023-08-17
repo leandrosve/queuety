@@ -1,15 +1,16 @@
-import { IconButton, Tooltip } from '@chakra-ui/react';
+import { Button, ButtonProps, Flex, IconButton, Tooltip } from '@chakra-ui/react';
 import { TbClipboard, TbClipboardCheck } from 'react-icons/tb';
-import React, { useState, useEffect } from 'react';
-import {useTranslation} from 'react-i18next';
-interface Props {
+import React, { useState, useEffect, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+interface Props extends ButtonProps {
   value: string;
   tooltip?: string;
   copiedTooltip?: string;
+  icon?: ReactNode;
 }
-const CopyToClipboard = ({ value, tooltip, copiedTooltip }: Props) => {
+const CopyToClipboard = ({ value, tooltip, copiedTooltip, icon, children, ...props }: Props) => {
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   useEffect(() => {
     const id = setTimeout(() => {
       setShowCopiedTooltip(false);
@@ -19,19 +20,24 @@ const CopyToClipboard = ({ value, tooltip, copiedTooltip }: Props) => {
 
   return (
     <Tooltip
-      label={showCopiedTooltip ? copiedTooltip || t('common.copied') : tooltip ||  t('common.copy')}
+      label={showCopiedTooltip ? copiedTooltip || t('common.copied') : tooltip || t('common.copy')}
       placement='right'
       isOpen={showCopiedTooltip ? true : undefined}
       hasArrow
     >
-      <IconButton
+      <Button
         onClick={() => {
           navigator.clipboard.writeText(value);
           setShowCopiedTooltip(true);
         }}
-        icon={showCopiedTooltip ? <TbClipboardCheck /> : <TbClipboard />}
         aria-label={'Copiar código de acceso'}
-      />
+        {...props}
+      >
+        <Flex gap={2} alignItems='center'>
+          {icon ?? (showCopiedTooltip ? <TbClipboardCheck /> : <TbClipboard />)}
+          {children}
+        </Flex>
+      </Button>
     </Tooltip>
   );
 };
