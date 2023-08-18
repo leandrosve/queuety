@@ -1,5 +1,5 @@
 import { AvatarBadge, Box, Button, Flex, FormControl, FormLabel, IconButton, Stack, Switch, Text } from '@chakra-ui/react';
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import AutoAvatar from '../../common/AutoAvatar';
 import { LuTrash2 } from 'react-icons/lu';
 import { useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
@@ -7,22 +7,18 @@ import { useTranslation } from 'react-i18next';
 import FormatUtils from '../../../utils/FormatUtils';
 import { useAllowedUsersContext } from '../../../context/AllowedUsersContext';
 import { useOnlinePrescenceContext } from '../../../context/OnlinePrescenceContext';
-import { useDesktopAuthContext } from '../../../context/DesktopAuthContext';
 import AllowedUser from '../../../model/auth/AllowedUser';
 
 const AllowedUserList = () => {
   const { toggleAutoAuth, connection } = useDesktopConnectionContext();
   const allowedUsers = useAllowedUsersContext();
-  const { revokeAuthorization } = useDesktopAuthContext();
-
   const onlinePrescence = useOnlinePrescenceContext();
 
   const { t } = useTranslation(undefined, { keyPrefix: 'settings' });
   const isEmpty = useMemo(() => !allowedUsers.list.length, [allowedUsers]);
 
   const revoke = (user: AllowedUser) => {
-    const onlineUser = onlinePrescence.data.find((u) => u.userId === user.userId);
-    if (onlineUser) revokeAuthorization(user.userId, onlineUser.clientId);
+    allowedUsers.remove(user.userId);
   };
 
   return (
@@ -53,7 +49,7 @@ const AllowedUserList = () => {
             {allowedUsers.list.map((user, index) => (
               <Flex key={index} gap={3} alignItems='center' paddingRight={2} _notLast={{ borderBottom: '1px', borderColor: 'borders.100' }} py={2}>
                 <AutoAvatar size='sm' name={user.nickname} boxSize='30px'>
-                  <AvatarBadge boxSize='1em' bg={onlinePrescence.contains({ userId: user.userId, clientId: '' }) ? 'green.300' : 'red.300'} />
+                  <AvatarBadge boxSize='1em' bg={onlinePrescence.contains(user.userId) ? 'green.300' : 'red.300'} />
                 </AutoAvatar>
                 <Stack spacing={0}>
                   <Text fontSize='sm' as='span' fontWeight='bold' lineHeight='short'>

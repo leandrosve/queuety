@@ -7,6 +7,7 @@ import { JoinPlayerRoomRequestDTO } from './dto/JoinPlayerRoomRequestDTO';
 import { AuthService } from './auth.service';
 import { BadRequestExceptionFilter } from 'src/common/filters/BadRequestExceptionFilter';
 import { Server as SocketServer } from 'socket.io';
+import { UserChangeDTO } from './dto/UserChangeDTO';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseFilters(BadRequestExceptionFilter)
@@ -41,8 +42,13 @@ export class AuthGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('notify-user-reconnection')
-  private async onNotifyUserConnection(@ConnectedSocket() client: Socket) {
-    return this.authService.notifyUserConnection(client);
+  private async onNotifyUserConnection(@ConnectedSocket() client: Socket, @MessageBody('nickname') nickname: string) {
+    return this.authService.notifyUserConnection(client, nickname);
+  }
+
+  @SubscribeMessage('notify-user-changed')
+  private onSendUserChanged(@ConnectedSocket() client: Socket, @MessageBody() dto: UserChangeDTO) {
+    return this.authService.sendUserChanged(client, dto);
   }
 
   @SubscribeMessage('notify-host-connection')

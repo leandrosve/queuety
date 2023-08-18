@@ -34,6 +34,10 @@ const useAllowedUsers = () => {
     return list.find((item) => item.userId === userId) ?? null;
   };
 
+  const update = (user: Partial<AllowedUser>) => {
+    return setList((prev) => prev.map((i) => (i.userId !== user.userId ? i : { ...i, ...user })));
+  };
+
   useEffect(() => {
     if (!initialized) {
       setInitialized(true);
@@ -46,6 +50,7 @@ const useAllowedUsers = () => {
     remove,
     clear,
     get,
+    update,
     list,
   };
 };

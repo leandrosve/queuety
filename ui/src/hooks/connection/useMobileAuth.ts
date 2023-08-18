@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AuthResponse, { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import MobileAuthService from '../../services/api/auth/MobileAuthService';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -36,14 +36,14 @@ export enum HostStatus {
 }
 
 const useMobileAuth = () => {
-  const authService = useMemo(() => new MobileAuthService(), []);
+  const authService = useMemo(() => MobileAuthService.getInstance(), []);
   const { settings } = useSettingsContext();
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
   const [connectionId, setConnectionId] = useState<string>('');
   const [playerRoomId, setPlayerRoomId] = useState<string | null>(authService.getSavedPlayerRoom());
   const [userId, setUserId] = useState<string>(localStorage.getItem('userId') || '');
-
   const [authRoomId, setAuthRoomId] = useState<string | null>();
+  const nicknameRef = useRef(settings.nickname);
 
   const [status, setStatus] = useState<MobileAuthStatus>(MobileAuthStatus.UNSTARTED);
 
@@ -107,14 +107,13 @@ const useMobileAuth = () => {
     if (!response.playerRoomId) return;
     setStatus(MobileAuthStatus.AUTH_REQUEST_ACCEPTED);
     setPlayerRoomId(response.playerRoomId);
-    console.count('ON AUTH RESPONSE');
     joinPlayerRoom(response.playerRoomId);
   };
 
   // Join Player Room
   const joinPlayerRoom = async (playerRoomId: string) => {
     setStatus(MobileAuthStatus.JOINING_PLAYER_ROOM);
-    const ok = await authService.joinPlayerRoom(playerRoomId, false, userId);
+    const ok = await authService.joinPlayerRoom(playerRoomId, false, userId, nicknameRef.current);
     if (ok) {
       history.pushState(null, '', location.origin);
       setStatus(MobileAuthStatus.JOINED_PLAYER_ROOM);
@@ -133,7 +132,7 @@ const useMobileAuth = () => {
   const onHostReconnected = () => {
     Logger.success('Host Re-connected');
     setHostStatus(HostStatus.CONNECTED);
-    authService.notifyUserReconnection();
+    authService.notifyUserReconnection(nicknameRef.current);
   };
 
   const onHostConnected = () => {
@@ -153,6 +152,7 @@ const useMobileAuth = () => {
   };
 
   useEffect(() => {
+    authService.setUserId(userId);
     if (!userId) return;
     authService.onConnected(onSocketConnected);
     authService.onDisconnected(onDisconnected);
@@ -177,6 +177,13 @@ const useMobileAuth = () => {
     }
   }, []);
 
+  useEffect(() => {
+    authService.setAuthRoomId(authRoomId);
+    authService.setPlayerRoomId(playerRoomId);
+  }, [playerRoomId, authRoomId]);
+  useEffect(() => {
+    nicknameRef.current = settings.nickname;
+  }, [settings.nickname]);
   return {
     status,
     error,

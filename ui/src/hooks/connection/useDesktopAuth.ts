@@ -14,7 +14,7 @@ const useDesktopAuth = () => {
   const { socket, isReady, connectionId } = useSocketConnectionContext();
   const [joinedAuthRoom, setJoinedAuthRoom] = useState(false);
   const [joinedPlayerRoom, setJoinedPlayerRoom] = useState(false);
-  const authService = useMemo(() => new DesktopAuthService(socket), []);
+  const authService = useMemo(() => DesktopAuthService.getInstance(socket), []);
   const authRequests = useAuthRequestsContext();
   const allowedUsers = useAllowedUsersContext();
   const onlinePrescence = useOnlinePrescenceContext();
@@ -48,7 +48,7 @@ const useDesktopAuth = () => {
     Logger.info('Response', request.clientId, status);
     const playerRoomId = status == AuthResponseStatus.AUTHORIZED ? connection.playerRoom.id : null;
     const response = { status, clientId: request.clientId, playerRoomId };
-    
+
     if (status == AuthResponseStatus.AUTHORIZED) {
       // Add to the list of authorized users before sending response
       allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date() });
@@ -65,20 +65,25 @@ const useDesktopAuth = () => {
 
   const revokeAuthorization = async (userId: string, clientId: string) => {
     const res = await authService.sendAuthRevocation(userId, clientId);
-    if (res.hasError) return false;
-    allowedUsers.remove(userId);
-    return true;
+    return res.hasError;
   };
 
-  const onUserConnected = (userId: string, clientId: string, reconnected?: boolean) => {
+  const onUserConnected = (userId: string, clientId: string, reconnected?: boolean, nickname?: string) => {
     if (!allowedUsersRef.current.get(userId)) {
       revokeAuthorization(userId, clientId);
       Logger.warn('Unauthorized user tried to connect', { userId });
       return;
     }
+    if (nickname) {
+      allowedUsers.update({ userId, nickname });
+    }
     Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}`, { userId, clientId });
     onlinePrescence.addUnique({ userId, clientId });
     authService.notifyHostConnection(clientId);
+  };
+
+  const onUserChanged = (userId: string, nickname: string) => {
+    allowedUsers.update({ userId, nickname });
   };
 
   useEffect(() => {
@@ -96,8 +101,10 @@ const useDesktopAuth = () => {
 
   useEffect(() => {
     if (isReady) {
-      authService.onUserConnected(res => onUserConnected(res.userId, res.clientId, false));
-      authService.onUserReconnected(res => onUserConnected(res.userId, res.clientId, true));
+      authService.onUserConnected((res) => onUserConnected(res.userId, res.clientId, false, res.nickname));
+      authService.onUserReconnected((res) => onUserConnected(res.userId, res.clientId, true, res.nickname));
+      authService.onUserChanged((res) => onUserChanged(res.userId, res.nickname));
+
       authService.onUserDisconnected((res) => {
         Logger.warn('User Disconnected', res);
         onlinePrescence.remove({ ...res, clientId: '' });

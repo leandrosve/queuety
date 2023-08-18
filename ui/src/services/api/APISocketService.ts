@@ -13,6 +13,7 @@ type APISocketErrorResponse = {
 export default class APISocketService {
   protected socket: Socket;
   constructor(namespace: string, socket?: Socket) {
+    console.log("created instance")
     this.socket = socket ?? createSocket(false, namespace);
   }
 

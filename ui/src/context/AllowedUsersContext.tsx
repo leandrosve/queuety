@@ -8,6 +8,7 @@ interface Props {
   clear: () => void;
   get: (userId: string) => AllowedUser | null;
   list: AllowedUser[];
+  update: (user: Partial<AllowedUser>) => void;
 }
 
 const AllowedUsersContext = React.createContext<Props>({
@@ -15,6 +16,7 @@ const AllowedUsersContext = React.createContext<Props>({
   remove: () => {},
   clear: () => {},
   get: () => null,
+  update: () => null,
   list: [],
 });
 

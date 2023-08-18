@@ -1,6 +1,5 @@
 import React, { PropsWithChildren, useContext } from 'react';
 import useDesktopAuth from '../hooks/connection/useDesktopAuth';
-import { Dictionary } from '../hooks/common/useDictionary';
 import AuthRequest from '../model/auth/AuthRequest';
 import { AuthResponseStatus } from '../model/auth/AuthResponse';
 

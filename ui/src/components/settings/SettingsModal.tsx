@@ -31,7 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSize, useSettingsContext } from '../../context/SettingsContext';
 import AutoAvatar from '../common/AutoAvatar';
 import i18next from 'i18next';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import SelectMenu from '../common/SelectMenu';
 import GlassModal from '../common/glass/GlassModal';
 import { LuLanguages } from 'react-icons/lu';
@@ -39,6 +39,7 @@ import { BiText } from 'react-icons/bi';
 import fonts from '../../data/fonts';
 import languages from '../../data/languages';
 import AllowedUserList from '../connection/desktop/AllowedUserList';
+import MobileAuthService from '../../services/api/auth/MobileAuthService';
 
 interface Props {
   isOpen: boolean;
@@ -59,6 +60,17 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
   const { settings, setNickname, setFontSize, setGlassMode, setFontFamily } = useSettingsContext();
   const [nicknameValue, setNicknameValue] = useState(settings.nickname);
   const nicknameError = useMemo(() => !nicknameValue || nicknameValue.length < 3 || nicknameValue.length > 100, [nicknameValue]);
+
+  const onSaveNickname = () => {
+    if (isMobile && nicknameValue != settings.nickname) {
+      //MobileAuthService.getInstance().notifyUserChanged(nicknameValue);
+    }
+    setNickname(nicknameValue);
+  };
+
+  useEffect(() => {
+    setNicknameValue(settings.nickname);
+  }, [isOpen]);
 
   return (
     <GlassModal
@@ -97,7 +109,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
                 </InputGroup>
                 <Button
                   isDisabled={nicknameError}
-                  onClick={() => setNickname(nicknameValue)}
+                  onClick={() => onSaveNickname()}
                   borderLeftRadius={0}
                   border='1px'
                   borderLeftWidth={0}
