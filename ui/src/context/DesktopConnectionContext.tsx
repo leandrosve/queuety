@@ -1,6 +1,5 @@
 import React, { useState, PropsWithChildren, useEffect, useContext } from 'react';
 import ConnectionService from '../services/api/ConnectionService';
-import useSocketConnection, { SocketConnection } from '../hooks/connection/useSocketConnection';
 
 export interface ConnectionData {
   playerRoom: RoomData;
@@ -46,7 +45,6 @@ const getInitialSettings = () => {
 };
 
 export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
-  const socketConnection = useSocketConnection(true);
   const [playerRoom, setPlayerRoom] = useState<RoomData>(getInitialPlayerRoom());
   const [authRoom, setAuthRoom] = useState<RoomData>(getInitialAuthRoom());
   const [settings, setSettings] = useState<Settings>(getInitialSettings());

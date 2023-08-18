@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDesktopConnectionContext } from '../../context/DesktopConnectionContext';
 import { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import DesktopAuthService from '../../services/api/auth/DesktopAuthService';
@@ -7,14 +7,14 @@ import AuthRequest from '../../model/auth/AuthRequest';
 import { useAuthRequestsContext } from '../../context/AuthRequestsContext';
 import { useAllowedUsersContext } from '../../context/AllowedUsersContext';
 import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
-import { useSocketConnectionContext } from '../../context/SocketConnectionContext';
+import useSocketStatus from './useSocketStatus';
+import AuthService from '../../services/api/auth/AuthService';
 
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
-  const { socket, isReady, connectionId } = useSocketConnectionContext();
+  const { isReady, connectionId } = useSocketStatus(AuthService._socket, true);
   const [joinedAuthRoom, setJoinedAuthRoom] = useState(false);
   const [joinedPlayerRoom, setJoinedPlayerRoom] = useState(false);
-  const authService = useMemo(() => DesktopAuthService.getInstance(socket), []);
   const authRequests = useAuthRequestsContext();
   const allowedUsers = useAllowedUsersContext();
   const onlinePrescence = useOnlinePrescenceContext();
@@ -24,13 +24,13 @@ const useDesktopAuth = () => {
   const allowedUsersRef = useRef(allowedUsers);
 
   const joinAuthRoom = async (roomId: string) => {
-    const res = await authService.joinAuthRoom(roomId);
+    const res = await DesktopAuthService.joinAuthRoom(roomId);
     if (res.hasError) return;
     setJoinedAuthRoom(res.data);
   };
 
   const joinPlayerRoom = async (roomId: string) => {
-    const res = await authService.joinPlayerRoom(roomId);
+    const res = await DesktopAuthService.joinPlayerRoom(roomId);
     if (res.hasError) return;
     setJoinedPlayerRoom(res.data);
   };
@@ -51,10 +51,10 @@ const useDesktopAuth = () => {
 
     if (status == AuthResponseStatus.AUTHORIZED) {
       // Add to the list of authorized users before sending response
-      allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date() });
+      allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date(), clientId: request.clientId });
     }
 
-    const res = await authService.sendAuthResponse(response);
+    const res = await DesktopAuthService.sendAuthResponse(response);
     if (res.hasError) return false;
     // Remove request from list
     if (status !== AuthResponseStatus.PENDING) {
@@ -64,7 +64,7 @@ const useDesktopAuth = () => {
   };
 
   const revokeAuthorization = async (userId: string, clientId: string) => {
-    const res = await authService.sendAuthRevocation(userId, clientId);
+    const res = await DesktopAuthService.sendAuthRevocation(userId, clientId);
     return res.hasError;
   };
 
@@ -78,8 +78,8 @@ const useDesktopAuth = () => {
       allowedUsers.update({ userId, nickname });
     }
     Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}`, { userId, clientId });
-    onlinePrescence.addUnique({ userId, clientId });
-    authService.notifyHostConnection(clientId);
+    onlinePrescence.addUnique(userId);
+    DesktopAuthService.notifyHostConnection(clientId);
   };
 
   const onUserChanged = (userId: string, nickname: string) => {
@@ -87,11 +87,11 @@ const useDesktopAuth = () => {
   };
 
   useEffect(() => {
-    if (connection.authRoom?.id && socket && isReady) {
+    if (connection.authRoom?.id && isReady) {
       joinAuthRoom(connection.authRoom.id);
-      authService.onAuthRequested(onAuthRequested);
+      DesktopAuthService.onAuthRequested(onAuthRequested);
     }
-  }, [socket, isReady, connection.authRoom]);
+  }, [isReady, connection.authRoom]);
 
   useEffect(() => {
     if (connection.playerRoom?.id && isReady) {
@@ -101,13 +101,13 @@ const useDesktopAuth = () => {
 
   useEffect(() => {
     if (isReady) {
-      authService.onUserConnected((res) => onUserConnected(res.userId, res.clientId, false, res.nickname));
-      authService.onUserReconnected((res) => onUserConnected(res.userId, res.clientId, true, res.nickname));
-      authService.onUserChanged((res) => onUserChanged(res.userId, res.nickname));
+      DesktopAuthService.onUserConnected((res) => onUserConnected(res.userId, res.clientId, false, res.nickname));
+      DesktopAuthService.onUserReconnected((res) => onUserConnected(res.userId, res.clientId, true, res.nickname));
+      DesktopAuthService.onUserChanged((res) => onUserChanged(res.userId, res.nickname));
 
-      authService.onUserDisconnected((res) => {
+      DesktopAuthService.onUserDisconnected((res) => {
         Logger.warn('User Disconnected', res);
-        onlinePrescence.remove({ ...res, clientId: '' });
+        onlinePrescence.remove(res.userId);
       });
     }
   }, [isReady]);

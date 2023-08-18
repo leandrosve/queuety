@@ -1,5 +1,4 @@
 import { Socket } from 'socket.io-client';
-import { createSocket } from '../../socket';
 import Logger from '../../utils/Logger';
 
 export type APISocketResponse<T> = APISocketSuccessfulResponse<T> | APISocketErrorResponse;
@@ -11,32 +10,29 @@ type APISocketErrorResponse = {
 };
 
 export default class APISocketService {
-  protected socket: Socket;
-  constructor(namespace: string, socket?: Socket) {
-    console.log("created instance")
-    this.socket = socket ?? createSocket(false, namespace);
+  protected static _socket: Socket;
+  private static logRequests: boolean = true;
+
+  public static connect() {
+    this._socket.connect();
   }
 
-  public connect() {
-    this.socket.connect();
-  }
-
-  private logError = <T>(message: string, params?: Object, res?: APISocketResponse<T>) => {
+  private static logError = <T>(message: string, params?: Object, res?: APISocketResponse<T>) => {
     Logger.danger(`API Returned error for message: ${message} - params: ${JSON.stringify(params)} - res: ${JSON.stringify(res)}`);
   };
 
-  public async emit<T>(message: string, params?: Object): Promise<APISocketResponse<T>> {
+  public static async emit<T>(message: string, params?: Object): Promise<APISocketResponse<T>> {
     return new Promise((resolve) => {
-      this.socket.emit(message, params, (res: APISocketResponse<T>) => {
+      if (this.logRequests) Logger.debug('Socket - sending message: ' + message);
+      this._socket.emit(message, params, (res: APISocketResponse<T>) => {
         if (res.hasError) this.logError(message, params, res);
         resolve(res);
       });
     });
   }
 
-  public async test(authRoomId: string, host?: boolean): Promise<APISocketResponse<boolean>> {
+  public static async test(authRoomId: string, host?: boolean): Promise<APISocketResponse<boolean>> {
     const res = await this.emit<boolean>('join', { authRoomId, host });
-
     return res;
   }
 }

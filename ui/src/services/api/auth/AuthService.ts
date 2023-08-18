@@ -1,39 +1,42 @@
 import { Socket } from 'socket.io-client';
 import APISocketService from '../APISocketService';
+import { authSocket } from '../../../socket';
 
 export default class AuthService extends APISocketService {
-  protected authRoomId?: string | null;
-  protected playerRoomId?: string | null;
+  protected static authRoomId?: string | null;
+  protected static playerRoomId?: string | null;
+  public static _socket: Socket = authSocket;
 
-  protected constructor(socket?: Socket) {
-    super('/auth', socket);
-  }
-
-  public setAuthRoomId(authRoomId?: string | null) {
+  public static setAuthRoomId(authRoomId?: string | null) {
     this.authRoomId = authRoomId;
   }
-  public setPlayerRoomId(playerRoomId?: string | null) {
+  public static setPlayerRoomId(playerRoomId?: string | null) {
     this.playerRoomId = playerRoomId;
   }
 
-  public cleanup() {
-    this.socket.off('connection');
-    this.socket.off('disconnect');
+  public static restart() {
+    this._socket.disconnect();
+    this._socket.connect();
   }
 
-  public joinAuthRoom(authRoomId: string, host?: boolean) {
+  public static cleanup() {
+    this._socket.off('connection');
+    this._socket.off('disconnect');
+  }
+
+  public static joinAuthRoom(authRoomId: string, host?: boolean) {
     return this.emit<boolean>('join-auth-room', { authRoomId, host });
   }
 
-  public joinPlayerRoom(playerRoomId: string, host?: boolean, userId?: string, nickname?: string) {
+  public static joinPlayerRoom(playerRoomId: string, host?: boolean, userId?: string, nickname?: string) {
     return this.emit<boolean>('join-player-room', { playerRoomId, host, userId, nickname });
   }
 
-  public onConnected(callback: (clientId: string) => void) {
-    this.socket.on('connection', callback);
+  public static onConnected(callback: (clientId: string) => void) {
+    this._socket.on('connection', callback);
   }
 
-  public onDisconnected(callback: () => void) {
-    this.socket.on('disconnect', callback);
+  public static onDisconnected(callback: () => void) {
+    this._socket.on('disconnect', callback);
   }
 }

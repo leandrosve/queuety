@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AllowedUser from '../../model/auth/AllowedUser';
+import DesktopAuthService from '../../services/api/auth/DesktopAuthService';
 
 interface SerializedAuthorizedUser extends Omit<AllowedUser, 'joinedAt'> {
   joinedAt: string;
@@ -23,7 +24,11 @@ const useAllowedUsers = () => {
   };
 
   const remove = (userId: string) => {
-    setList((prev) => prev.filter((u) => u.userId !== userId));
+    setList((prev) => {
+      const found = prev.find((u) => u.userId === userId);
+      if (found) DesktopAuthService.sendAuthRevocation(found.userId, found.clientId);
+      return prev.filter((u) => u.userId !== userId);
+    });
   };
 
   const clear = () => {

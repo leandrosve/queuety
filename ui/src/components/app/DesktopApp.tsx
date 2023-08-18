@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState } from 'react';
+import { useState } from 'react';
 import PlayerScriptProvider from '../player/PlayerScriptProvider';
 import Player from '../player/Player';
 import { Flex } from '@chakra-ui/react';
@@ -18,11 +18,9 @@ import DesktopConnectionModal from '../connection/desktop/DesktopConnectionModal
 import NavbarDesktop from '../layout/navbar/NavbarDesktop';
 import SettingsModal, { SettingsModalSections } from '../settings/SettingsModal';
 import { combineProviders } from '../../utils/ContextUtils';
-import { SocketConnectionProvider } from '../../context/SocketConnectionContext';
 
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
-  SocketConnectionProvider,
   AuthRequestsProvider,
   AllowedUsersProvider,
   OnlinePrescenceProvider,

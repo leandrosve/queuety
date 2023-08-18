@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
-import { createSocket } from '../../socket';
+import { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 
 export interface SocketConnection {
@@ -10,10 +9,9 @@ export interface SocketConnection {
   connect: () => void;
 }
 
-const useSocketConnection = (autoConnect?: boolean): SocketConnection => {
+const useSocketStatus = (socket: Socket, autoConnect?: boolean): SocketConnection => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const [connectionId, setConnectionId] = useState<string>('');
-  const socket = useMemo(() => createSocket(autoConnect, '/auth'), []);
   const [loading, setLoading] = useState<boolean>(false);
 
   const connect = () => {
@@ -29,15 +27,22 @@ const useSocketConnection = (autoConnect?: boolean): SocketConnection => {
   const onDisconnected = () => setIsReady(false);
 
   useEffect(() => {
+    if (!socket) return;
     socket.on('connection', onSocketConnected);
     socket.on('disconnect', onDisconnected);
     return () => {
       socket.off('connection', onSocketConnected);
       socket.off('disconnect', onDisconnected);
     };
-  }, []);
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket && autoConnect) {
+      connect();
+    }
+  }, [socket]);
 
   return { socket, isReady, connectionId, loading, connect };
 };
 
-export default useSocketConnection;
+export default useSocketStatus;

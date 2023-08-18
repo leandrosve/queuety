@@ -24,4 +24,8 @@ export default class Logger {
   public static success(...objects: any[]) {
     this.log('#1f7f2f', '#9ff490', objects, '✅ ');
   }
+
+  public static debug(...objects: any[]) {
+    this.log('#4d4d4d', '#c2c2c2', objects, '🐛 ');
+  }
 }

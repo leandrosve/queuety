@@ -63,7 +63,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
 
   const onSaveNickname = () => {
     if (isMobile && nicknameValue != settings.nickname) {
-      //MobileAuthService.getInstance().notifyUserChanged(nicknameValue);
+      MobileAuthService.notifyUserChanged(nicknameValue);
     }
     setNickname(nicknameValue);
   };
