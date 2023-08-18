@@ -2,9 +2,9 @@ import './assets/css/app.css';
 import { ChakraProvider, useMediaQuery } from '@chakra-ui/react';
 import theme from './lib/chakra/chakraTheme';
 import './i18n/i18n';
-import DesktopApp from './components/app/DesktopApp';
+import DesktopApp from './components/app/desktop/DesktopApp';
 import { SettingsProvider } from './context/SettingsContext';
-import MobileApp from './components/app/MobileApp';
+import MobileApp from './components/app/mobile/MobileApp';
 import { useEffect, useState } from 'react';
 
 function App() {

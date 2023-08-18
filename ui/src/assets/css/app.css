@@ -12,9 +12,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  overflow-x: hidden;
 }
 
+body {
+  overflow-x: hidden;
+
+}
 .layout {
   place-items: center;
   min-width: 100vw;

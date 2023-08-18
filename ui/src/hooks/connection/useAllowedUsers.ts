@@ -32,7 +32,9 @@ const useAllowedUsers = () => {
   };
 
   const clear = () => {
+    const users = [...list];
     setList([]);
+    users.forEach((u) => DesktopAuthService.sendAuthRevocation(u.userId, u.clientId));
   };
 
   const get = (userId: string) => {

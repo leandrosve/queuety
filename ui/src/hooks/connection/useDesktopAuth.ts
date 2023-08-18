@@ -75,7 +75,7 @@ const useDesktopAuth = () => {
       return;
     }
     if (nickname) {
-      allowedUsers.update({ userId, nickname });
+      allowedUsers.update({ userId, nickname, clientId });
     }
     Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}`, { userId, clientId });
     onlinePrescence.addUnique(userId);
