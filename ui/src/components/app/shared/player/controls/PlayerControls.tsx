@@ -1,55 +1,55 @@
-import { Flex, Icon, IconButton } from '@chakra-ui/react';
+import { ButtonGroup, Flex, Icon, IconButton } from '@chakra-ui/react';
 import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
 import { usePlayerQueueContext } from '../../../../../context/PlayerQueueContext';
+import PlayerState from '../../../../../model/player/PlayerState';
 
 interface Props {
   playbackRate: number; // Seconds
-  state: YT.PlayerState;
+  state: number;
   onPlay: () => void;
   onPause: () => void;
   onForward: (seconds: number) => void;
   onRewind: (seconds: number) => void;
 }
+
+const buttonWidth = '5rem';
 const PlayerControls = ({ state, onPlay, onPause, onForward, onRewind }: Props) => {
   const { goNext, goPrevious } = usePlayerQueueContext();
 
   return (
-    <Flex gap='30px'>
+    <ButtonGroup
+      isAttached
+      borderStyle='solid '
+      variant='ghost'
+      alignSelf='start'
+      borderRadius='md'
+      borderColor='borders.100'
+      background='whiteAlpha.100'
+      _dark={{ borderWidth: '1px' }}
+      _light={{ background: 'blackAlpha.100' }}
+    >
       <IconButton
-        rounded='full'
         icon={<Icon as={BsSkipStartFill} boxSize={5} />}
         aria-label='skip forward'
-        variant='ghost'
+        width={buttonWidth}
+        borderRadius='none'
         onClick={() => goPrevious()}
       />
+      <IconButton icon={<Icon as={TbRewindBackward10} boxSize={5} />} aria-label='rewind' width={buttonWidth} onClick={() => onRewind(10)} />
       <IconButton
-        rounded='full'
-        icon={<Icon as={TbRewindBackward10} boxSize={5} />}
-        aria-label='rewind'
-        variant='ghost'
-        onClick={() => onRewind(10)}
-      />
-      <IconButton
-        rounded='full'
-        variant='ghost'
+        width={buttonWidth}
         onClick={() => {
-          state != YT.PlayerState.PLAYING ? onPlay() : onPause();
+          state != PlayerState.PLAYING ? onPlay() : onPause();
         }}
-        icon={<Icon as={state != YT.PlayerState.PLAYING ? BsFillPlayFill : BsPauseFill} boxSize={7} />}
-        aria-label={state != YT.PlayerState.PLAYING ? 'play' : 'pause'}
+        icon={<Icon as={state != PlayerState.PLAYING ? BsFillPlayFill : BsPauseFill} boxSize={7} />}
+        aria-label={state != PlayerState.PLAYING ? 'play' : 'pause'}
       >
         Toggle Play
       </IconButton>
-      <IconButton
-        rounded='full'
-        icon={<Icon as={TbRewindForward10} boxSize={5} />}
-        aria-label='rewind forward'
-        variant='ghost'
-        onClick={() => onForward(10)}
-      />
-      <IconButton rounded='full' icon={<Icon as={BsSkipEndFill} boxSize={5} />} aria-label='skip forward' variant='ghost' onClick={() => goNext()} />
-    </Flex>
+      <IconButton width={buttonWidth} icon={<Icon as={TbRewindForward10} boxSize={5} />} aria-label='rewind forward' onClick={() => onForward(10)} />
+      <IconButton width={buttonWidth} icon={<Icon as={BsSkipEndFill} boxSize={5} />} aria-label='skip forward' onClick={() => goNext()} />
+    </ButtonGroup>
   );
 };
 

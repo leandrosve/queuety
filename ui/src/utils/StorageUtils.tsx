@@ -1,12 +1,12 @@
 export enum StorageKey {
   DEBUG_MODE = 'debugMode',
-  CONNECTION = 'connection',
   QUEUE = 'queue',
   SETTINGS = 'settings',
+  CONNECTION_SETTINGS = 'connection_settings',
   ALLOWED_USERS = 'allowedUsers',
   USER_ID = 'userId',
-
   PLAYER_ROOM_ID = 'playerRoomId',
+  AUTH_ROOM_ID = 'authRoomId',
 }
 
 export default class StorageUtils {

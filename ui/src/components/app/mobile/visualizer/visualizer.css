@@ -1,0 +1,60 @@
+.visualizer {
+}
+
+.visualizer-backdrop {
+  pointer-events: none;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-mask-image: linear-gradient(0deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 3%, rgba(0, 0, 0, 0) 97%);
+}
+
+.visualizer-backdrop-image {
+  z-index: -1;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+  opacity: 1;
+  height: 150%;
+  width: 150%;
+  animation: v-rotate 120s normal ease infinite;
+  animation-play-state: paused;
+}
+
+.visualizer-backdrop-blur {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  backdrop-filter: blur(30px);
+}
+
+@keyframes v-rotate {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  25% {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+  }
+  50% {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(0, 0, 1, 180deg);
+  }
+  75% {
+    -webkit-transform: rotate(270deg);
+    transform: rotate(270deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}

@@ -1,8 +1,9 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
+import PlayerState from '../model/player/PlayerState';
 
 interface PlayerStatus {
   currentTime: number;
-  state: YT.PlayerState;
+  state: PlayerState;
   playbackRate: number;
 }
 
@@ -21,7 +22,7 @@ export const PlayerStatusContext = React.createContext<PlayerStatusContextProps>
 });
 
 export const PlayerStatusProvider = ({ children }: PropsWithChildren) => {
-  const [status, setStatus] = useState<PlayerStatus>({ currentTime: 0, state: YT.PlayerState.UNSTARTED, playbackRate: 1 });
+  const [status, setStatus] = useState<PlayerStatus>({ currentTime: 0, state: PlayerState.UNSTARTED, playbackRate: 1 });
   const updateStatus = (status: PlayerStatus) => {
     setStatus(status);
   };

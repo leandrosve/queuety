@@ -1,5 +1,5 @@
 import { AvatarBadge, Box, Button, Flex, FormControl, FormLabel, IconButton, Stack, Switch, Text } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import AutoAvatar from '../../../common/AutoAvatar';
 import { LuTrash2 } from 'react-icons/lu';
 import { useDesktopConnectionContext } from '../../../../context/DesktopConnectionContext';
@@ -46,24 +46,8 @@ const AllowedUserList = () => {
         </Flex>
         {!isEmpty ? (
           <Stack spacing={0} maxHeight={250} overflow='hidden' overflowY='auto' mt={1}>
-            {allowedUsers.list.map((user, index) => (
-              <Flex key={index} gap={3} alignItems='center' paddingRight={2} _notLast={{ borderBottom: '1px', borderColor: 'borders.100' }} py={2}>
-                <AutoAvatar size='sm' name={user.nickname} boxSize='30px'>
-                  <AvatarBadge boxSize='1em' bg={onlinePrescence.contains(user.userId) ? 'green.300' : 'red.300'} />
-                </AutoAvatar>
-                <Stack spacing={0}>
-                  <Text fontSize='sm' as='span' fontWeight='bold' lineHeight='short'>
-                    {user.nickname}{' '}
-                    <Text fontSize='xs' as='span' fontWeight='light' lineHeight='shorter'>
-                      {FormatUtils.shortenUserId(user.userId)}
-                    </Text>
-                  </Text>
-                  <Text fontSize='xs' as='span'>
-                    {FormatUtils.timeAgo(user.joinedAt)}
-                  </Text>
-                </Stack>
-                <IconButton onClick={() => revoke(user)} marginLeft='auto' aria-label='delete' icon={<LuTrash2 />} size='sm' />
-              </Flex>
+            {allowedUsers.list.map((user) => (
+              <AllowedUserListItem user={user} key={user.userId} isOnline={onlinePrescence.contains(user.userId)} onRevokeAuth={() => revoke(user)} />
             ))}
           </Stack>
         ) : (
@@ -71,6 +55,33 @@ const AllowedUserList = () => {
         )}
       </Box>
     </>
+  );
+};
+
+interface AllowedUserListItemProps {
+  user: AllowedUser;
+  isOnline: boolean;
+  onRevokeAuth: () => void;
+}
+const AllowedUserListItem = ({ user, isOnline, onRevokeAuth }: AllowedUserListItemProps) => {
+  return (
+    <Flex gap={3} alignItems='center' paddingRight={2} _notLast={{ borderBottom: '1px', borderColor: 'borders.100' }} py={2}>
+      <AutoAvatar size='sm' name={user.nickname} boxSize='30px'>
+        <AvatarBadge boxSize='1em' bg={isOnline ? 'green.300' : 'red.300'} />
+      </AutoAvatar>
+      <Stack spacing={0}>
+        <Text fontSize='sm' as='span' fontWeight='bold' lineHeight='short'>
+          {user.nickname}{' '}
+          <Text fontSize='xs' as='span' fontWeight='light' lineHeight='shorter'>
+            {FormatUtils.shortenUserId(user.userId)}
+          </Text>
+        </Text>
+        <Text fontSize='xs' as='span'>
+          {FormatUtils.timeAgo(user.joinedAt)}
+        </Text>
+      </Stack>
+      <IconButton onClick={onRevokeAuth} marginLeft='auto' aria-label='delete' icon={<LuTrash2 />} size='sm' />
+    </Flex>
   );
 };
 

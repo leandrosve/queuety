@@ -9,6 +9,7 @@ import PlayerQueueItemProgressBar from './PlayerQueueItemProgressBar';
 import { YoutubeVideoDetail } from '../../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../../utils/FormatUtils';
 import { usePlayerStatusContext } from '../../../../../context/PlayerStatusContext';
+import PlayerState from '../../../../../model/player/PlayerState';
 
 interface Props {
   video: YoutubeVideoDetail;
@@ -59,7 +60,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         </Heading>
         <Flex alignItems='center' gap={2}>
           <Image borderRadius='full' width='25px' objectFit='cover' aspectRatio={'1/1'} src={video.channelThumbnail} />
-          <Text as='span' fontWeight='bold' fontSize='sm'>
+          <Text as='span' fontWeight='bold' fontSize='sm' noOfLines={1}>
             {video.channelTitle}
           </Text>
         </Flex>
@@ -117,7 +118,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
 const StateIndicator = () => {
   const { status } = usePlayerStatusContext();
 
-  if (status.state == YT.PlayerState.BUFFERING) {
+  if (status.state == PlayerState.BUFFERING) {
     return (
       <Flex height='100%' width='100%' position='absolute' top='0' left='0' pointerEvents='none' alignItems='center' justifyContent='center'>
         <Spinner />

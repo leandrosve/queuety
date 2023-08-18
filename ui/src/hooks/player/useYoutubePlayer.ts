@@ -1,7 +1,8 @@
-import { RefObject, useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
 import { usePlayerQueueContext } from '../../context/PlayerQueueContext';
 import QueueItem from '../../model/player/QueueItem';
+import PlayerState from '../../model/player/PlayerState';
 
 /**
  *
@@ -13,7 +14,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
-  const [state, setState] = useState<YT.PlayerState>(YT.PlayerState.UNSTARTED);
+  const [state, setState] = useState<PlayerState>(PlayerState.UNSTARTED);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
 
   const { updateStatus } = usePlayerStatusContext();
@@ -46,13 +47,13 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
   };
 
   const onStateChange = (event: YT.OnStateChangeEvent) => {
-    setState(playerRef.current?.getPlayerState() || YT.PlayerState.UNSTARTED);
-    if (event.data !== YT.PlayerState.UNSTARTED) {
+    setState((playerRef.current?.getPlayerState() as PlayerState) || PlayerState.UNSTARTED);
+    if (event.data !== PlayerState.UNSTARTED) {
       setDuration(playerRef.current?.getDuration() || 0);
       setCurrentTime(playerRef.current?.getCurrentTime() || 0);
     }
 
-    if (event.data === YT.PlayerState.ENDED) {
+    if (event.data === PlayerState.ENDED) {
       setCurrentTime(playerRef.current?.getDuration() || 0);
       goNext();
     }

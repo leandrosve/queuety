@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Flex } from '@chakra-ui/react';
 import './playerQueue.css';
 import { usePlayerStatusContext } from '../../../../../context/PlayerStatusContext';
+import PlayerState from '../../../../../model/player/PlayerState';
 
 const PlayerQueueItemProgressBar = ({ duration }: { duration: number }) => {
   const [time, setTime] = useState(0);
@@ -15,7 +16,7 @@ const PlayerQueueItemProgressBar = ({ duration }: { duration: number }) => {
 
   useEffect(() => {
     let interval: number;
-    if (state === YT.PlayerState.PLAYING) {
+    if (state === PlayerState.PLAYING) {
       interval = setInterval(() => {
         setTime((p) => p + 1 * playbackRate);
       }, 1000);
