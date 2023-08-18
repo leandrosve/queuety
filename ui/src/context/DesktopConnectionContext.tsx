@@ -1,5 +1,6 @@
 import React, { useState, PropsWithChildren, useEffect, useContext } from 'react';
 import ConnectionService from '../services/api/ConnectionService';
+import StorageUtils, { StorageKey } from '../utils/StorageUtils';
 
 export interface ConnectionData {
   playerRoom: RoomData;
@@ -30,17 +31,17 @@ const DesktopConnectionContext = React.createContext<DesktopConnectionContextPro
 
 /* TO-DO unify these*/
 const getInitialPlayerRoom = () => {
-  const currentConnection = JSON.parse(localStorage.getItem('connection') || '{}');
+  const currentConnection = JSON.parse(StorageUtils.get(StorageKey.CONNECTION) || '{}');
   return { id: currentConnection?.playerRoomId };
 };
 
 const getInitialAuthRoom = () => {
-  const currentConnection = JSON.parse(localStorage.getItem('connection') || '{}');
+  const currentConnection = JSON.parse(StorageUtils.get(StorageKey.CONNECTION) || '{}');
   return { id: currentConnection?.authRoomId };
 };
 
 const getInitialSettings = () => {
-  const currentConnection = JSON.parse(localStorage.getItem('connection') || '{}') as ConnectionData;
+  const currentConnection = JSON.parse(StorageUtils.get(StorageKey.CONNECTION) || '{}') as ConnectionData;
   return currentConnection.settings ?? { automatic: false };
 };
 
@@ -81,7 +82,7 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('connection', JSON.stringify({ playerRoomId: playerRoom.id, authRoomId: authRoom.id, settings }));
+    StorageUtils.set(StorageKey.CONNECTION, JSON.stringify({ playerRoomId: playerRoom.id, authRoomId: authRoom.id, settings }));
   }, [playerRoom, authRoom, settings]);
 
   return (

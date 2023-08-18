@@ -1,14 +1,21 @@
 export enum StorageKey {
+  DEBUG_MODE = 'debugMode',
+  CONNECTION = 'connection',
+  QUEUE = 'queue',
+  SETTINGS = 'settings',
+  ALLOWED_USERS = 'allowedUsers',
+  USER_ID = 'userId',
+
   PLAYER_ROOM_ID = 'playerRoomId',
 }
 
 export default class StorageUtils {
-  public static save(key: StorageKey, data: object) {
-    localStorage.setItem(key, JSON.stringify(data));
+  public static set(key: StorageKey, data: string) {
+    localStorage.setItem(key, data);
   }
 
-  public static get<T>(key: StorageKey) {
-    localStorage.getItem(key) as T;
+  public static get(key: StorageKey) {
+    return localStorage.getItem(key);
   }
 
   public static remove(key: StorageKey) {

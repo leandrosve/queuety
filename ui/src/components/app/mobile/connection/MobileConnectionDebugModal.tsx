@@ -1,15 +1,16 @@
 import { Button, Flex, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tag, Text } from '@chakra-ui/react';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
+import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 
 const MobileConnectionDebugModal = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isOpen, setIsOpen] = useState(localStorage.getItem('debugMode') == 'true');
+  const [isOpen, setIsOpen] = useState(StorageUtils.get(StorageKey.DEBUG_MODE) == 'true');
   const auth = useMobileAuthContext();
   const toggleOpen = (open?: boolean) => {
     setIsOpen((p) => {
       const next = open !== undefined ? open : !p;
-      localStorage.setItem('debugMode', `${next}`);
+      StorageUtils.set(StorageKey.DEBUG_MODE, `${next}`);
       return next;
     });
   };
@@ -49,7 +50,7 @@ const MobileConnectionDebugModal = () => {
                 Join
               </Button>
             </Flex>
-            <Button marginTop={5} onClick={() => localStorage.clear()}>
+            <Button marginTop={5} onClick={() => StorageUtils.clear()}>
               Clear Storage
             </Button>
           </Flex>

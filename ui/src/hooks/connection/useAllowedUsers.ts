@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import AllowedUser from '../../model/auth/AllowedUser';
 import DesktopAuthService from '../../services/api/auth/DesktopAuthService';
+import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
 
 interface SerializedAuthorizedUser extends Omit<AllowedUser, 'joinedAt'> {
   joinedAt: string;
 }
 
 const getSavedUsers = (): AllowedUser[] => {
-  const users = JSON.parse(localStorage.getItem('authorized-users') ?? '[]') as SerializedAuthorizedUser[];
+  const users = JSON.parse(StorageUtils.get(StorageKey.ALLOWED_USERS) ?? '[]') as SerializedAuthorizedUser[];
   return users.map((user) => ({ ...user, joinedAt: new Date(user.joinedAt) }));
 };
 
@@ -50,7 +51,7 @@ const useAllowedUsers = () => {
       setInitialized(true);
       return;
     }
-    localStorage.setItem('authorized-users', JSON.stringify(Object.values(list)));
+    StorageUtils.set(StorageKey.ALLOWED_USERS, JSON.stringify(Object.values(list)));
   }, [list]);
   return {
     add,

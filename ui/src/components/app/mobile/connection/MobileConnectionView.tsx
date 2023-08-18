@@ -5,6 +5,7 @@ import { useSettingsContext } from '../../../../context/SettingsContext';
 import AutoAvatar from '../../../common/AutoAvatar';
 import FormatUtils from '../../../../utils/FormatUtils';
 import PlayerBackdrop from '../../shared/player/PlayerBackdrop';
+import StorageUtils from '../../../../utils/StorageUtils';
 
 const MobileConnectionView = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -12,7 +13,7 @@ const MobileConnectionView = () => {
   const { settings } = useSettingsContext();
 
   const onEndSession = () => {
-    localStorage.clear();
+    StorageUtils.clear();
     location.reload();
   };
 

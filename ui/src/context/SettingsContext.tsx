@@ -1,6 +1,7 @@
 import React, { useState, PropsWithChildren, useContext, useEffect } from 'react';
 import NicknameGenerator from '../utils/NicknameGenerator';
 import Logger from '../utils/Logger';
+import StorageUtils, { StorageKey } from '../utils/StorageUtils';
 
 export interface Settings {
   nickname: string;
@@ -31,7 +32,7 @@ export const SettingsContext = React.createContext<SettingsContextProps>({
 });
 
 const getInitialSettings = (): Settings => {
-  const settings = localStorage.getItem('settings');
+  const settings = StorageUtils.get(StorageKey.SETTINGS);
   if (!settings) return { ...initial, nickname: NicknameGenerator.generate() };
   const parsedSettings = JSON.parse(settings) as Settings;
   return { ...initial, ...parsedSettings };
@@ -75,8 +76,7 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    const items = JSON.stringify(settings);
-    localStorage.setItem('settings', items);
+    StorageUtils.set(StorageKey.SETTINGS, JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {

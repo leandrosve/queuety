@@ -1,7 +1,7 @@
-import { Button, Flex, Heading, Input, Tag, Text } from '@chakra-ui/react';
-import { AuthResponseStatus } from '../../../../model/auth/AuthResponse';
+import { Button, Flex, Heading, Tag, Text } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useDesktopAuthContext } from '../../../../context/DesktopAuthContext';
+import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 
 const DesktopConnectionView = () => {
   const { connectionId, authRoom, playerRoom, isSocketReady, authorizeRequest } = useDesktopAuthContext();
@@ -9,7 +9,7 @@ const DesktopConnectionView = () => {
   const toggleOpen = (open?: boolean) => {
     setIsOpen((p) => {
       const next = open !== undefined ? open : !p;
-      localStorage.setItem('debugMode', `${next}`);
+      StorageUtils.set(StorageKey.DEBUG_MODE, `${next}`);
       return next;
     });
   };
@@ -44,7 +44,7 @@ const DesktopConnectionView = () => {
       <Button
         marginTop={5}
         onClick={() => {
-          localStorage.clear();
+          StorageUtils.clear();
           location.reload();
         }}
       >

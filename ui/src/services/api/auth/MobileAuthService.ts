@@ -58,16 +58,4 @@ export default class MobileAuthService extends AuthService {
   public static onHostConnected(callback: (res: boolean) => void) {
     this._socket.on('host-connected', callback);
   }
-
-  public static savePlayerRoom(playerRoomId: string) {
-    localStorage.setItem('playerRoomId', playerRoomId);
-  }
-
-  public static getSavedPlayerRoom() {
-    return localStorage.getItem('playerRoomId');
-  }
-
-  public static removeSavedPlayerRoom() {
-    return localStorage.removeItem('playerRoomId');
-  }
 }

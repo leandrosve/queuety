@@ -4,6 +4,7 @@ import MobileAuthService from '../../services/api/auth/MobileAuthService';
 import { useSettingsContext } from '../../context/SettingsContext';
 import ConnectionService from '../../services/api/ConnectionService';
 import Logger from '../../utils/Logger';
+import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
 
 export enum MobileAuthStatus {
   UNSTARTED = 'UNSTARTED',
@@ -39,8 +40,8 @@ const useMobileAuth = () => {
   const { settings } = useSettingsContext();
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
   const [connectionId, setConnectionId] = useState<string>('');
-  const [playerRoomId, setPlayerRoomId] = useState<string | null>(MobileAuthService.getSavedPlayerRoom());
-  const [userId, setUserId] = useState<string>(localStorage.getItem('userId') || '');
+  const [playerRoomId, setPlayerRoomId] = useState<string | null>(StorageUtils.get(StorageKey.PLAYER_ROOM_ID));
+  const [userId, setUserId] = useState<string>(StorageUtils.get(StorageKey.USER_ID) || '');
   const [authRoomId, setAuthRoomId] = useState<string | null>();
   const nicknameRef = useRef(settings.nickname);
 
@@ -53,7 +54,7 @@ const useMobileAuth = () => {
     const res = await ConnectionService.getUserId();
     if (!res.hasError) {
       setUserId(res.data.userId);
-      localStorage.setItem('userId', res.data.userId);
+      StorageUtils.set(StorageKey.USER_ID, res.data.userId);
     }
   };
   const onTrigger = (authRoom: string) => {
@@ -116,7 +117,7 @@ const useMobileAuth = () => {
     if (ok) {
       history.pushState(null, '', location.origin);
       setStatus(MobileAuthStatus.JOINED_PLAYER_ROOM);
-      MobileAuthService.savePlayerRoom(playerRoomId);
+      StorageUtils.set(StorageKey.PLAYER_ROOM_ID, playerRoomId);
     }
   };
 
@@ -144,7 +145,7 @@ const useMobileAuth = () => {
     MobileAuthService.restart();
     //MobileAuthService.cleanup();
     setPlayerRoomId(null);
-    MobileAuthService.removeSavedPlayerRoom();
+    StorageUtils.remove(StorageKey.PLAYER_ROOM_ID);
     setAuthRoomId(null);
     setHostStatus(HostStatus.DISCONNECTED);
     setStatus(MobileAuthStatus.AUTH_REQUEST_DENIED);

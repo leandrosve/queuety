@@ -1,8 +1,9 @@
-import React, { useState, PropsWithChildren, useContext, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
 import QueueItem from '../model/player/QueueItem';
 import { YoutubeVideoDetail } from '../services/api/YoutubeService';
 import { v4 as uuidv4 } from 'uuid';
 import Logger from '../utils/Logger';
+import StorageUtils, { StorageKey } from '../utils/StorageUtils';
 
 enum QueueStatus {
   UNSTARTED = 'unstarted',
@@ -23,7 +24,6 @@ export type PlayerQueueContextProps = {
   clearQueue: () => void;
   goNext: () => void;
   goPrevious: () => void;
-
 };
 
 export const PlayerQueueContext = React.createContext<PlayerQueueContextProps>({
@@ -42,7 +42,7 @@ export const PlayerQueueContext = React.createContext<PlayerQueueContextProps>({
 });
 
 const getInitialQueueInfo = (): Queue => {
-  const q = localStorage.getItem('queue');
+  const q = StorageUtils.get(StorageKey.QUEUE);
   if (q) return JSON.parse(q) as Queue;
   return { items: [], current: null, status: QueueStatus.UNSTARTED };
 };
@@ -101,7 +101,7 @@ export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
     setQueue((p) => {
       const newItem = { id: uuidv4(), video };
       const nextItems = [...p.items, newItem];
-      const newCurrent = (p.status === QueueStatus.ENDED || p.items.length === 0) ? newItem : p.current;
+      const newCurrent = p.status === QueueStatus.ENDED || p.items.length === 0 ? newItem : p.current;
       return { items: nextItems, current: newCurrent, status: QueueStatus.ACTIVE };
     });
   };
@@ -112,7 +112,7 @@ export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
       const newItem = { id: uuidv4(), video };
       const nextItems = [...p.items];
       nextItems.splice(index + 1, 0, newItem);
-      const newCurrent = (playNow || p.status === QueueStatus.ENDED || p.items.length === 0) ? newItem : p.current;
+      const newCurrent = playNow || p.status === QueueStatus.ENDED || p.items.length === 0 ? newItem : p.current;
       return { items: nextItems, current: newCurrent, status: QueueStatus.ACTIVE };
     });
   };
@@ -129,7 +129,7 @@ export const PlayerQueueProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    localStorage.setItem('queue', JSON.stringify(queue));
+    StorageUtils.set(StorageKey.QUEUE, JSON.stringify(queue));
   }, [queue]);
   return (
     <PlayerQueueContext.Provider
