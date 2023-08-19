@@ -1,7 +1,6 @@
 import { ButtonGroup, Flex, Icon, IconButton } from '@chakra-ui/react';
 import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
-import { usePlayerQueueContext } from '../../../../../context/PlayerQueueContext';
 import PlayerState from '../../../../../model/player/PlayerState';
 
 interface Props {
@@ -11,12 +10,12 @@ interface Props {
   onPause: () => void;
   onForward: (seconds: number) => void;
   onRewind: (seconds: number) => void;
+  onPrevious: () => void;
+  onNext: () => void;
 }
 
 const buttonWidth = '5rem';
-const PlayerControls = ({ state, onPlay, onPause, onForward, onRewind }: Props) => {
-  const { goNext, goPrevious } = usePlayerQueueContext();
-
+const PlayerControls = ({ state, onPlay, onPause, onForward, onRewind, onPrevious, onNext }: Props) => {
   return (
     <ButtonGroup
       isAttached
@@ -34,7 +33,7 @@ const PlayerControls = ({ state, onPlay, onPause, onForward, onRewind }: Props) 
         aria-label='skip forward'
         width={buttonWidth}
         borderRadius='none'
-        onClick={() => goPrevious()}
+        onClick={onPrevious}
       />
       <IconButton icon={<Icon as={TbRewindBackward10} boxSize={5} />} aria-label='rewind' width={buttonWidth} onClick={() => onRewind(10)} />
       <IconButton
@@ -48,7 +47,7 @@ const PlayerControls = ({ state, onPlay, onPause, onForward, onRewind }: Props) 
         Toggle Play
       </IconButton>
       <IconButton width={buttonWidth} icon={<Icon as={TbRewindForward10} boxSize={5} />} aria-label='rewind forward' onClick={() => onForward(10)} />
-      <IconButton width={buttonWidth} icon={<Icon as={BsSkipEndFill} boxSize={5} />} aria-label='skip forward' onClick={() => goNext()} />
+      <IconButton width={buttonWidth} icon={<Icon as={BsSkipEndFill} boxSize={5} />} aria-label='skip forward' onClick={onNext} />
     </ButtonGroup>
   );
 };

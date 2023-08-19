@@ -26,11 +26,6 @@ export class AuthGateway implements OnGatewayConnection {
   // First attempt to implement this
   // Beforehand Note: I definetely should have researched this more before starting to implement this
 
-  @SubscribeMessage('test-validation')
-  private async testValidation(@ConnectedSocket() client: Socket, @MessageBody() dto: JoinPlayerRoomRequestDTO) {
-    return { dto, wtf: true };
-  }
-
   @SubscribeMessage('join-auth-room')
   private async onJoinAuthRoom(@ConnectedSocket() client: Socket, @MessageBody('authRoomId') authRoomId: string) {
     return this.authService.joinAuthRoom(client, authRoomId);

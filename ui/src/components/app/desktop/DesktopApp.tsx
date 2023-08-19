@@ -2,7 +2,6 @@ import { useState } from 'react';
 import PlayerScriptProvider from './player/PlayerScriptProvider';
 import Player from './player/Player';
 import { Flex } from '@chakra-ui/react';
-import { PlayerQueueProvider, usePlayerQueueContext } from '../../../context/PlayerQueueContext';
 import { PlayerStatusProvider } from '../../../context/PlayerStatusContext';
 import { DesktopConnectionProvider } from '../../../context/DesktopConnectionContext';
 import { DesktopAuthProvider } from '../../../context/DesktopAuthContext';
@@ -18,7 +17,7 @@ import AuthorizationRequests from './connection/AuthorizationRequests';
 import PlayerSearch from '../shared/player/search/PlayerSearch';
 import PlayerQueue from '../shared/player/queue/PlayerQueue';
 import PlayerBackdrop from '../shared/player/PlayerBackdrop';
-
+import useDesktopQueue from '../../../hooks/queue/useDesktopQueue';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,
@@ -27,7 +26,7 @@ const MainProviders = combineProviders([
   DesktopAuthProvider,
 ]);
 
-const PlayerProviders = combineProviders([PlayerScriptProvider, PlayerQueueProvider, PlayerStatusProvider]);
+const PlayerProviders = combineProviders([PlayerScriptProvider, PlayerStatusProvider]);
 
 const DesktopApp = () => {
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
@@ -64,33 +63,22 @@ const DesktopApp = () => {
 };
 
 const Content = () => {
-  const {
-    currentItem,
-    currentIndex,
-    queue,
-    updateCurrentItem,
-    clearQueue,
-    addNowToQueue,
-    addLastToQueue,
-    addNextToQueue,
-    updateQueue,
-    removeFromQueue,
-  } = usePlayerQueueContext();
+  const { queue, controls } = useDesktopQueue();
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
-      <PlayerSearch onPlay={addNowToQueue} onPlayLast={addLastToQueue} onPlayNext={addNextToQueue} />
+      <PlayerSearch onPlay={controls.onAddNow} onPlayLast={controls.onAddLast} onPlayNext={controls.onAddNext} />
       {!!queue.length && (
         <PlayerQueue
-          currentItem={currentItem}
-          currentIndex={currentIndex}
-          queue={queue}
-          onClear={clearQueue}
-          onUpdate={updateQueue}
-          onRemove={removeFromQueue}
-          onPlay={updateCurrentItem}
+          currentItem={queue.currentItem}
+          currentIndex={queue.currentIndex}
+          queue={queue.items}
+          onClear={controls.onClear}
+          onUpdate={controls.onUpdate}
+          onRemove={controls.onRemove}
+          onPlay={controls.onPlay}
         />
       )}
-      {currentItem ? <Player queueItem={currentItem} /> : <Welcome />}
+      {queue.currentItem ? <Player queueItem={queue.currentItem} /> : <Welcome />}
     </Flex>
   );
 };

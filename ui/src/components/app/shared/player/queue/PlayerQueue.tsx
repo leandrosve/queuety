@@ -13,7 +13,7 @@ interface Props {
   queue: QueueItem[];
   currentItem?: QueueItem | null;
   currentIndex: number;
-  onUpdate: (item: QueueItem[]) => void;
+  onUpdate: (itemId: string, destinationIndex: number) => void;
   onRemove: (id: string) => void;
   onPlay: (item: QueueItem) => void;
   onClear: () => void;
@@ -72,7 +72,7 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
             <Flex direction='column' gap={0} maxHeight={300} overflow='hidden' overflowY='auto'>
               <DragAndDropList
                 items={queue}
-                onReorder={onUpdate}
+                onReorder={(itemId, index) => onUpdate(`${itemId}`, index)}
                 renderItem={(i, isDragging) => (
                   <PlayerQueueItem
                     video={i.video}

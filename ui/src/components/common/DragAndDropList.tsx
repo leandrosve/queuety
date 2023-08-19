@@ -15,7 +15,7 @@ interface DraggableItem {
 interface Props<T extends DraggableItem> {
   items: T[];
   renderItem: (item: T, isDragging?: boolean) => JSX.Element;
-  onReorder?: (items: T[]) => void;
+  onReorder?: (id: string | number, destinationIndex: number) => void;
 }
 
 const DragAndDropList = <T extends DraggableItem>({ items, onReorder, renderItem }: Props<T>) => {
@@ -27,10 +27,7 @@ const DragAndDropList = <T extends DraggableItem>({ items, onReorder, renderItem
     if (result.destination.index === result.source.index) {
       return;
     }
-
-    const quotes = reorder(items, result.source.index, result.destination.index);
-
-    onReorder?.(quotes);
+    onReorder?.(items[result.source.index].id, result.destination.index);
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>

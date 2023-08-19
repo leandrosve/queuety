@@ -3,7 +3,6 @@ import useYoutubePlayer from '../../../../hooks/player/useYoutubePlayer';
 import './player.css';
 import QueueItem from '../../../../model/player/QueueItem';
 import PlayerBackdrop from '../../shared/player/PlayerBackdrop';
-import PlayerControls from '../../shared/player/controls/PlayerControls';
 
 interface Props {
   queueItem: QueueItem;
@@ -21,7 +20,6 @@ const Player = ({ queueItem }: Props) => {
         </Flex>
       </Box>
       <PlayerBackdrop videoId={queueItem.video.id} state={state} />
-      <PlayerControls state={state} playbackRate={playbackRate} {...controls} />
       {/*<PlayerTrack duration={duration} currentTime={currentTime} playbackRate={playbackRate} state={state} {...controls} />*/}
     </Flex>
   );
