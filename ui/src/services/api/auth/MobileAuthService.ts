@@ -58,4 +58,6 @@ export default class MobileAuthService extends AuthService {
   public static onHostConnected(callback: (res: boolean) => void) {
     this._socket.on('host-connected', callback);
   }
+
+
 }

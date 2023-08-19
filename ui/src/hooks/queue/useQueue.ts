@@ -4,15 +4,12 @@ import { QueueStatus, Queue } from '../../model/queue/Queue';
 import Logger from '../../utils/Logger';
 import { QueueAction, QueueActionType } from '../../model/queue/QueueActions';
 
-const useQueue = (callback?: (action: QueueAction) => void):[Queue, Dispatch<QueueAction>] => {
-  const [queue, dispatch] = useReducer(
-    (prev: Queue, action: QueueAction) => {
-      const next = reducer(prev, action);
-      callback?.(action);
-      return next;
-    },
-    { items: [], currentId: null, status: QueueStatus.UNSTARTED }
-  );
+const useQueue = (initialData?: Queue | null, callback?: (action: QueueAction) => void): [Queue, Dispatch<QueueAction>] => {
+  const [queue, dispatch] = useReducer((prev: Queue, action: QueueAction) => {
+    const next = reducer(prev, action);
+    callback?.(action);
+    return next;
+  }, initialData ?? { items: [], currentId: null, status: QueueStatus.UNSTARTED });
   return [queue, dispatch];
 };
 

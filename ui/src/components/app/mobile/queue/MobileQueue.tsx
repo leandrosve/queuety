@@ -1,11 +1,17 @@
 import { Button, Flex, Icon, IconButton, Stack, Text } from '@chakra-ui/react';
 import GlassContainer from '../../../common/glass/GlassContainer';
-import queueMocks from '../../shared/player/queue/queueMocks';
 import { MobileQueueItem } from './MobileQueueItem';
 import './mobileQueue.css';
 import { BsSkipEndFill } from 'react-icons/bs';
+import QueueItem from '../../../../model/player/QueueItem';
 
-const MobileQueue = () => {
+interface Props {
+  queue: QueueItem[];
+  currentItem?: QueueItem | null;
+  currentIndex: number;
+}
+
+const MobileQueue = ({ queue, currentIndex, currentItem }: Props) => {
   return (
     <GlassContainer
       display='flex'
@@ -24,11 +30,11 @@ const MobileQueue = () => {
       left={0}
       minHeight={200}
     >
-      <Flex padding={3} gap={2}>
+      <Flex padding={3} gap={2} justifyContent='space-between'>
         <Stack spacing={2}>
           <Flex gap={2}>
             <Text fontSize='sm' noOfLines={2}>
-              Playing: {queueMocks[0].video.title}
+              Playing: {currentItem?.video.title}
             </Text>
           </Flex>
 
@@ -45,8 +51,8 @@ const MobileQueue = () => {
       </Flex>
 
       <Stack spacing={1}>
-        {queueMocks.map((q, index) => (
-          <MobileQueueItem video={q.video} isCurrent={index == 0} onPlay={() => {}} onRemove={() => {}} />
+        {queue.map((q, index) => (
+          <MobileQueueItem key={q.id} video={q.video} isCurrent={index == 0} onPlay={() => {}} onRemove={() => {}} />
         ))}
       </Stack>
     </GlassContainer>

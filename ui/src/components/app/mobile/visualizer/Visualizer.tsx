@@ -9,9 +9,13 @@ import { useTranslation } from 'react-i18next';
 import PlayerTrack from '../../shared/player/controls/PlayerTrack';
 import PlayerState from '../../../../model/player/PlayerState';
 import DraggableSnackbar from '../queue/DraggableSnackbar';
+import useMobileQueue from '../../../../hooks/queue/useMobileQueue';
+import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 
 const Visualizer = () => {
   const { t } = useTranslation();
+  const { playerRoomId } = useMobileAuthContext();
+  const { queue } = useMobileQueue(playerRoomId);
   return (
     <Flex direction='column' alignItems='center' justifyContent='start' alignSelf='stretch' gap={3}>
       <Button display='flex' alignSelf='stretch' justifyContent='start' gap={5} onClick={() => {}} marginX={4}>
@@ -39,10 +43,8 @@ const Visualizer = () => {
       <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5}>
         <PlayerTrack duration={100} onTimeChange={() => {}} playbackRate={1} state={PlayerState.PAUSED} />
       </Flex>
-      <Flex grow={1}>
-
-      </Flex>
-        <MobileQueue />
+      <Flex grow={1}></Flex>
+      <MobileQueue />
     </Flex>
   );
 };

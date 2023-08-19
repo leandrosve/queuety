@@ -3,8 +3,8 @@ import PlayerScriptProvider from './player/PlayerScriptProvider';
 import Player from './player/Player';
 import { Flex } from '@chakra-ui/react';
 import { PlayerStatusProvider } from '../../../context/PlayerStatusContext';
-import { DesktopConnectionProvider } from '../../../context/DesktopConnectionContext';
-import { DesktopAuthProvider } from '../../../context/DesktopAuthContext';
+import { DesktopConnectionProvider, useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
+import { DesktopAuthProvider, useDesktopAuthContext } from '../../../context/DesktopAuthContext';
 import { AuthRequestsProvider } from '../../../context/AuthRequestsContext';
 import { AllowedUsersProvider } from '../../../context/AllowedUsersContext';
 import { OnlinePrescenceProvider } from '../../../context/OnlinePrescenceContext';
@@ -63,7 +63,8 @@ const DesktopApp = () => {
 };
 
 const Content = () => {
-  const { queue, controls } = useDesktopQueue();
+  const { connection } = useDesktopConnectionContext();
+  const { queue, controls } = useDesktopQueue(connection.playerRoom?.id);
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
       <PlayerSearch onPlay={controls.onAddNow} onPlayLast={controls.onAddLast} onPlayNext={controls.onAddNext} />

@@ -7,7 +7,7 @@ async function bootstrap() {
   const config = new DocumentBuilder().setTitle('Queuety API Docs').setVersion('1.0').addTag('queuety').build();
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({ origin: ['http://localhost:5173', 'http://192.168.0.226:5173'] });
+  app.enableCors({ origin: ['http://localhost:5173', 'http://192.168.0.226:5173', '*'] });
   app.setGlobalPrefix('/api');
 
   app.useGlobalPipes(
