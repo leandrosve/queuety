@@ -1,13 +1,11 @@
 import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketServer, WebSocketGateway } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { AuthResponseDTO } from './dto/AuthResponseDTO';
 import { AuthRequestDTO } from './dto/AuthRequestDTO';
-import { JoinPlayerRoomRequestDTO } from './dto/JoinPlayerRoomRequestDTO';
 import { AuthService } from './auth.service';
 import { BadRequestExceptionFilter } from 'src/common/filters/BadRequestExceptionFilter';
-import { Server as SocketServer } from 'socket.io';
-import { UserChangeDTO } from './dto/UserChangeDTO';
+import { JoinAuthRoomRequestDTO } from './dto/JoinAuthRoomRequestDTO';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseFilters(BadRequestExceptionFilter)
@@ -23,32 +21,9 @@ export class AuthGateway implements OnGatewayConnection {
     this.authService.onConnect(client);
   }
 
-  // First attempt to implement this
-  // Beforehand Note: I definetely should have researched this more before starting to implement this
-
   @SubscribeMessage('join-auth-room')
-  private async onJoinAuthRoom(@ConnectedSocket() client: Socket, @MessageBody('authRoomId') authRoomId: string) {
-    return this.authService.joinAuthRoom(client, authRoomId);
-  }
-
-  @SubscribeMessage('join-player-room')
-  private async onJoinPlayerRoom(@ConnectedSocket() client: Socket, @MessageBody() dto: JoinPlayerRoomRequestDTO) {
-    return this.authService.joinPlayerRoom(client, dto);
-  }
-
-  @SubscribeMessage('notify-user-reconnection')
-  private async onNotifyUserConnection(@ConnectedSocket() client: Socket, @MessageBody('nickname') nickname: string) {
-    return this.authService.notifyUserConnection(client, nickname);
-  }
-
-  @SubscribeMessage('notify-user-changed')
-  private onSendUserChanged(@ConnectedSocket() client: Socket, @MessageBody() dto: UserChangeDTO) {
-    return this.authService.sendUserChanged(client, dto);
-  }
-
-  @SubscribeMessage('notify-host-connection')
-  private async onNotifyHostConnection(@ConnectedSocket() client: Socket, @MessageBody('clientId') clientId: string) {
-    return this.authService.notifyHostConnection(client, clientId);
+  private async onJoinAuthRoom(@ConnectedSocket() client: Socket, @MessageBody() dto: JoinAuthRoomRequestDTO) {
+    return this.authService.joinAuthRoom(client, dto);
   }
 
   @SubscribeMessage('send-auth-request')

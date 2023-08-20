@@ -62,7 +62,10 @@ const useDesktopQueue = (playerRoomId?: string | null) => {
   }, [lastAction]);
 
   useEffect(() => {
-    PlayerService.connect(() => setIsSocketReady(true));
+    console.log("holaa?")
+    PlayerService.connect(() => {
+      console.log("holaaa response")
+      setIsSocketReady(true)});
   }, []);
 
   useEffect(() => {

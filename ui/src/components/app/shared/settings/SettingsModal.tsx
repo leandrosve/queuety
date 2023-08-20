@@ -39,7 +39,7 @@ import { BiText } from 'react-icons/bi';
 import fonts from '../../../../data/fonts';
 import languages from '../../../../data/languages';
 import AllowedUserList from '../../desktop/connection/AllowedUserList';
-import MobileAuthService from '../../../../services/api/auth/MobileAuthService';
+import PlayerService from '../../../../services/api/player/PlayerService';
 
 interface Props {
   isOpen: boolean;
@@ -63,7 +63,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
 
   const onSaveNickname = () => {
     if (isMobile && nicknameValue != settings.nickname) {
-      MobileAuthService.notifyUserChanged(nicknameValue);
+      PlayerService.notifyUserChanged(nicknameValue);
     }
     setNickname(nicknameValue);
   };

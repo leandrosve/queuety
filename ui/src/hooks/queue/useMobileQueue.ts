@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 import Logger from '../../utils/Logger';
-import PlayerService from '../../services/api/player/PlayerService';
 import useQueue from './useQueue';
 import { QueueActionRequest } from '../../model/queue/QueueActions';
 import queueMocks from '../../components/app/shared/player/queue/queueMocks';
 import { QueueStatus } from '../../model/queue/Queue';
+import MobilePlayerService from '../../services/api/player/MobilePlayerService';
 
 const useMobileQueue = (playerRoomId?: string | null) => {
   const [queue, dispatch] = useQueue({
@@ -24,12 +24,8 @@ const useMobileQueue = (playerRoomId?: string | null) => {
 
   useEffect(() => {
     if (!playerRoomId) return;
-    PlayerService.connect(() => {
-      PlayerService.joinPlayerRoom(playerRoomId, false, 'user-asdasd', 'test');
-      setTimeout(() => {
-        PlayerService.onPlayerEvent(processEvent);
-      }, 1000);
-    });
+    MobilePlayerService.joinPlayerRoom(playerRoomId, 'user-asdasd', 'test');
+    MobilePlayerService.onPlayerEvent(processEvent);
   }, [playerRoomId]);
   return {
     queue: {

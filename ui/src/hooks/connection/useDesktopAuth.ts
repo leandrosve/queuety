@@ -9,6 +9,7 @@ import { useAllowedUsersContext } from '../../context/AllowedUsersContext';
 import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
 import useSocketStatus from './useSocketStatus';
 import AuthService from '../../services/api/auth/AuthService';
+import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
 
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
@@ -30,7 +31,7 @@ const useDesktopAuth = () => {
   };
 
   const joinPlayerRoom = async (roomId: string) => {
-    const res = await DesktopAuthService.joinPlayerRoom(roomId);
+    const res = await DesktopPlayerService.joinPlayerRoom(roomId);
     if (res.hasError) return;
     setJoinedPlayerRoom(res.data);
   };
@@ -64,7 +65,7 @@ const useDesktopAuth = () => {
   };
 
   const revokeAuthorization = async (userId: string, clientId: string) => {
-    const res = await DesktopAuthService.sendAuthRevocation(userId, clientId);
+    const res = await DesktopPlayerService.sendAuthRevocation(userId, clientId);
     return res.hasError;
   };
 
@@ -74,12 +75,11 @@ const useDesktopAuth = () => {
       Logger.warn('Unauthorized user tried to connect', { userId });
       return;
     }
-    if (nickname) {
-      allowedUsers.update({ userId, nickname, clientId });
-    }
+    allowedUsers.update({ userId, clientId, ...(nickname ? { nickname } : {}) });
     Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}`, { userId, clientId });
     onlinePrescence.addUnique(userId);
-    DesktopAuthService.notifyHostConnection(clientId);
+    Logger.info('SEND NOTIFY HOST CONNECTION');
+    DesktopPlayerService.notifyHostConnection(clientId);
   };
 
   const onUserChanged = (userId: string, nickname: string) => {
@@ -101,11 +101,11 @@ const useDesktopAuth = () => {
 
   useEffect(() => {
     if (isReady) {
-      DesktopAuthService.onUserConnected((res) => onUserConnected(res.userId, res.clientId, false, res.nickname));
-      DesktopAuthService.onUserReconnected((res) => onUserConnected(res.userId, res.clientId, true, res.nickname));
-      DesktopAuthService.onUserChanged((res) => onUserChanged(res.userId, res.nickname));
+      DesktopPlayerService.onUserConnected((res) => onUserConnected(res.userId, res.clientId, false, res.nickname));
+      DesktopPlayerService.onUserReconnected((res) => onUserConnected(res.userId, res.clientId, true, res.nickname));
+      DesktopPlayerService.onUserChanged((res) => onUserChanged(res.userId, res.nickname));
 
-      DesktopAuthService.onUserDisconnected((res) => {
+      DesktopPlayerService.onUserDisconnected((res) => {
         Logger.warn('User Disconnected', res);
         onlinePrescence.remove(res.userId);
       });

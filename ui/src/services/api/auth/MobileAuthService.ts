@@ -26,15 +26,6 @@ export default class MobileAuthService extends AuthService {
     return this.emit<boolean>('send-auth-request', request);
   }
 
-  public static notifyUserReconnection(nickname: string) {
-    return this.emit<boolean>('notify-user-reconnection', { nickname });
-  }
-
-  public static notifyUserChanged(nickname: string) {
-    if (!this.userId || !this.playerRoomId) return;
-    return this.emit<boolean>('notify-user-changed', { nickname, userId: this.userId, playerRoomId: this.playerRoomId });
-  }
-
   public static onAuthConfirmation(callback: (res: AuthResponse) => void) {
     this._socket.on('receive-auth-response', callback);
   }
@@ -47,17 +38,7 @@ export default class MobileAuthService extends AuthService {
     this._socket.off('receive-auth-response');
   }
 
-  public static onHostReconnected(callback: (res: boolean) => void) {
-    this._socket.on('host-reconnected', callback);
-  }
-
-  public static onHostDisconnected(callback: (res: AuthResponse) => void) {
+  public static onHostDisconnected(callback: () => void) {
     this._socket.on('host-disconnected', callback);
   }
-
-  public static onHostConnected(callback: (res: boolean) => void) {
-    this._socket.on('host-connected', callback);
-  }
-
-
 }

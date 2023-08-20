@@ -21,7 +21,7 @@ const Content = () => {
   return (
     <>
       <MobileConnectionDebugModal />
-      {asd.status !== MobileAuthStatus.JOINED_PLAYER_ROOM ? <MobileConnectionView /> : <MobileAppPlayerView />}
+      {asd.status !== MobileAuthStatus.JOINED_PLAYER_ROOM ? <MobileConnectionView /> : <MobileConnectionView />}
     </>
   );
 };

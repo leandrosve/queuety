@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AllowedUser from '../../model/auth/AllowedUser';
-import DesktopAuthService from '../../services/api/auth/DesktopAuthService';
 import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
+import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
 
 interface SerializedAuthorizedUser extends Omit<AllowedUser, 'joinedAt'> {
   joinedAt: string;
@@ -27,7 +27,7 @@ const useAllowedUsers = () => {
   const remove = (userId: string) => {
     setList((prev) => {
       const found = prev.find((u) => u.userId === userId);
-      if (found) DesktopAuthService.sendAuthRevocation(found.userId, found.clientId);
+      if (found) DesktopPlayerService.sendAuthRevocation(found.userId, found.clientId);
       return prev.filter((u) => u.userId !== userId);
     });
   };
@@ -35,7 +35,7 @@ const useAllowedUsers = () => {
   const clear = () => {
     const users = [...list];
     setList([]);
-    users.forEach((u) => DesktopAuthService.sendAuthRevocation(u.userId, u.clientId));
+    users.forEach((u) => DesktopPlayerService.sendAuthRevocation(u.userId, u.clientId));
   };
 
   const get = (userId: string) => {

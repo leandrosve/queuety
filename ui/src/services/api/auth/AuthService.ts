@@ -3,15 +3,13 @@ import APISocketService from '../APISocketService';
 import { authSocket } from '../../../socket';
 
 export default class AuthService extends APISocketService {
-  protected static authRoomId?: string | null;
-  protected static playerRoomId?: string | null;
   public static _socket: Socket = authSocket;
 
-  public static setAuthRoomId(authRoomId?: string | null) {
-    this.authRoomId = authRoomId;
-  }
-  public static setPlayerRoomId(playerRoomId?: string | null) {
-    this.playerRoomId = playerRoomId;
+  public static connect(onConnected?: (clientId: string) => void) {
+    if (onConnected) {
+      this._socket.on('connection', onConnected);
+    }
+    this._socket.connect();
   }
 
   public static restart() {
@@ -24,12 +22,8 @@ export default class AuthService extends APISocketService {
     this._socket.off('disconnect');
   }
 
-  public static joinAuthRoom(authRoomId: string, host?: boolean) {
-    return this.emit<boolean>('join-auth-room', { authRoomId, host });
-  }
-
-  public static joinPlayerRoom(playerRoomId: string, host?: boolean, userId?: string, nickname?: string) {
-    return this.emit<boolean>('join-player-room', { playerRoomId, host, userId, nickname });
+  public static joinAuthRoom(authRoomId: string, host: boolean, userId: string) {
+    return this.emit<boolean>('join-auth-room', { authRoomId, host, userId });
   }
 
   public static onConnected(callback: (clientId: string) => void) {

@@ -7,6 +7,8 @@ import FormatUtils from '../../../../utils/FormatUtils';
 import PlayerBackdrop from '../../shared/player/PlayerBackdrop';
 import StorageUtils from '../../../../utils/StorageUtils';
 
+
+
 const MobileConnectionView = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const auth = useMobileAuthContext();
