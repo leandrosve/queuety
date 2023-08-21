@@ -50,6 +50,16 @@ export default {
         invalid: 'Must be between 3 and 100 characters long',
       },
       language: 'Language',
+      session: {
+        title: 'End Session',
+        description: 'Disconnect device',
+        button: 'Disconnect',
+      },
+      hostSession: {
+        title: 'Session',
+        description: 'Close session and disconnect all devices',
+        button: 'End',
+      },
       appearance: 'Appearance',
       fontSize: 'Font Size',
       fontSizes: {

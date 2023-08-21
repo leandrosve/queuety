@@ -2,8 +2,9 @@ import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { BadRequestExceptionFilter } from 'src/common/filters/BadRequestExceptionFilter';
-import { QueueActionRequest } from './model/QueueActions';
+import { PlayerEventRequest } from './model/PlayerEvents';
 import { PlayerEventsService } from './player.events.service';
+import { Queue } from './model/Queue';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseFilters(BadRequestExceptionFilter)
@@ -20,9 +21,34 @@ export class PlayerEventsGateway {
     return true;
   }
 
-  @SubscribeMessage('send-player-action')
-  private async sendAction(@ConnectedSocket() client: Socket, @MessageBody() dto: { playerRoomId: string; action: QueueActionRequest }) {
-    this.playerEventsService.sendPlayerAction(client, dto.playerRoomId, dto.action);
+  @SubscribeMessage('send-complete-player-status-request')
+  private async onSendCompletePlayerStatusRequest(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('playerRoomId') playerRoomId: string,
+    @MessageBody('clientId') clientId: string
+  ) {
+    this.playerEventsService.sendCompletePlayerStatusRequest(client, playerRoomId, clientId);
+    return true;
+  }
+
+  @SubscribeMessage('send-mobile-player-action')
+  private async onSendMobilePlayerAction(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: { playerRoomId: string; action: PlayerEventRequest }
+  ) {
+    this.playerEventsService.sendMobilePlayerEvent(client, dto.playerRoomId, dto.action);
+    return true;
+  }
+
+  @SubscribeMessage('send-player-event')
+  private async onSendEvent(@ConnectedSocket() client: Socket, @MessageBody() dto: { playerRoomId: string; action: PlayerEventRequest }) {
+    this.playerEventsService.sendDesktopPlayerEvent(client, dto.playerRoomId, dto.action);
+    return true;
+  }
+
+  @SubscribeMessage('send-complete-player-status')
+  private async onSendCompletePlayerStatusResponse(@ConnectedSocket() client: Socket, @MessageBody() dto: { clientId: string; queue: Queue }) {
+    this.playerEventsService.sendCompletePlayerStatusResponse(client, dto.clientId, dto.queue);
     return true;
   }
 }

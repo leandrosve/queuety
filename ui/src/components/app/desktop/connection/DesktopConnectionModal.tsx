@@ -109,11 +109,11 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
   const { toggleAutoAuth, connection } = useDesktopConnectionContext();
   const [autoAuth, setAutoAuth] = useState(connection.settings.automatic);
   const [accepted, setAccepted] = useState(false);
-  const [isSubmited, setIsSubmited] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const onAcceptedRef = useRef(onAccepted);
   const handleAccept = async () => {
-    if (isSubmited) return;
-    setIsSubmited(true);
+    if (isSubmitted) return;
+    setIsSubmitted(true);
     setAccepted(true);
     const res = await authorizeRequest(request, AuthResponseStatus.AUTHORIZED);
     toggleAutoAuth(autoAuth);
@@ -125,7 +125,7 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
   };
 
   const handleDeny = () => {
-    if (isSubmited) return;
+    if (isSubmitted) return;
     authorizeRequest(request, AuthResponseStatus.DENIED);
   };
 
@@ -146,7 +146,7 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
         <Text>
           <b>{request.nickname}</b> está solicitando unirse a la sesión de reproducción
         </Text>
-        <Button width='100%' onClick={handleDeny}>
+        <Button width='100%' onClick={handleDeny} isDisabled={accepted}>
           Rechazar
         </Button>
 
@@ -181,7 +181,7 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
 
         <Flex marginLeft='auto' alignItems='center' fontSize='sm' gap={3}>
           <Text>Autorizar nuevos dispositivos automaticamente</Text>{' '}
-          <Switch colorScheme='primary' isChecked={autoAuth} onChange={() => setAutoAuth((p) => !p)} />
+          <Switch isDisabled={isSubmitted} colorScheme='primary' isChecked={autoAuth} onChange={() => setAutoAuth((p) => !p)} />
         </Flex>
       </Stack>
     </Transition>

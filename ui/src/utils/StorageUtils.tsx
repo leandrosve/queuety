@@ -29,4 +29,13 @@ export default class StorageUtils {
     }
     keys.forEach((k) => localStorage.removeItem(k));
   }
+
+  public static clearAll(options?: { exceptions?: StorageKey[] }) {
+    Object.values(StorageKey).forEach((key) => {
+      console.log(key);
+      if (!options?.exceptions?.includes(key)) {
+        localStorage.removeItem(key);
+      }
+    });
+  }
 }

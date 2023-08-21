@@ -1,3 +1,4 @@
+import { Queue } from '../../../model/queue/Queue';
 import { QueueActionRequest } from '../../../model/queue/QueueActions';
 import PlayerService from './PlayerService';
 
@@ -31,12 +32,19 @@ export default class MobilePlayerService extends PlayerService {
     this._socket.on('receive-auth-revocation', callback);
   }
 
-  public static sendPlayerAction(playerRoomId: string, action: QueueActionRequest) {
-    console.log('EMITED ACTION CAPO', this._socket);
-    return this.emit<boolean>('send-player-action', { playerRoomId, action });
+  public static sendMobilePlayerAction(playerRoomId: string, action: QueueActionRequest) {
+    return this.emit<boolean>('send-mobile-player-action', { playerRoomId, action });
   }
 
-  public static onPlayerEvent(callback: (res: any) => void) {
-    this._socket.on('receive-player-action', callback);
+  public static onPlayerEvent(callback: (res: QueueActionRequest) => void) {
+    this._socket.on('receive-player-event', callback);
+  }
+
+  public static sendCompletePlayerStatusRequest() {
+    return this.emit<boolean>('send-complete-player-status-request', { playerRoomId: this.playerRoomId, clientId: this.clientId });
+  }
+
+  public static onCompletePlayerStatus(callback: (res: { queue: Queue }) => void) {
+    this._socket.once('receive-complete-player-status', callback);
   }
 }

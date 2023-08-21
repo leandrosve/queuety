@@ -1,4 +1,5 @@
 import QueueItem from '../player/QueueItem';
+import { Queue } from './Queue';
 
 export enum QueueActionType {
   ADD_LAST = 'ADD_LAST',
@@ -9,15 +10,28 @@ export enum QueueActionType {
   CHANGE_ORDER = 'CHANGE_ORDER',
   PLAY_NOW = 'PLAY_NOW',
   CLEAR = 'CLEAR',
+  INITIALIZE = 'INITIALIZE',
 }
 // An interface for our actions
-export type QueueAction = AddItemAction | RemoveItemAction | PlayNextAction | ChangeOrderAction | PlayNowAction | ClearAction;
-export type QueueActionRequest = QueueAction & { actionId: string };
+export type QueueAction = { isLocal?: boolean } & (
+  | AddItemAction
+  | RemoveItemAction
+  | PlayNextAction
+  | ChangeOrderAction
+  | PlayNowAction
+  | ClearAction
+  | InitializeAction
+);
+export type QueueActionRequest = QueueAction & { eventId: string; previousEventId?: string; userId?: string | null };
 export type AddItemAction = {
   type: QueueActionType.ADD_LAST | QueueActionType.ADD_NEXT | QueueActionType.ADD_NOW;
   payload: QueueItem;
 };
 
+export type InitializeAction = {
+  type: QueueActionType.INITIALIZE;
+  payload: Queue;
+};
 export type RemoveItemAction = {
   type: QueueActionType.REMOVE;
   payload: string; //

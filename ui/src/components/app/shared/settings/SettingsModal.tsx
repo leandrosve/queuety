@@ -34,12 +34,13 @@ import i18next from 'i18next';
 import { useMemo, useEffect, useState } from 'react';
 import SelectMenu from '../../../common/SelectMenu';
 import GlassModal from '../../../common/glass/GlassModal';
-import { LuLanguages } from 'react-icons/lu';
+import { LuLanguages, LuLogOut } from 'react-icons/lu';
 import { BiText } from 'react-icons/bi';
 import fonts from '../../../../data/fonts';
 import languages from '../../../../data/languages';
 import AllowedUserList from '../../desktop/connection/AllowedUserList';
 import PlayerService from '../../../../services/api/player/PlayerService';
+import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 
 interface Props {
   isOpen: boolean;
@@ -68,6 +69,10 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
     setNickname(nicknameValue);
   };
 
+  const onEndSession = () => {
+    StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS] });
+    location.reload();
+  };
   useEffect(() => {
     setNicknameValue(settings.nickname);
   }, [isOpen]);
@@ -131,6 +136,17 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
                 onChange={(v) => i18next.changeLanguage(v)}
                 options={languages}
               />
+            </FormControl>
+            <FormControl>
+              <Flex justifyContent='space-between' alignItems='end' gap={2}>
+                <Flex direction='column'>
+                  <FormLabel mb={0}>{isMobile ? t('settings.session.title') : t('settings.hostSession.title')}</FormLabel>
+                  <Text fontSize='sm'>{isMobile ? t('settings.session.description') : t('settings.hostSession.description')}</Text>
+                </Flex>
+                <Button leftIcon={<LuLogOut />} flexShrink={0} size='sm' onClick={onEndSession}>
+                  {isMobile ? t('settings.session.button') : t('settings.hostSession.button')}
+                </Button>
+              </Flex>
             </FormControl>
           </Group>
           <Group title={t('settings.appearance')} _last={{ borderBottom: 'none' }}>

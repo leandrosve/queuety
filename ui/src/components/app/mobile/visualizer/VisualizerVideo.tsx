@@ -1,6 +1,7 @@
 import { Box, Flex, Image, Stack, Text } from '@chakra-ui/react';
 import './visualizer.css';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
+import VisualizerControlsOverlay from './VisualizerControlsOverlay';
 
 interface Props {
   video: YoutubeVideoDetail;
@@ -8,7 +9,7 @@ interface Props {
 const VisualizerVideo = ({ video }: Props) => {
   if (!video) return <VisualizerPlaceholder />;
   return (
-    <>
+    <Stack align='center' spacing={0}>
       <Flex className='visualizer' position='relative' width='100vw' aspectRatio='16/9' justifyContent='center' alignItems='center'>
         <Box borderRadius='md' aspectRatio='16/9' width='90%' margin={'5px'} boxShadow='xl' position='relative'>
           <Image
@@ -18,15 +19,10 @@ const VisualizerVideo = ({ video }: Props) => {
             objectFit='cover'
             src={`https://img.youtube.com/vi/${video.id}/sddefault.jpg`}
           ></Image>
-        </Box>
-
-        <Box className='visualizer-backdrop'>
-          <Image className='visualizer-backdrop-image' src={`https://img.youtube.com/vi/${video.id}/default.jpg`} />
-          <Box className='visualizer-backdrop-blur' />
+          <VisualizerControlsOverlay />
         </Box>
       </Flex>
-      <Text noOfLines={2} paddingX={2}>{video.title}</Text>
-    </>
+    </Stack>
   );
 };
 

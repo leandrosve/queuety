@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { QueueAction, QueueActionType, QueueActionRequest } from '../../model/queue/QueueActions';
 import useQueue from './useQueue';
 import { YoutubeVideoDetail } from '../../services/api/YoutubeService';
@@ -8,6 +8,8 @@ import Logger from '../../utils/Logger';
 import PlayerService from '../../services/api/player/PlayerService';
 import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
 import { Queue, QueueStatus } from '../../model/queue/Queue';
+import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
+import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
 
 const getInitialQueueInfo = (): Queue => {
   const q = StorageUtils.get(StorageKey.QUEUE);
@@ -17,18 +19,26 @@ const getInitialQueueInfo = (): Queue => {
 
 const useDesktopQueue = (playerRoomId?: string | null) => {
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
-  const [lastAction, setLastAction] = useState<QueueActionRequest>();
+  const onlineUsers = useOnlinePrescenceContext();
+  const [actions, setActions] = useState<{ previous?: QueueActionRequest; last: QueueActionRequest }>();
+
   const registerLastAction = useCallback(
     (action: QueueAction) => {
-      setLastAction({ actionId: 'action-' + uuid(), ...action });
+      setActions((prev) => {
+        const previous = prev?.last;
+        const last = { eventId: 'event-' + uuid().substring(0, 5), previousEventId: prev?.last?.eventId, ...action };
+        return { previous, last };
+      });
     },
-    [setLastAction]
+    [setActions]
   );
   const [queue, dispatch] = useQueue(getInitialQueueInfo(), registerLastAction);
   const [items, length, currentIndex, currentItem] = useMemo(() => {
     const index = queue.items.findIndex((i) => i.id === queue.currentId);
     return [queue.items, queue.items.length, index, queue.items[index]];
   }, [queue]);
+
+  const queueRef = useRef(queue);
 
   const onAddNow = useCallback(
     (video: YoutubeVideoDetail) => dispatch({ type: QueueActionType.ADD_NOW, payload: { id: uuid(), video } }),
@@ -53,22 +63,28 @@ const useDesktopQueue = (playerRoomId?: string | null) => {
   const onPlay = useCallback((item: QueueItem) => dispatch({ type: QueueActionType.PLAY_NOW, payload: { itemId: item.id } }), [dispatch]);
 
   useEffect(() => {
-    Logger.debug('player ready', isSocketReady);
-
-    if (!lastAction || !playerRoomId || !isSocketReady) return;
-    Logger.debug('Last Queue Action: ', lastAction);
-    console.log('hola??');
-    PlayerService.sendPlayerAction(playerRoomId, lastAction);
-  }, [lastAction]);
+    if (!actions?.last || !playerRoomId || !isSocketReady) return;
+    if (onlineUsers.data.length) {
+      DesktopPlayerService.sendPlayerAction(playerRoomId, actions?.last);
+    }
+  }, [actions]);
 
   useEffect(() => {
-    console.log("holaa?")
-    PlayerService.connect(() => {
-      console.log("holaaa response")
-      setIsSocketReady(true)});
+    DesktopPlayerService.onCompletePlayerStatusRequest(({ clientId }) => {
+      Logger.info(`Received complete status request from clientId: ${clientId}`);
+      DesktopPlayerService.sendCompletePlayerStatus(clientId, queueRef.current);
+    });
+    DesktopPlayerService.onMobilePlayerEvent((action) => {
+      Logger.info(`Received mobile player event`, action);
+      dispatch(action);
+    });
+    DesktopPlayerService.connect(() => {
+      setIsSocketReady(true);
+    });
   }, []);
 
   useEffect(() => {
+    queueRef.current = queue;
     StorageUtils.set(StorageKey.QUEUE, JSON.stringify(queue));
   }, [queue]);
 

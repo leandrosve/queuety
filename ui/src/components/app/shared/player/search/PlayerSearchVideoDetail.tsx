@@ -4,16 +4,17 @@ import { BsYoutube } from 'react-icons/bs';
 import { useTranslation } from 'react-i18next';
 import { YoutubeVideoDetail } from '../../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../../utils/FormatUtils';
+import { useRef, useEffect } from 'react';
+
 interface Props {
   video: YoutubeVideoDetail;
   onClose: () => void;
-
   onPlay: (video: YoutubeVideoDetail) => void;
   onPlayNext: (video: YoutubeVideoDetail) => void;
   onPlayLast: (video: YoutubeVideoDetail) => void;
 }
 const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: Props) => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const handlePlay = (mode: 'now' | 'last' | 'next') => {
     switch (mode) {
       case 'now': {
@@ -29,16 +30,16 @@ const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClos
     }
     onClose();
   };
+  const addToQueueRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    addToQueueRef.current?.focus();
+  }, [video]);
   return (
     <Box>
       <Flex gap={3} direction={{ base: 'column', md: 'row' }} alignItems='start'>
         <Box position='relative' flexShrink={0}>
-          <Image
-            width={{ base: '100%', md: '250px' }}
-            objectFit='cover'
-            aspectRatio={'16/9'}
-            src={video.thumbnail}
-          />
+          <Image width={{ base: '100%', md: '250px' }} objectFit='cover' aspectRatio={'16/9'} src={video.thumbnail} />
           <IconButton
             as='a'
             position='absolute'
@@ -84,10 +85,10 @@ const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClos
           {t('playerSearch.playNow')}
         </Button>
         <Button leftIcon={<LuListPlus />} onClick={() => handlePlay('next')}>
-        {t('playerSearch.playNext')}
+          {t('playerSearch.playNext')}
         </Button>
-        <Button leftIcon={<LuListEnd />} onClick={() => handlePlay('last')}>
-        {t('playerSearch.playLast')}
+        <Button leftIcon={<LuListEnd />} onClick={() => handlePlay('last')} ref={addToQueueRef}>
+          {t('playerSearch.playLast')}
         </Button>
       </Flex>
     </Box>

@@ -7,11 +7,13 @@ export default abstract class PlayerService extends APISocketService {
   protected static playerRoomId?: string | null;
   protected static userId?: string | null;
   public static _socket: Socket = playerSocket;
+  protected static clientId: string | null;
 
-  public static connect(onConnected?: () => void) {
-    if (onConnected) {
-      this._socket.on('connection', onConnected);
-    }
+  public static connect(onConnected?: (clientIc: string) => void) {
+    this._socket.on('connection', (clientId: string) => {
+      this.clientId = clientId;
+      onConnected?.(clientId);
+    });
     this._socket.connect();
   }
 
@@ -51,15 +53,6 @@ export default abstract class PlayerService extends APISocketService {
 
   public static onHostConnected(callback: (res: boolean) => void) {
     this._socket.on('host-connected', callback);
-  }
-
-  public static sendPlayerAction(playerRoomId: string, action: QueueActionRequest) {
-    console.log('EMITED ACTION CAPO', this._socket);
-    return this.emit<boolean>('send-player-action', { playerRoomId, action });
-  }
-
-  public static onPlayerEvent(callback: (res: any) => void) {
-    this._socket.on('receive-player-action', callback);
   }
 
   /* Move these to a specific DesktopPlayerService */

@@ -40,6 +40,9 @@ const reducer = (queue: Queue, { type, payload }: QueueAction): Queue => {
     case QueueActionType.CLEAR: {
       return { ...queue, items: queue.items.filter((i) => i.id === queue.currentId) };
     }
+    case QueueActionType.INITIALIZE: {
+      return payload;
+    }
     default:
       return queue;
   }
