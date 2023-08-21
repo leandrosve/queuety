@@ -77,7 +77,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
           >
             <Icon as={LuMoreHorizontal} boxSize='1rem' />
           </IconButton>
-          <IconButton variant='link' aria-label='drag' padding={2} paddingX={0}>
+          <IconButton variant='link' aria-label='drag' padding={2} paddingX={0} onClick={e => e.stopPropagation()}>
             <Icon as={LuAlignJustify} boxSize='1rem' />
           </IconButton>
         </Box>

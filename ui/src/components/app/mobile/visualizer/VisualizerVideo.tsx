@@ -17,9 +17,8 @@ const VisualizerVideo = ({ video }: Props) => {
             width='100%'
             opacity={0.85}
             objectFit='cover'
-            src={`https://img.youtube.com/vi/${video.id}/sddefault.jpg`}
+            src={video.thumbnail}
           ></Image>
-          <VisualizerControlsOverlay />
         </Box>
       </Flex>
     </Stack>

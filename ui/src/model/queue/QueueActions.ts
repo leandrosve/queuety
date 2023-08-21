@@ -6,7 +6,8 @@ export enum QueueActionType {
   ADD_NEXT = 'ADD_NEXT',
   ADD_NOW = 'ADD_NOW',
   REMOVE = 'REMOVE',
-  PLAY_NEXT = 'PLAY_NEXT',
+  SKIP = 'SKIP_FORWARD',
+  SKIP_BACK = 'SKIP_BACK',
   CHANGE_ORDER = 'CHANGE_ORDER',
   PLAY_NOW = 'PLAY_NOW',
   CLEAR = 'CLEAR',
@@ -16,7 +17,8 @@ export enum QueueActionType {
 export type QueueAction = { isLocal?: boolean } & (
   | AddItemAction
   | RemoveItemAction
-  | PlayNextAction
+  | SkipAction
+  | SkipBackAction
   | ChangeOrderAction
   | PlayNowAction
   | ClearAction
@@ -34,17 +36,22 @@ export type InitializeAction = {
 };
 export type RemoveItemAction = {
   type: QueueActionType.REMOVE;
-  payload: string; //
+  payload: string;
 };
 
-export type PlayNextAction = {
-  type: QueueActionType.PLAY_NEXT;
-  payload?: null; //
+export type SkipAction = {
+  type: QueueActionType.SKIP;
+  payload?: null;
+};
+
+export type SkipBackAction = {
+  type: QueueActionType.SKIP_BACK;
+  payload?: null;
 };
 
 export type ClearAction = {
   type: QueueActionType.CLEAR;
-  payload?: null; //
+  payload?: null;
 };
 
 export type ChangeOrderAction = {
@@ -52,7 +59,7 @@ export type ChangeOrderAction = {
   payload: {
     itemId: string;
     destinationIndex: number;
-  }; //
+  };
 };
 
 export type PlayNowAction = {

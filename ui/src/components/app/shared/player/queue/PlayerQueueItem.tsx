@@ -36,6 +36,8 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
       ref={ref}
       gap={2}
       borderRadius='sm'
+      background={isCurrent ? 'whiteAlpha.100' : undefined}
+      _light={{ background: isCurrent ? 'blackAlpha.200' : undefined }}
       onClick={onPlay}
       padding={1}
       direction={{ base: 'column', md: 'row' }}
@@ -87,7 +89,14 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         height={'100%'}
         width={'130px'}
       >
-        <Menu strategy='fixed' placement='left-start' isLazy autoSelect={false} onOpen={() => setIsMenuOpen(true)} onClose={() => setIsMenuOpen(false)}>
+        <Menu
+          strategy='fixed'
+          placement='left-start'
+          isLazy
+          autoSelect={false}
+          onOpen={() => setIsMenuOpen(true)}
+          onClose={() => setIsMenuOpen(false)}
+        >
           <MenuButton
             as={IconButton}
             rounded='full'
@@ -98,7 +107,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
             onClick={(e) => e.stopPropagation()}
             icon={<Icon as={LuMoreVertical} />}
           />
-          <MenuList onClick={(e) => e.stopPropagation()} >
+          <MenuList onClick={(e) => e.stopPropagation()}>
             <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4} />} onClick={onPlay}>
               {t('playerQueue.playNow')}
             </MenuItem>

@@ -28,7 +28,7 @@ const MobileQueueItemModal = ({ isOpen, onClose, onPlay, onRemove, onMoveLast, o
     onClose();
   };
   return (
-    <GlassModal isOpen={isOpen} onClose={onClose} isCentered maxWidth={'70vw'} bodyProps={{ padding: 2 }}>
+    <GlassModal isOpen={isOpen} onClose={onClose} isCentered maxWidth={'90vw'} bodyProps={{ padding: 2 }}>
       <Option onClick={() => handleAction('play')} icon={BsPlayFill}>
         {t('playerQueue.playNow')}
       </Option>

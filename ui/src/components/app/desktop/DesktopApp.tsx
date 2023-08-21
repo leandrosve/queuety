@@ -4,7 +4,7 @@ import Player from './player/Player';
 import { Flex } from '@chakra-ui/react';
 import { PlayerStatusProvider } from '../../../context/PlayerStatusContext';
 import { DesktopConnectionProvider, useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
-import { DesktopAuthProvider, useDesktopAuthContext } from '../../../context/DesktopAuthContext';
+import { DesktopAuthProvider } from '../../../context/DesktopAuthContext';
 import { AuthRequestsProvider } from '../../../context/AuthRequestsContext';
 import { AllowedUsersProvider } from '../../../context/AllowedUsersContext';
 import { OnlinePrescenceProvider } from '../../../context/OnlinePrescenceContext';
@@ -18,6 +18,7 @@ import PlayerSearch from '../shared/player/search/PlayerSearch';
 import PlayerQueue from '../shared/player/queue/PlayerQueue';
 import PlayerBackdrop from '../shared/player/PlayerBackdrop';
 import useDesktopQueue from '../../../hooks/queue/useDesktopQueue';
+import PlayerControls from '../shared/player/controls/PlayerControls';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,
@@ -74,12 +75,19 @@ const Content = () => {
           currentIndex={queue.currentIndex}
           queue={queue.items}
           onClear={controls.onClear}
-          onUpdate={controls.onUpdate}
+          onUpdate={controls.onChangeOrder}
           onRemove={controls.onRemove}
           onPlay={controls.onPlay}
         />
       )}
-      {queue.currentItem ? <Player queueItem={queue.currentItem} /> : <Welcome />}
+      {queue.currentItem ? (
+        <>
+          <Player queueItem={queue.currentItem} />
+          <PlayerControls playbackRate={1} state={1} queueControls={controls} />
+        </>
+      ) : (
+        <Welcome />
+      )}
     </Flex>
   );
 };

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, Collapse, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
+import { Box, Button, Collapse, Flex, Icon, IconButton, Stack, Text } from '@chakra-ui/react';
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 import './playerQueue.css';
 import { useTranslation } from 'react-i18next';
@@ -37,11 +37,19 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
       >
         <Flex justifyContent='space-between' gap={2}>
           <Flex direction='column' gap={1}>
-            {currentItem && (
-              <Flex noOfLines={2} title={currentItem.video.title}>
-                {t('playerQueue.playing')}: {currentItem.video.title}
-              </Flex>
-            )}
+            {currentIndex + 1< queue.length ? (
+              <Stack spacing={0}>
+                <Text fontSize='sm'>{t('playerQueue.next')}: </Text>
+                <Text noOfLines={1} title={queue[currentIndex + 1].video.title}>
+                  {queue[currentIndex + 1].video.title}
+                </Text>
+              </Stack>
+            ) : currentItem ? (
+              <Stack spacing={0}>
+                <Text fontSize='sm'>{t('playerQueue.playing')}:</Text>
+                <Text>{currentItem.video.title}</Text>
+              </Stack>
+            ) : null}
             <Flex alignItems='center' gap={1}>
               <Text color='text.300' fontSize='sm'>
                 {t('playerQueue.queue')}:{' '}

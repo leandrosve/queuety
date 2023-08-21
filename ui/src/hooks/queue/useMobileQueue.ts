@@ -3,9 +3,7 @@ import Logger from '../../utils/Logger';
 import useQueue from './useQueue';
 import { QueueAction, QueueActionRequest, QueueActionType } from '../../model/queue/QueueActions';
 import MobilePlayerService from '../../services/api/player/MobilePlayerService';
-import { YoutubeVideoDetail } from '../../services/api/YoutubeService';
 import { v4 as uuid } from 'uuid';
-import QueueItem from '../../model/player/QueueItem';
 
 const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) => {
   const [lastLocalAction, setLastLocalAction] = useState<QueueActionRequest>();
@@ -16,39 +14,12 @@ const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) =>
     },
     [setLastLocalAction, userId]
   );
-  const [queue, dispatch] = useQueue(null, registerLastAction);
+  const { queue, controls, dispatch } = useQueue(null, registerLastAction);
 
   const [items, length, currentIndex, currentItem] = useMemo(() => {
     const index = queue.items.findIndex((i) => i.id === queue.currentId);
     return [queue.items, queue.items.length, index, queue.items[index]];
   }, [queue]);
-
-  const onAddNow = useCallback(
-    (video: YoutubeVideoDetail) => dispatch({ type: QueueActionType.ADD_NOW, payload: { id: uuid(), video }, isLocal: true }),
-    [dispatch]
-  );
-  const onAddLast = useCallback(
-    (video: YoutubeVideoDetail) => dispatch({ type: QueueActionType.ADD_LAST, payload: { id: uuid(), video }, isLocal: true }),
-    [dispatch]
-  );
-  const onAddNext = useCallback(
-    (video: YoutubeVideoDetail) => dispatch({ type: QueueActionType.ADD_NEXT, payload: { id: uuid(), video }, isLocal: true }),
-    [dispatch]
-  );
-  const onSkip = useCallback(() => dispatch({ type: QueueActionType.PLAY_NEXT, isLocal: true }), [dispatch]);
-  const onClear = useCallback(() => {
-    dispatch({ type: QueueActionType.CLEAR, isLocal: true });
-  }, [dispatch]);
-  const onChangeOrder = useCallback(
-    (itemId: string, destinationIndex: number) =>
-      dispatch({ type: QueueActionType.CHANGE_ORDER, payload: { itemId, destinationIndex }, isLocal: true }),
-    [dispatch]
-  );
-  const onRemove = useCallback((itemId: string) => dispatch({ type: QueueActionType.REMOVE, payload: itemId, isLocal: true }), [dispatch]);
-  const onPlay = useCallback(
-    (item: QueueItem) => dispatch({ type: QueueActionType.PLAY_NOW, payload: { itemId: item.id }, isLocal: true }),
-    [dispatch]
-  );
 
   const processEvent = (action: QueueActionRequest) => {
     console.log('my userId is', userId);
@@ -59,7 +30,7 @@ const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) =>
     }
 
     action.isLocal = false;
-    dispatch(action);
+    dispatch(action, false);
   };
 
   useEffect(() => {
@@ -73,7 +44,6 @@ const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) =>
     MobilePlayerService.onCompletePlayerStatus(({ queue }) => {
       dispatch({ type: QueueActionType.INITIALIZE, payload: queue });
     });
-    console.log('no??');
     MobilePlayerService.sendCompletePlayerStatusRequest();
   }, [playerRoomId, userId]);
   return {
@@ -83,16 +53,7 @@ const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) =>
       currentIndex,
       currentItem,
     },
-    controls: {
-      onAddNow,
-      onAddLast,
-      onAddNext,
-      onClear,
-      onChangeOrder,
-      onRemove,
-      onPlay,
-      onSkip,
-    },
+    controls,
   };
 };
 
