@@ -10,11 +10,11 @@ export default class Logger {
   }
 
   public static info(...objects: any[]) {
-    this.log('#296fa8', '#90cdf4', objects, 'ℹ ');
+    this.log('#296fa8', '#90cdf4', objects, '🏁 ');
   }
 
   public static warn(...objects: any[]) {
-    this.log('#7f611f', '#f4d990', objects, '❕ ');
+    this.log('#7f611f', '#f4d990', objects, '🚨 ');
   }
 
   public static danger(...objects: any[]) {
@@ -27,5 +27,9 @@ export default class Logger {
 
   public static debug(...objects: any[]) {
     this.log('#4d4d4d', '#c2c2c2', objects, '🐛 ');
+  }
+
+  public static socket(...objects: any[]) {
+    this.log('#791f7f', '#dcabf7', objects, '🎆 ');
   }
 }

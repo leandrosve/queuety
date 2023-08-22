@@ -117,6 +117,7 @@ const useMobileAuth = () => {
     setStatus(MobileAuthStatus.JOINING_PLAYER_ROOM);
     const res = await MobilePlayerService.joinPlayerRoom(playerRoomId, userId, nicknameRef.current);
     if (!res.hasError) {
+      Logger.success("Joined player room");
       history.pushState(null, '', location.origin);
       setStatus(MobileAuthStatus.JOINED_PLAYER_ROOM);
       StorageUtils.set(StorageKey.PLAYER_ROOM_ID, playerRoomId);

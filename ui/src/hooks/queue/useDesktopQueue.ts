@@ -37,7 +37,7 @@ const useDesktopQueue = (playerRoomId?: string | null): { queue: QueueData; cont
     },
     [setActions]
   );
-  const { queue, controls, dispatch } = useQueue(getInitialQueueInfo(), registerLastAction, false);
+  const { queue, controls, dispatch } = useQueue(getInitialQueueInfo(), registerLastAction);
 
   const [items, length, currentIndex, currentItem] = useMemo(() => {
     const index = queue.items.findIndex((i) => i.id === queue.currentId);
@@ -59,7 +59,7 @@ const useDesktopQueue = (playerRoomId?: string | null): { queue: QueueData; cont
       DesktopPlayerService.sendCompletePlayerStatus(clientId, queueRef.current);
     });
     DesktopPlayerService.onMobilePlayerEvent((action) => {
-      Logger.info(`Received mobile player event`, action);
+      if (action?.type) Logger.info(`Received mobile player event`, action);
       dispatch(action);
     });
     DesktopPlayerService.connect(() => {

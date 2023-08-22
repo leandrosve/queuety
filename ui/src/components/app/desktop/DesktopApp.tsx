@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PlayerScriptProvider from './player/PlayerScriptProvider';
 import Player from './player/Player';
 import { Flex } from '@chakra-ui/react';
@@ -19,6 +19,7 @@ import PlayerQueue from '../shared/player/queue/PlayerQueue';
 import PlayerBackdrop from '../shared/player/PlayerBackdrop';
 import useDesktopQueue from '../../../hooks/queue/useDesktopQueue';
 import PlayerControls from '../shared/player/controls/PlayerControls';
+import TestColors from '../../common/TestColors';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,

@@ -35,6 +35,7 @@ const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) =>
 
   useEffect(() => {
     if (!playerRoomId || !lastLocalAction || !lastLocalAction.isLocal || !lastLocalAction.userId) return;
+    console.log('sending action', lastLocalAction.type, lastLocalAction.isLocal);
     MobilePlayerService.sendMobilePlayerAction(playerRoomId, lastLocalAction);
   }, [lastLocalAction]);
 
@@ -42,7 +43,7 @@ const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) =>
     if (!playerRoomId || !userId) return;
     MobilePlayerService.onPlayerEvent(processEvent);
     MobilePlayerService.onCompletePlayerStatus(({ queue }) => {
-      dispatch({ type: QueueActionType.INITIALIZE, payload: queue });
+      dispatch({ type: QueueActionType.INITIALIZE, payload: queue }, false);
     });
     MobilePlayerService.sendCompletePlayerStatusRequest();
   }, [playerRoomId, userId]);

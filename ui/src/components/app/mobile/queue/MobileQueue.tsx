@@ -28,11 +28,10 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
   return (
     <>
       <Flex
+        grow={1}
         display='flex'
         flexDirection='column'
         alignSelf='stretch'
-        flexGrow={0}
-        flex={0}
         boxShadow='sm'
         marginTop={3}
         padding={0}
@@ -41,6 +40,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
         borderTopWidth='1px'
         borderColor='borders.100'
         position='relative'
+        overflow='hidden'
         bottom={0}
         left={0}
       >

@@ -76,7 +76,7 @@ const useDesktopAuth = () => {
       return;
     }
     allowedUsers.update({ userId, clientId, ...(nickname ? { nickname } : {}) });
-    Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}`, { userId, clientId });
+    Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}: ${userId}`);
     onlinePrescence.addUnique(userId);
     Logger.info('SEND NOTIFY HOST CONNECTION');
     DesktopPlayerService.notifyHostConnection(clientId);
@@ -106,7 +106,7 @@ const useDesktopAuth = () => {
       DesktopPlayerService.onUserChanged((res) => onUserChanged(res.userId, res.nickname));
 
       DesktopPlayerService.onUserDisconnected((res) => {
-        Logger.warn('User Disconnected', res);
+        Logger.warn('User Disconnected:' + res?.userId);
         onlinePrescence.remove(res.userId);
       });
     }

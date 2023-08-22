@@ -23,7 +23,7 @@ export default class APISocketService {
 
   public static async emit<T>(message: string, params?: Object): Promise<APISocketResponse<T>> {
     return new Promise((resolve) => {
-      if (this.logRequests) Logger.debug('Socket - sending message: ' + message);
+      if (this.logRequests) Logger.socket('Socket - sending message: ' + message);
       this._socket.emit(message, params, (res: APISocketResponse<T>) => {
         if (res.hasError) this.logError(message, params, res);
         resolve(res);
