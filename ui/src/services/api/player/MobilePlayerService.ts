@@ -1,3 +1,4 @@
+import PlayerStatus from '../../../model/player/PlayerStatus';
 import { Queue } from '../../../model/queue/Queue';
 import { QueueActionRequest } from '../../../model/queue/QueueActions';
 import PlayerService from './PlayerService';
@@ -40,11 +41,15 @@ export default class MobilePlayerService extends PlayerService {
     this._socket.on('receive-player-event', callback);
   }
 
-  public static sendCompletePlayerStatusRequest() {
-    return this.emit<boolean>('send-complete-player-status-request', { playerRoomId: this.playerRoomId, clientId: this.clientId });
+  public static sendCompleteQueueRequest() {
+    return this.emit<boolean>('send-complete-queue-request', { playerRoomId: this.playerRoomId, clientId: this.clientId });
   }
 
-  public static onCompletePlayerStatus(callback: (res: { queue: Queue }) => void) {
-    this._socket.once('receive-complete-player-status', callback);
+  public static onCompleteQueue(callback: (res: { queue: Queue }) => void) {
+    this._socket.once('receive-complete-queue', callback);
+  }
+
+  public static onPlayerStatus(callback: (res: { status: PlayerStatus }) => void) {
+    this._socket.on('receive-player-status', callback);
   }
 }

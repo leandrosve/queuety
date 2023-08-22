@@ -1,11 +1,21 @@
-import { Box, Flex, Icon, Image, Stack, Text } from '@chakra-ui/react';
+import { Flex, Icon, Spinner, Stack, Text } from '@chakra-ui/react';
 import './visualizer.css';
 import { useEffect, useState } from 'react';
-import { LuPlay, LuSkipBack } from 'react-icons/lu';
-import { BsFastForwardFill } from 'react-icons/bs';
+import { BsFastForwardFill, BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
+import PlayerStatus from '../../../../model/player/PlayerStatus';
+import PlayerState from '../../../../model/player/PlayerState';
 
-const VisualizerControlsOverlay = () => {
+interface Props {
+  status: PlayerStatus;
+}
+
+const getPlayerStateIcon = (state: PlayerState) => {
+  if (state === PlayerState.PLAYING) return BsPauseFill;
+  return BsPlayFill;
+};
+
+const VisualizerControlsOverlay = ({ status }: Props) => {
   const [clicked, setClicked] = useState(false);
   const [tapLeft, setTapLeft] = useState(0);
 
@@ -31,7 +41,7 @@ const VisualizerControlsOverlay = () => {
       top={0}
       zIndex={1}
       width='100%'
-      opacity={clicked ? 1 : 1}
+      opacity={clicked ? 1 : 0}
       background='blackAlpha.500'
       transition='opacity 400ms'
     >
@@ -53,9 +63,13 @@ const VisualizerControlsOverlay = () => {
         ></Flex>
       </motion.div>
       <Flex height={'100%'} width='20%' position='relative' alignItems='center' justifyContent='center'>
-        <Icon as={LuPlay} fill='white' stroke='white' boxSize='3rem' />
+        {status.state == PlayerState.BUFFERING ? (
+          <Spinner color='white'/>
+        ) : (
+          <Icon as={getPlayerStateIcon(status.state)} fill='white' stroke='white' boxSize='3rem' />
+        )}
       </Flex>
-      <Flex height={'100%'} width='40%' alignItems='center' justifyContent='center'>
+      <Flex height={'100%'} width='40%' alignItems='center' opacity={0} justifyContent='center'>
         <Icon as={BsFastForwardFill} boxSize='2rem' />
       </Flex>
     </Flex>

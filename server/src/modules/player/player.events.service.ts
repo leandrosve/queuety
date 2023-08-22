@@ -3,6 +3,7 @@ import RoomType, { checkRoomType } from '../auth/model/RoomType';
 import { Socket } from 'socket.io';
 import { PlayerEventRequest } from './model/PlayerEvents';
 import { Queue } from './model/Queue';
+import PlayerStatus from './model/PlayerStatus';
 
 @Injectable()
 export class PlayerEventsService {
@@ -22,16 +23,22 @@ export class PlayerEventsService {
     return true;
   }
 
-  public sendCompletePlayerStatusRequest(client: Socket, playerRoomId: string, clientId: string) {
+  public sendCompleteQueueRequest(client: Socket, playerRoomId: string, clientId: string) {
     checkRoomType(playerRoomId, RoomType.PLAYER);
-    this.logger.log(`Send complete player action request for ${playerRoomId}`);
-    client.to(playerRoomId).emit('receive-complete-player-status-request', { clientId });
+    this.logger.log(`Send complete queue request for ${playerRoomId}`);
+    client.to(playerRoomId).emit('receive-complete-queue-request', { clientId });
     return true;
   }
 
-  public sendCompletePlayerStatusResponse(client: Socket, clientId: string, queue: Queue) {
-    this.logger.log(`Send complete player status response to ${clientId}`);
-    client.to(clientId).emit('receive-complete-player-status', { queue });
+  public sendCompleteQueueResponse(client: Socket, clientId: string, queue: Queue) {
+    this.logger.log(`Send complete queue  to ${clientId}`);
+    client.to(clientId).emit('receive-complete-queue', { queue });
+    return true;
+  }
+
+  public sendPlayerStatus(client: Socket, playerRoomId: string, status: PlayerStatus) {
+    this.logger.log(`Send player status to player room: ${playerRoomId}`);
+    client.to(playerRoomId).emit('receive-player-status', { status });
     return true;
   }
 }

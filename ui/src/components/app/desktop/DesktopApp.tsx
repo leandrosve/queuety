@@ -19,7 +19,7 @@ import PlayerQueue from '../shared/player/queue/PlayerQueue';
 import PlayerBackdrop from '../shared/player/PlayerBackdrop';
 import useDesktopQueue from '../../../hooks/queue/useDesktopQueue';
 import PlayerControls from '../shared/player/controls/PlayerControls';
-import TestColors from '../../common/TestColors';
+import useDesktopPlayer from '../../../hooks/player/useDesktopPlayer';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,
@@ -67,6 +67,8 @@ const DesktopApp = () => {
 const Content = () => {
   const { connection } = useDesktopConnectionContext();
   const { queue, controls } = useDesktopQueue(connection.playerRoom?.id);
+  useDesktopPlayer(connection.playerRoom?.id);
+
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
       <PlayerSearch onPlay={controls.onAddNow} onPlayLast={controls.onAddLast} onPlayNext={controls.onAddNext} />

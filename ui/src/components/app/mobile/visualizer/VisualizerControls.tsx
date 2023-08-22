@@ -2,10 +2,12 @@ import { ButtonGroup, Flex, Icon, IconButton } from '@chakra-ui/react';
 import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
 import PlayerState from '../../../../model/player/PlayerState';
+import PlayerStatus from '../../../../model/player/PlayerStatus';
 
 interface Props {
   playbackRate: number; // Seconds
   state: number;
+  status: PlayerStatus;
   onPlay: () => void;
   onPause: () => void;
   onForward: (seconds: number) => void;
@@ -13,7 +15,7 @@ interface Props {
 }
 
 const buttonWidth = '5rem';
-const VisualizerControls = ({ state, onPlay, onPause }: Props) => {
+const VisualizerControls = ({ state, onPlay, onPause, status }: Props) => {
   return (
     <ButtonGroup variant='ghost' borderRadius='md'>
       <IconButton icon={<Icon as={BsSkipStartFill} boxSize={5} />} aria-label='skip forward' width={buttonWidth} />
@@ -22,8 +24,8 @@ const VisualizerControls = ({ state, onPlay, onPause }: Props) => {
         onClick={() => {
           state != PlayerState.PLAYING ? onPlay() : onPause();
         }}
-        icon={<Icon as={state != PlayerState.PLAYING ? BsFillPlayFill : BsPauseFill} boxSize={7} />}
-        aria-label={state != PlayerState.PLAYING ? 'play' : 'pause'}
+        icon={<Icon as={status.state != PlayerState.PLAYING ? BsFillPlayFill : BsPauseFill} boxSize={7} />}
+        aria-label={status.state != PlayerState.PLAYING ? 'play' : 'pause'}
       >
         Toggle Play
       </IconButton>

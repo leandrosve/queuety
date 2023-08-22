@@ -92,10 +92,9 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
     }
   }, [queueItem]);
 
-  // Esto ta mal
   useEffect(() => {
-    updateStatus({ state, currentTime, playbackRate });
-  }, [state, currentTime]);
+    updateStatus({ state, currentTime, playbackRate, duration, isReady });
+  }, [state, currentTime, playbackRate, duration, isReady]);
 
   useEffect(() => {
     initialize();

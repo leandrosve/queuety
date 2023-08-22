@@ -54,9 +54,9 @@ const useDesktopQueue = (playerRoomId?: string | null): { queue: QueueData; cont
   }, [actions]);
 
   useEffect(() => {
-    DesktopPlayerService.onCompletePlayerStatusRequest(({ clientId }) => {
+    DesktopPlayerService.onCompleteQueueRequest(({ clientId }) => {
       Logger.info(`Received complete status request from clientId: ${clientId}`);
-      DesktopPlayerService.sendCompletePlayerStatus(clientId, queueRef.current);
+      DesktopPlayerService.sendCompleteQueue(clientId, queueRef.current);
     });
     DesktopPlayerService.onMobilePlayerEvent((action) => {
       if (action?.type) Logger.info(`Received mobile player event`, action);

@@ -67,20 +67,17 @@ const QRView = ({ onClose }: QRViewProps) => {
   const { t } = useTranslation();
   const { connection, regenAuthRoom } = useDesktopConnectionContext();
   const disabled = useMemo(() => !connection.authRoom.id || connection.authRoom.loading, [connection.authRoom]);
+  const authRoomLink = useMemo(() => ConnectionService.getLinkForAuthRoomId(connection.authRoom.id || ''), [connection]);
   return (
     <Flex direction='column' alignItems='center' gap={3} justifyContent='center' paddingBottom={5}>
       <Text>{t('connection.connectDescription')}</Text>
       <Stack padding={4} spacing={5} paddingBottom={0}>
         <Flex gap={5} boxShadow='sm' borderRadius='md'>
           <Flex boxSize={224} justifyContent='center' alignItems='center'>
-            {disabled ? (
-              <Spinner />
-            ) : (
-              <QRCode size={224} value={`${location.origin}/?auth=${connection.authRoom.id}`} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />
-            )}
+            {disabled ? <Spinner /> : <QRCode size={224} value={authRoomLink} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />}
           </Flex>
           <Flex direction='column' gap={3} alignSelf='stretch'>
-            <CopyToClipboard isDisabled={disabled} icon={<LuLink />} value={ConnectionService.getLinkForAuthRoomId(connection.authRoom.id || '')}>
+            <CopyToClipboard isDisabled={disabled} icon={<LuLink />} value={authRoomLink}>
               Copiar Link
             </CopyToClipboard>
             <CopyToClipboard isDisabled={disabled} value={connection.authRoom.id || ''}>

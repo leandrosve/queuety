@@ -1,3 +1,4 @@
+import PlayerStatus from '../../../model/player/PlayerStatus';
 import { Queue } from '../../../model/queue/Queue';
 import { QueueActionRequest } from '../../../model/queue/QueueActions';
 import PlayerService from './PlayerService';
@@ -27,12 +28,16 @@ export default class DesktopPlayerService extends PlayerService {
     this._socket.on('user-changed', callback);
   }
 
-  public static onCompletePlayerStatusRequest(callback: (res: { clientId: string }) => void) {
-    this._socket.on('receive-complete-player-status-request', callback);
+  public static onCompleteQueueRequest(callback: (res: { clientId: string }) => void) {
+    this._socket.on('receive-complete-queue-request', callback);
   }
 
-  public static sendCompletePlayerStatus(clientId: string, queue: Queue) {
-    return this.emit('send-complete-player-status', { clientId, queue });
+  public static sendCompleteQueue(clientId: string, queue: Queue) {
+    return this.emit('send-complete-queue', { clientId, queue });
+  }
+
+  public static sendPlayerStatus(playerRoomId: string, status: PlayerStatus) {
+    return this.emit('send-player-status', { playerRoomId, status });
   }
 
   public static sendPlayerAction(playerRoomId: string, action: QueueActionRequest) {
@@ -46,5 +51,4 @@ export default class DesktopPlayerService extends PlayerService {
   public static onMobilePlayerEvent(callback: (res: QueueActionRequest) => void) {
     this._socket.on('receive-mobile-player-event', callback);
   }
-
 }

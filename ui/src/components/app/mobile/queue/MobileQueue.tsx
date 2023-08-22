@@ -5,7 +5,7 @@ import './mobileQueue.css';
 import { BsSkipEndFill } from 'react-icons/bs';
 import QueueItem from '../../../../model/player/QueueItem';
 import MobileQueueItemModal from './MobileQueueItemModal';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import DragAndDropList from '../../../common/DragAndDropList';
 import { useTranslation } from 'react-i18next';
 
@@ -24,6 +24,17 @@ interface Props {
 const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, onChangeOrder, currentIndex = 0 }: Props) => {
   const [selectedItem, setSelectedItem] = useState<QueueItem | null>(null);
   const { t } = useTranslation();
+
+  const onMoveNext = useCallback(
+    (itemId: string, destinationIndex: number) => {
+      let itemIndex = queue.findIndex((i) => i.id === itemId);
+      if (itemIndex < currentIndex) {
+        destinationIndex = destinationIndex - 1;
+      }
+      onChangeOrder(itemId, destinationIndex);
+    },
+    [queue, currentIndex]
+  );
 
   return (
     <>
@@ -102,7 +113,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
         item={selectedItem}
         onRemove={() => selectedItem && onRemove(selectedItem.id)}
         onPlay={() => selectedItem && onPlay(selectedItem)}
-        onMoveNext={() => selectedItem && onChangeOrder(selectedItem.id, currentIndex + 1)}
+        onMoveNext={() => selectedItem && onMoveNext(selectedItem.id, currentIndex + 1)}
         onMoveLast={() => selectedItem && onChangeOrder(selectedItem.id, queue.length)}
       />
     </>

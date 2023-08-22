@@ -11,11 +11,13 @@ import VisualizerVideo from './visualizer/VisualizerVideo';
 import './visualizer/visualizer.css';
 import PlayerSearchModal from '../shared/player/search/PlayerSearchModal';
 import { useState } from 'react';
+import useMobilePlayerStatus from '../../../hooks/player/useMobilePlayerStatus';
 
 const MobileAppPlayerView = () => {
   const { t } = useTranslation();
   const { playerRoomId, userId } = useMobileAuthContext();
   const { queue, controls } = useMobileQueue(playerRoomId, userId);
+  const { status } = useMobilePlayerStatus();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   return (
     <Flex direction='column' alignItems='center' justifyContent='start' alignSelf='stretch' gap={3}>
@@ -23,11 +25,11 @@ const MobileAppPlayerView = () => {
         <BsSearch />
         <Text as='span'>{t('playerSearch.pasteUrl')}</Text>
       </Button>
-      <VisualizerVideo video={queue.currentItem?.video} />
+      <VisualizerVideo video={queue.currentItem?.video} status={status} />
 
-      <VisualizerControls state={1} onPlay={() => {}} onForward={() => {}} onPause={() => {}} onRewind={() => {}} playbackRate={1} />
+      <VisualizerControls status={status} state={1} onPlay={() => {}} onForward={() => {}} onPause={() => {}} onRewind={() => {}} playbackRate={1} />
       <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5}>
-        <PlayerTrack duration={100} onTimeChange={() => {}} playbackRate={1} state={PlayerState.PAUSED} />
+        <PlayerTrack currentTime={status.currentTime} duration={status.duration} onTimeChange={() => {}} playbackRate={1} state={status.state} />
       </Flex>
       <MobileQueue
         queue={queue.items}

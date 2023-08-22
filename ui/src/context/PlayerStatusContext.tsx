@@ -1,28 +1,26 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
-import PlayerState from '../model/player/PlayerState';
-
-interface PlayerStatus {
-  currentTime: number;
-  state: PlayerState;
-  playbackRate: number;
-}
+import PlayerStatus from '../model/player/PlayerStatus';
 
 interface PlayerStatusContextProps {
   status: PlayerStatus;
   updateStatus: (status: PlayerStatus) => void;
 }
 
+const defaultStatus = {
+  currentTime: 0,
+  state: -1,
+  playbackRate: 1,
+  duration: 0,
+  isReady: false,
+};
+
 export const PlayerStatusContext = React.createContext<PlayerStatusContextProps>({
-  status: {
-    currentTime: 0,
-    state: -1,
-    playbackRate: 1,
-  },
+  status: defaultStatus,
   updateStatus: () => {},
 });
 
 export const PlayerStatusProvider = ({ children }: PropsWithChildren) => {
-  const [status, setStatus] = useState<PlayerStatus>({ currentTime: 0, state: PlayerState.UNSTARTED, playbackRate: 1 });
+  const [status, setStatus] = useState<PlayerStatus>(defaultStatus);
   const updateStatus = (status: PlayerStatus) => {
     setStatus(status);
   };

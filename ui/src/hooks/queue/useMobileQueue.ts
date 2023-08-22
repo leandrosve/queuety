@@ -42,10 +42,10 @@ const useMobileQueue = (playerRoomId?: string | null, userId?: string | null) =>
   useEffect(() => {
     if (!playerRoomId || !userId) return;
     MobilePlayerService.onPlayerEvent(processEvent);
-    MobilePlayerService.onCompletePlayerStatus(({ queue }) => {
+    MobilePlayerService.onCompleteQueue(({ queue }) => {
       dispatch({ type: QueueActionType.INITIALIZE, payload: queue }, false);
     });
-    MobilePlayerService.sendCompletePlayerStatusRequest();
+    MobilePlayerService.sendCompleteQueueRequest();
   }, [playerRoomId, userId]);
   return {
     queue: {

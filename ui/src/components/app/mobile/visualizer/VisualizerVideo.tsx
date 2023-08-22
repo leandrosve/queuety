@@ -3,17 +3,25 @@ import './visualizer.css';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import { useState, useEffect } from 'react';
 import classNames from 'classnames';
+import PlayerStatus from '../../../../model/player/PlayerStatus';
+import VisualizerControlsOverlay from './VisualizerControlsOverlay';
 
 interface Props {
   video: YoutubeVideoDetail;
+  status: PlayerStatus;
 }
-const VisualizerVideo = ({ video }: Props) => {
+const VisualizerVideo = ({ video, status }: Props) => {
   if (!video) return <VisualizerPlaceholder />;
   return (
     <Stack align='center' spacing={0}>
       <Flex className='visualizer' position='relative' width='100vw' aspectRatio='16/9' justifyContent='center' alignItems='center'>
         <Box borderRadius='md' aspectRatio='16/9' width='90%' margin={'5px'} boxShadow='xl' position='relative'>
           <Image aspectRatio='16/9' width='100%' opacity={0.85} objectFit='cover' src={video.thumbnail}></Image>
+          <VisualizerControlsOverlay status={status} />
+          <Flex position='absolute' top={0} gap={2} padding={2} paddingBottom={5} bgGradient='linear(to-b, blackAlpha.600, transparent)' width='100%'>
+            <Image boxShadow='md' aspectRatio='1/1' width='1.5rem' height='1.5rem' opacity={1} objectFit='cover' src={video.channelThumbnail} rounded='full' />
+            <Text noOfLines={1} textShadow='md'>{video.title}</Text>
+          </Flex>
         </Box>
       </Flex>
       <VisualizerBackdrop src={video.thumbnail} />
