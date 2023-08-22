@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Flex } from '@chakra-ui/react';
-import './playerQueue.css';
-import { usePlayerStatusContext } from '../../../../../context/PlayerStatusContext';
-import PlayerState from '../../../../../model/player/PlayerState';
+import { usePlayerStatusContext } from '../../../../context/PlayerStatusContext';
+import PlayerState from '../../../../model/player/PlayerState';
 
-const PlayerQueueItemProgressBar = ({ duration }: { duration: number }) => {
+const QueueItemProgressBar = ({ duration }: { duration: number }) => {
   const [time, setTime] = useState(0);
 
   const { status } = usePlayerStatusContext();
@@ -47,4 +46,4 @@ const PlayerQueueItemProgressBar = ({ duration }: { duration: number }) => {
   );
 };
 
-export default PlayerQueueItemProgressBar;
+export default QueueItemProgressBar;

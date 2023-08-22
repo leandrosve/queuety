@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../utils/FormatUtils';
-import PlayerQueueItemProgressBar from '../../shared/player/queue/PlayerQueueItemProgressBar';
+import QueueItemProgressBar from '../../shared/queue/QueueItemProgressBar';
 import { motion } from 'framer-motion';
 import GlassModal from '../../../common/glass/GlassModal';
 
@@ -52,7 +52,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
           <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
             {FormatUtils.formatDuration(video.duration)}
           </Text>
-          {isCurrent && <PlayerQueueItemProgressBar duration={video.duration} />}
+          {isCurrent && <QueueItemProgressBar duration={video.duration} />}
         </Box>
         <Flex direction='column' gap={1}>
           <Heading display='inline' size='sm' noOfLines={2} title={video.title}>

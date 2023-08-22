@@ -4,7 +4,7 @@ import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { useSettingsContext } from '../../../../context/SettingsContext';
 import AutoAvatar from '../../../common/AutoAvatar';
 import FormatUtils from '../../../../utils/FormatUtils';
-import PlayerBackdrop from '../../shared/player/PlayerBackdrop';
+import PlayerBackdrop from '../../desktop/player/PlayerBackdrop';
 import StorageUtils from '../../../../utils/StorageUtils';
 
 

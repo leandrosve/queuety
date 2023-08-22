@@ -1,0 +1,34 @@
+.desktop-queue-drag {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.desktop-queue-item {
+  transition: background 200ms ease;
+}
+
+.desktop-queue-item.current {
+  border: 1px solid red;
+}
+
+.desktop-queue-item:hover .desktop-queue-drag,
+.desktop-queue-item.menu-open .desktop-queue-drag,
+.desktop-queue-item.is-dragging .desktop-queue-drag {
+  opacity: 1;
+}
+
+.desktop-queue-item:hover,
+.desktop-queue-item.menu-open,
+.desktop-queue-item.is-dragging {
+  background: var(--bg-alpha-200);
+}
+
+.desktop-queue-backdrop {
+  content: '""';
+  position: 'absolute';
+  top: 0;
+  left: 0;
+  width: '100%';
+  height: '100%';
+  z-index: -1;
+}

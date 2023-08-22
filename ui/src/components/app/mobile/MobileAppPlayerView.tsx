@@ -3,15 +3,14 @@ import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
 import VisualizerControls from './visualizer/VisualizerControls';
 import MobileQueue from './queue/MobileQueue';
 import { BsSearch } from 'react-icons/bs';
-import PlayerTrack from '../shared/player/controls/PlayerTrack';
-import PlayerState from '../../../model/player/PlayerState';
 import { useTranslation } from 'react-i18next';
 import { useMobileAuthContext } from '../../../context/MobileAuthContext';
 import VisualizerVideo from './visualizer/VisualizerVideo';
 import './visualizer/visualizer.css';
-import PlayerSearchModal from '../shared/player/search/PlayerSearchModal';
+import SearchModal from '../shared/search/SearchModal';
 import { useState } from 'react';
 import useMobilePlayerStatus from '../../../hooks/player/useMobilePlayerStatus';
+import PlayerTrack from '../shared/player/PlayerTrack';
 
 const MobileAppPlayerView = () => {
   const { t } = useTranslation();
@@ -41,7 +40,7 @@ const MobileAppPlayerView = () => {
         onChangeOrder={controls.onChangeOrder}
         onSkip={controls.onSkip}
       />
-      <PlayerSearchModal
+      <SearchModal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
         onPlay={controls.onAddNow}

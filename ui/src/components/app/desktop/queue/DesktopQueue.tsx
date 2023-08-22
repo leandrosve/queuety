@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Box, Button, Collapse, Flex, Icon, IconButton, Stack, Text } from '@chakra-ui/react';
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
-import './playerQueue.css';
+import './desktopQueue.css';
 import { useTranslation } from 'react-i18next';
-import { PlayerQueueItem } from './PlayerQueueItem';
+import { DesktopQueueItem } from './DesktopQueueItem';
 import { BsDash } from 'react-icons/bs';
-import QueueItem from '../../../../../model/player/QueueItem';
-import GlassContainer from '../../../../common/glass/GlassContainer';
-import DragAndDropList from '../../../../common/DragAndDropList';
+import QueueItem from '../../../../model/player/QueueItem';
+import GlassContainer from '../../../common/glass/GlassContainer';
+import DragAndDropList from '../../../common/DragAndDropList';
 
 interface Props {
   queue: QueueItem[];
@@ -18,7 +18,7 @@ interface Props {
   onPlay: (item: QueueItem) => void;
   onClear: () => void;
 }
-const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onPlay, onClear }: Props) => {
+const DesktopQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onPlay, onClear }: Props) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const { t } = useTranslation();
 
@@ -82,7 +82,7 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
                 items={queue}
                 onReorder={(itemId, index) => onUpdate(`${itemId}`, index)}
                 renderItem={(i, isDragging) => (
-                  <PlayerQueueItem
+                  <DesktopQueueItem
                     video={i.video}
                     isCurrent={currentItem?.id == i.id}
                     isDragging={isDragging}
@@ -99,4 +99,4 @@ const PlayerQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onP
   );
 };
 
-export default PlayerQueue;
+export default DesktopQueue;

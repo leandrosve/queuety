@@ -2,14 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Box, Flex, Heading, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Spinner, Text } from '@chakra-ui/react';
 import { BsDot, BsFillPlayFill } from 'react-icons/bs';
 import { LuAlignJustify, LuMoreVertical, LuTrash2 } from 'react-icons/lu';
-import './playerQueue.css';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import PlayerQueueItemProgressBar from './PlayerQueueItemProgressBar';
-import { YoutubeVideoDetail } from '../../../../../services/api/YoutubeService';
-import FormatUtils from '../../../../../utils/FormatUtils';
-import { usePlayerStatusContext } from '../../../../../context/PlayerStatusContext';
-import PlayerState from '../../../../../model/player/PlayerState';
+import QueueItemProgressBar from '../../shared/queue/QueueItemProgressBar';
+import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
+import FormatUtils from '../../../../utils/FormatUtils';
+import { usePlayerStatusContext } from '../../../../context/PlayerStatusContext';
+import PlayerState from '../../../../model/player/PlayerState';
 
 interface Props {
   video: YoutubeVideoDetail;
@@ -19,7 +18,7 @@ interface Props {
   onRemove: () => void;
   onPlay: () => void;
 }
-export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRemove, onPlay }: Props) => {
+export const DesktopQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRemove, onPlay }: Props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
@@ -30,7 +29,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
   }, [isCurrent]);
   return (
     <Flex
-      className={classNames('player-queue-item', { 'menu-open': isMenuOpen, 'is-dragging': isDragging })}
+      className={classNames('desktop-queue-item', { 'menu-open': isMenuOpen, 'is-dragging': isDragging })}
       cursor='pointer'
       userSelect='none'
       ref={ref}
@@ -53,7 +52,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
           {FormatUtils.formatDuration(video.duration)}
         </Text>
-        {isCurrent && <PlayerQueueItemProgressBar duration={video.duration} />}
+        {isCurrent && <QueueItemProgressBar duration={video.duration} />}
         {isCurrent && <StateIndicator />}
       </Box>
       <Flex direction='column' gap={1}>
@@ -81,7 +80,7 @@ export const PlayerQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         position='absolute'
         display='flex'
         alignItems='center'
-        className={classNames('player-queue-drag')}
+        className={classNames('desktop-queue-drag')}
         justifyContent='end'
         right={0}
         top={0}

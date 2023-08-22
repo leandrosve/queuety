@@ -1,8 +1,8 @@
 import { ButtonGroup, Flex, Icon, IconButton } from '@chakra-ui/react';
 import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
-import PlayerState from '../../../../../model/player/PlayerState';
-import { QueueControls } from '../../../../../hooks/queue/useDesktopQueue';
+import PlayerState from '../../../../model/player/PlayerState';
+import { QueueControls } from '../../../../hooks/queue/useQueue';
 
 interface Props {
   playbackRate: number; // Seconds

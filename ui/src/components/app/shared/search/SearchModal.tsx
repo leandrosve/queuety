@@ -14,10 +14,10 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import { BsSearch, BsX } from 'react-icons/bs';
-import PlayerSearchVideoDetail from './PlayerSearchVideoDetail';
+import SearchVideoDetail from './SearchVideoDetail';
 import { useTranslation } from 'react-i18next';
-import YoutubeService, { YoutubeVideoDetail } from '../../../../../services/api/YoutubeService';
-import GlassModal from '../../../../common/glass/GlassModal';
+import YoutubeService, { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
+import GlassModal from '../../../common/glass/GlassModal';
 
 const getErrorCode = (errorCode: string) => {
   if (['video_not_found', 'malformed_url', 'shorts_url'].includes(errorCode)) return errorCode;
@@ -31,7 +31,7 @@ interface Props {
   onPlayNext: (video: YoutubeVideoDetail) => void;
   onPlayLast: (video: YoutubeVideoDetail) => void;
 }
-const PlayerSearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props) => {
+const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props) => {
   const [videoDetails, setVideoDetails] = useState<YoutubeVideoDetail | null>(null);
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -130,7 +130,7 @@ const PlayerSearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: 
 
       <ScaleFade initialScale={0.9} in={!loadingDetails && !!videoDetails} unmountOnExit>
         {!!videoDetails && (
-          <PlayerSearchVideoDetail
+          <SearchVideoDetail
             onClose={() => {
               onClose();
               setInputValue('');
@@ -147,4 +147,4 @@ const PlayerSearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: 
   );
 };
 
-export default PlayerSearchModal;
+export default SearchModal;

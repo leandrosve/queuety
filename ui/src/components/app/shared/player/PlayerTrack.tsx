@@ -1,7 +1,7 @@
 import { Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, Tooltip } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import FormatUtils from '../../../../../utils/FormatUtils';
-import PlayerState from '../../../../../model/player/PlayerState';
+import PlayerState from '../../../../model/player/PlayerState';
+import FormatUtils from '../../../../utils/FormatUtils';
 
 interface Props {
   duration: number;

@@ -2,8 +2,8 @@ import { Box, Button, Flex, Heading, IconButton, Image, Link, Text } from '@chak
 import { LuPlay, LuListPlus, LuListEnd } from 'react-icons/lu';
 import { BsYoutube } from 'react-icons/bs';
 import { useTranslation } from 'react-i18next';
-import { YoutubeVideoDetail } from '../../../../../services/api/YoutubeService';
-import FormatUtils from '../../../../../utils/FormatUtils';
+import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
+import FormatUtils from '../../../../utils/FormatUtils';
 import { useRef, useEffect } from 'react';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   onPlayNext: (video: YoutubeVideoDetail) => void;
   onPlayLast: (video: YoutubeVideoDetail) => void;
 }
-const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: Props) => {
+const SearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: Props) => {
   const { t } = useTranslation();
   const handlePlay = (mode: 'now' | 'last' | 'next') => {
     switch (mode) {
@@ -95,4 +95,4 @@ const PlayerSearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClos
   );
 };
 
-export default PlayerSearchVideoDetail;
+export default SearchVideoDetail;

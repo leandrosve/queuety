@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PlayerScriptProvider from './player/PlayerScriptProvider';
 import Player from './player/Player';
 import { Flex } from '@chakra-ui/react';
@@ -14,12 +14,14 @@ import { combineProviders } from '../../../utils/ContextUtils';
 import DesktopConnectionView from './connection/DesktopConnectionView';
 import DesktopConnectionModal from './connection/DesktopConnectionModal';
 import AuthorizationRequests from './connection/AuthorizationRequests';
-import PlayerSearch from '../shared/player/search/PlayerSearch';
-import PlayerQueue from '../shared/player/queue/PlayerQueue';
-import PlayerBackdrop from '../shared/player/PlayerBackdrop';
+import DesktopQueue from './queue/DesktopQueue';
+import PlayerBackdrop from './player/PlayerBackdrop';
 import useDesktopQueue from '../../../hooks/queue/useDesktopQueue';
-import PlayerControls from '../shared/player/controls/PlayerControls';
+import PlayerControls from '../shared/player/PlayerControls';
 import useDesktopPlayer from '../../../hooks/player/useDesktopPlayer';
+import SearchLinkButton from '../shared/search/SearchLinkButton';
+import SearchModal from '../shared/search/SearchModal';
+import PlayerDescription from './player/PlayerDescription';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,
@@ -65,15 +67,22 @@ const DesktopApp = () => {
 };
 
 const Content = () => {
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { connection } = useDesktopConnectionContext();
   const { queue, controls } = useDesktopQueue(connection.playerRoom?.id);
   useDesktopPlayer(connection.playerRoom?.id);
-
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
-      <PlayerSearch onPlay={controls.onAddNow} onPlayLast={controls.onAddLast} onPlayNext={controls.onAddNext} />
+      <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} />
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        onPlay={controls.onAddNow}
+        onPlayLast={controls.onAddLast}
+        onPlayNext={controls.onAddNext}
+      />
       {!!queue.length && (
-        <PlayerQueue
+        <DesktopQueue
           currentItem={queue.currentItem}
           currentIndex={queue.currentIndex}
           queue={queue.items}
