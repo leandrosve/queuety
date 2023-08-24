@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 import useMobileAuth, { HostStatus, MobileAuthStatus } from '../hooks/connection/useMobileAuth';
+import HostData from '../model/auth/HostData';
 
 export type MobileAuthContextProps = {
   status: MobileAuthStatus;
@@ -11,6 +12,7 @@ export type MobileAuthContextProps = {
   playerRoomId: string | null;
   userId: string | null;
   onTrigger: (authRoom: string) => void;
+  host: HostData;
 };
 
 const MobileAuthContext = React.createContext<MobileAuthContextProps>({
@@ -23,6 +25,7 @@ const MobileAuthContext = React.createContext<MobileAuthContextProps>({
   userId: null,
   playerRoomId: null,
   onTrigger: () => {},
+  host: { nickname: 'unknown', userId: '0000' },
 });
 
 export const MobileAuthProvider = ({ children }: PropsWithChildren) => {
@@ -31,5 +34,5 @@ export const MobileAuthProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const useMobileAuthContext = () => {
-    return useContext(MobileAuthContext);
-  };
+  return useContext(MobileAuthContext);
+};

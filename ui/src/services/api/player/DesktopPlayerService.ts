@@ -1,11 +1,11 @@
+import { PlayerStatusAction } from '../../../model/player/PlayerActions';
 import PlayerStatus from '../../../model/player/PlayerStatus';
-import { Queue } from '../../../model/queue/Queue';
-import { QueueActionRequest } from '../../../model/queue/QueueActions';
+import { InitializeAction, QueueActionRequest } from '../../../model/queue/QueueActions';
 import PlayerService from './PlayerService';
 
 export default class DesktopPlayerService extends PlayerService {
-  public static joinPlayerRoom(playerRoomId: string) {
-    return super.joinRoom(playerRoomId, true);
+  public static joinPlayerRoom(playerRoomId: string, userId: string, nickname: string) {
+    return super.joinRoom(playerRoomId, true, userId, nickname);
   }
 
   public static notifyHostConnection(clientId: string) {
@@ -32,8 +32,8 @@ export default class DesktopPlayerService extends PlayerService {
     this._socket.on('receive-complete-queue-request', callback);
   }
 
-  public static sendCompleteQueue(clientId: string, queue: Queue) {
-    return this.emit('send-complete-queue', { clientId, queue });
+  public static sendCompleteQueue(clientId: string, action: InitializeAction) {
+    return this.emit('send-complete-queue', { clientId, action });
   }
 
   public static sendPlayerStatus(playerRoomId: string, status: PlayerStatus) {
@@ -50,5 +50,9 @@ export default class DesktopPlayerService extends PlayerService {
 
   public static onMobilePlayerEvent(callback: (res: QueueActionRequest) => void) {
     this._socket.on('receive-mobile-player-event', callback);
+  }
+
+  public static onPlayerStatusAction(callback: (res: PlayerStatusAction) => void) {
+    this._socket.on('receive-player-status-action', callback);
   }
 }

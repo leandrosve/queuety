@@ -9,7 +9,7 @@ const Layout = ({ children, isMobile }: Props) => {
   return (
     <Flex className='layout' gap={3} grow={1} zIndex={1}>
       <NavbarMobile />
-      <Flex grow={1} alignItems='start' justifyContent='center'>
+      <Flex grow={1} alignItems='start' justifyContent='center' flex='1 1 0' minHeight={0}>
         {children}
       </Flex>
     </Flex>

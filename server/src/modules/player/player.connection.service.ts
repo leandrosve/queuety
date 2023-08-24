@@ -47,11 +47,11 @@ export class PlayerConnectionService {
   }
 
   private notifyConnectionToRoom(client: Socket, roomId: string, nickname: string) {
+    const userId = this.userId(client);
     if (this.isHost(client)) {
-      client.to(roomId).emit('host-reconnected', true);
+      client.to(roomId).emit('host-reconnected', { userId, nickname });
       return;
     }
-    const userId = this.userId(client);
     if (userId) {
       client.to(roomId).emit('user-connected', { userId, clientId: client.id, nickname });
     }

@@ -10,6 +10,8 @@ import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext'
 import useSocketStatus from './useSocketStatus';
 import AuthService from '../../services/api/auth/AuthService';
 import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
+import useDesktopNotifications from '../notifications/useDesktopNotifications';
+import { useSettingsContext } from '../../context/SettingsContext';
 
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
@@ -19,7 +21,8 @@ const useDesktopAuth = () => {
   const authRequests = useAuthRequestsContext();
   const allowedUsers = useAllowedUsersContext();
   const onlinePrescence = useOnlinePrescenceContext();
-
+  const notifications = useDesktopNotifications();
+  const { settings } = useSettingsContext();
   // Need to access these inside the socket callback :(
   const acceptAutomatic = useRef(connection.settings.automatic);
   const allowedUsersRef = useRef(allowedUsers);
@@ -30,8 +33,8 @@ const useDesktopAuth = () => {
     setJoinedAuthRoom(res.data);
   };
 
-  const joinPlayerRoom = async (roomId: string) => {
-    const res = await DesktopPlayerService.joinPlayerRoom(roomId);
+  const joinPlayerRoom = async (roomId: string, userId: string, nickname: string) => {
+    const res = await DesktopPlayerService.joinPlayerRoom(roomId, userId, nickname);
     if (res.hasError) return;
     setJoinedPlayerRoom(res.data);
   };
@@ -52,7 +55,9 @@ const useDesktopAuth = () => {
 
     if (status == AuthResponseStatus.AUTHORIZED) {
       // Add to the list of authorized users before sending response
-      allowedUsers.add({ nickname: request.nickname, userId: request.userId, joinedAt: new Date(), clientId: request.clientId });
+      const allowedUser = { nickname: request.nickname, userId: request.userId, joinedAt: new Date(), clientId: request.clientId };
+      allowedUsers.add(allowedUser);
+      notifications.userJoined(allowedUser);
     }
 
     const res = await DesktopAuthService.sendAuthResponse(response);
@@ -61,7 +66,7 @@ const useDesktopAuth = () => {
     if (status !== AuthResponseStatus.PENDING) {
       authRequests.remove(request);
     }
-    return false;
+    return true;
   };
 
   const revokeAuthorization = async (userId: string, clientId: string) => {
@@ -94,10 +99,10 @@ const useDesktopAuth = () => {
   }, [isReady, connection.authRoom]);
 
   useEffect(() => {
-    if (connection.playerRoom?.id && isReady) {
-      joinPlayerRoom(connection.playerRoom?.id);
+    if (connection.playerRoom?.id && connection.userId && settings.nickname && isReady) {
+      joinPlayerRoom(connection.playerRoom?.id, connection.userId, settings.nickname);
     }
-  }, [isReady, connection.authRoom]);
+  }, [isReady, connection.authRoom, connection.userId]);
 
   useEffect(() => {
     if (isReady) {

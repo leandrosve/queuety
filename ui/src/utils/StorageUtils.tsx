@@ -7,6 +7,7 @@ export enum StorageKey {
   USER_ID = 'userId',
   PLAYER_ROOM_ID = 'playerRoomId',
   AUTH_ROOM_ID = 'authRoomId',
+  HOST = 'host',
 }
 
 export default class StorageUtils {
@@ -32,7 +33,6 @@ export default class StorageUtils {
 
   public static clearAll(options?: { exceptions?: StorageKey[] }) {
     Object.values(StorageKey).forEach((key) => {
-      console.log(key);
       if (!options?.exceptions?.includes(key)) {
         localStorage.removeItem(key);
       }

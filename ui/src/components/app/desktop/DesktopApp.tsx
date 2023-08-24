@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import PlayerScriptProvider from './player/PlayerScriptProvider';
-import Player from './player/Player';
 import { Flex } from '@chakra-ui/react';
 import { PlayerStatusProvider } from '../../../context/PlayerStatusContext';
 import { DesktopConnectionProvider, useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
@@ -14,14 +13,7 @@ import { combineProviders } from '../../../utils/ContextUtils';
 import DesktopConnectionView from './connection/DesktopConnectionView';
 import DesktopConnectionModal from './connection/DesktopConnectionModal';
 import AuthorizationRequests from './connection/AuthorizationRequests';
-import DesktopQueue from './queue/DesktopQueue';
-import PlayerBackdrop from './player/PlayerBackdrop';
-import useDesktopQueue from '../../../hooks/queue/useDesktopQueue';
-import PlayerControls from '../shared/player/PlayerControls';
-import useDesktopPlayer from '../../../hooks/player/useDesktopPlayer';
-import SearchLinkButton from '../shared/search/SearchLinkButton';
-import SearchModal from '../shared/search/SearchModal';
-import PlayerDescription from './player/PlayerDescription';
+import DesktopAppPlayerView from './DesktopAppPlayerView';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,
@@ -35,7 +27,7 @@ const PlayerProviders = combineProviders([PlayerScriptProvider, PlayerStatusProv
 const DesktopApp = () => {
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [settingsSection, setSettingsSection] = useState<SettingsModalSections | null>(SettingsModalSections.CONNECTIONS);
+  const [settingsSection, setSettingsSection] = useState<SettingsModalSections | null>(SettingsModalSections.GENERAL);
   const onDesktopConnectionModalClosed = (redirectToSettigns?: SettingsModalSections) => {
     setIsConnectionModalOpen(false);
     if (redirectToSettigns) {
@@ -67,50 +59,9 @@ const DesktopApp = () => {
 };
 
 const Content = () => {
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { connection } = useDesktopConnectionContext();
-  const { queue, controls } = useDesktopQueue(connection.playerRoom?.id);
-  useDesktopPlayer(connection.playerRoom?.id);
-  return (
-    <Flex direction='column' gap={5} paddingTop={10}>
-      <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} />
-      <SearchModal
-        isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
-        onPlay={controls.onAddNow}
-        onPlayLast={controls.onAddLast}
-        onPlayNext={controls.onAddNext}
-      />
-      {!!queue.length && (
-        <DesktopQueue
-          currentItem={queue.currentItem}
-          currentIndex={queue.currentIndex}
-          queue={queue.items}
-          onClear={controls.onClear}
-          onUpdate={controls.onChangeOrder}
-          onRemove={controls.onRemove}
-          onPlay={controls.onPlay}
-        />
-      )}
-      {queue.currentItem ? (
-        <>
-          <Player queueItem={queue.currentItem} />
-          <PlayerControls playbackRate={1} state={1} queueControls={controls} />
-        </>
-      ) : (
-        <Welcome />
-      )}
-    </Flex>
-  );
-};
-
-const Welcome = () => {
-  return (
-    <Flex direction='column' gap={3} alignItems='center' justifyContent='center' height={500} width={{ base: '95vw', md: 750, lg: 900 }}>
-      Welcome!
-      <PlayerBackdrop state={1} image='https://img.freepik.com/free-photo/ultra-detailed-nebula-abstract-wallpaper-4_1562-749.jpg?size=626&ext=jpg' />
-    </Flex>
-  );
+  if (!connection.playerRoom.id || !connection.userId) return null;
+  return <DesktopAppPlayerView playerRoomId={connection.playerRoom.id} userId={connection.userId} />;
 };
 
 export default DesktopApp;

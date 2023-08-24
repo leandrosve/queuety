@@ -1,17 +1,19 @@
-import { ButtonGroup, Flex, Icon, IconButton } from '@chakra-ui/react';
+import { ButtonGroup, Icon, IconButton } from '@chakra-ui/react';
 import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
 import PlayerState from '../../../../model/player/PlayerState';
 import { QueueControls } from '../../../../hooks/queue/useQueue';
+import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
+import PlayerStatus from '../../../../model/player/PlayerStatus';
 
 interface Props {
-  playbackRate: number; // Seconds
-  state: number;
+  status: PlayerStatus;
   queueControls: QueueControls;
+  playerControls: PlayerControls;
 }
 
 const buttonWidth = '5rem';
-const PlayerControls = ({ state, queueControls }: Props) => {
+const PlayerControlsBar = ({ queueControls, playerControls, status }: Props) => {
   return (
     <ButtonGroup
       isAttached
@@ -31,26 +33,29 @@ const PlayerControls = ({ state, queueControls }: Props) => {
         borderRadius='none'
         onClick={queueControls.onSkipBack}
       />
-      <IconButton icon={<Icon as={TbRewindBackward10} boxSize={5} />} aria-label='rewind' width={buttonWidth} onClick={() => console.log('rewind')} />
+      <IconButton
+        icon={<Icon as={TbRewindBackward10} boxSize={5} />}
+        aria-label='rewind'
+        width={buttonWidth}
+        onClick={() => playerControls.onRewind(10)}
+      />
       <IconButton
         width={buttonWidth}
         onClick={() => {
-          state != PlayerState.PLAYING ? console.log('play') : console.log('pause');
+          status.state != PlayerState.PLAYING ? playerControls.onPlay() : playerControls.onPause();
         }}
-        icon={<Icon as={state != PlayerState.PLAYING ? BsFillPlayFill : BsPauseFill} boxSize={7} />}
-        aria-label={state != PlayerState.PLAYING ? 'play' : 'pause'}
-      >
-        Toggle Play
-      </IconButton>
+        icon={<Icon as={status.state != PlayerState.PLAYING ? BsFillPlayFill : BsPauseFill} boxSize={7} />}
+        aria-label={status.state != PlayerState.PLAYING ? 'play' : 'pause'}
+      />
       <IconButton
         width={buttonWidth}
         icon={<Icon as={TbRewindForward10} boxSize={5} />}
-        aria-label='rewind forward'
-        onClick={() => console.log('roll it')}
+        aria-label='fast forward'
+        onClick={() => playerControls.onForward(10)}
       />
       <IconButton width={buttonWidth} icon={<Icon as={BsSkipEndFill} boxSize={5} />} aria-label='skip forward' onClick={queueControls.onSkip} />
     </ButtonGroup>
   );
 };
 
-export default PlayerControls;
+export default PlayerControlsBar;

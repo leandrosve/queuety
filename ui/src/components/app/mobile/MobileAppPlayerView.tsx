@@ -1,5 +1,5 @@
 import useMobileQueue from '../../../hooks/queue/useMobileQueue';
-import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import VisualizerControls from './visualizer/VisualizerControls';
 import MobileQueue from './queue/MobileQueue';
 import { BsSearch } from 'react-icons/bs';
@@ -11,41 +11,54 @@ import SearchModal from '../shared/search/SearchModal';
 import { useState } from 'react';
 import useMobilePlayerStatus from '../../../hooks/player/useMobilePlayerStatus';
 import PlayerTrack from '../shared/player/PlayerTrack';
+import MobileNotifications from './connection/MobileNotifications';
+import HostData from '../../../model/auth/HostData';
 
-const MobileAppPlayerView = () => {
+interface Props {
+  playerRoomId: string;
+  userId: string;
+  host: HostData;
+}
+const MobileAppPlayerView = ({ playerRoomId, userId, host }: Props) => {
   const { t } = useTranslation();
-  const { playerRoomId, userId } = useMobileAuthContext();
-  const { queue, controls } = useMobileQueue(playerRoomId, userId);
-  const { status } = useMobilePlayerStatus();
+  const { queue, controls: queueControls } = useMobileQueue(playerRoomId, userId);
+  const { status, controls: playerControls } = useMobilePlayerStatus();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   return (
-    <Flex direction='column' alignItems='center' justifyContent='start' alignSelf='stretch' gap={3}>
+    <Flex direction='column' alignItems='center' justifyContent='start' alignSelf='stretch' gap={0}>
       <Button display='flex' alignSelf='stretch' justifyContent='start' gap={5} onClick={() => setIsSearchModalOpen(true)} marginX={4}>
         <BsSearch />
         <Text as='span'>{t('playerSearch.pasteUrl')}</Text>
       </Button>
-      <VisualizerVideo video={queue.currentItem?.video} status={status} />
+      <VisualizerVideo video={queue.currentItem?.video} status={status} playerControls={playerControls} host={host}/>
 
-      <VisualizerControls status={status} state={1} onPlay={() => {}} onForward={() => {}} onPause={() => {}} onRewind={() => {}} playbackRate={1} />
-      <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5}>
-        <PlayerTrack currentTime={status.currentTime} duration={status.duration} onTimeChange={() => {}} playbackRate={1} state={status.state} />
+      <VisualizerControls status={status} controls={playerControls} queueControls={queueControls} />
+      <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5} mb={4}>
+        <PlayerTrack
+          currentTime={status.currentTime}
+          duration={status.duration}
+          onTimeChange={playerControls.onTimeChange}
+          playbackRate={status.playbackRate}
+          state={status.state}
+        />
       </Flex>
+      <MobileNotifications />
       <MobileQueue
         queue={queue.items}
         currentItem={queue.currentItem}
         currentIndex={queue.currentIndex}
-        onClear={controls.onClear}
-        onPlay={controls.onPlay}
-        onRemove={controls.onRemove}
-        onChangeOrder={controls.onChangeOrder}
-        onSkip={controls.onSkip}
+        onClear={queueControls.onClear}
+        onPlay={queueControls.onPlay}
+        onRemove={queueControls.onRemove}
+        onChangeOrder={queueControls.onChangeOrder}
+        onSkip={queueControls.onSkip}
       />
       <SearchModal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
-        onPlay={controls.onAddNow}
-        onPlayLast={controls.onAddLast}
-        onPlayNext={controls.onAddNext}
+        onPlay={queueControls.onAddNow}
+        onPlayLast={queueControls.onAddLast}
+        onPlayNext={queueControls.onAddNext}
       />
     </Flex>
   );

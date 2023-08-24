@@ -6,6 +6,7 @@ import ConnectionService from '../../services/api/ConnectionService';
 import Logger from '../../utils/Logger';
 import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
 import MobilePlayerService from '../../services/api/player/MobilePlayerService';
+import HostData from '../../model/auth/HostData';
 
 export enum MobileAuthStatus {
   UNSTARTED = 'UNSTARTED',
@@ -37,6 +38,10 @@ export enum HostStatus {
   WAITING = 'WAITING',
 }
 
+const getSavedHostData = (): HostData => {
+  const res = StorageUtils.get(StorageKey.HOST) || '{}';
+  return { nickname: 'unknown', userId: '', ...JSON.parse(res) };
+};
 const useMobileAuth = () => {
   const { settings } = useSettingsContext();
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
@@ -44,6 +49,7 @@ const useMobileAuth = () => {
   const [playerRoomId, setPlayerRoomId] = useState<string | null>(StorageUtils.get(StorageKey.PLAYER_ROOM_ID));
   const [userId, setUserId] = useState<string>(StorageUtils.get(StorageKey.USER_ID) || '');
   const [authRoomId, setAuthRoomId] = useState<string | null>();
+  const [host, setHost] = useState<HostData>(getSavedHostData());
   const nicknameRef = useRef(settings.nickname);
 
   const [status, setStatus] = useState<MobileAuthStatus>(MobileAuthStatus.UNSTARTED);
@@ -117,7 +123,7 @@ const useMobileAuth = () => {
     setStatus(MobileAuthStatus.JOINING_PLAYER_ROOM);
     const res = await MobilePlayerService.joinPlayerRoom(playerRoomId, userId, nicknameRef.current);
     if (!res.hasError) {
-      Logger.success("Joined player room");
+      Logger.success('Joined player room');
       history.pushState(null, '', location.origin);
       setStatus(MobileAuthStatus.JOINED_PLAYER_ROOM);
       StorageUtils.set(StorageKey.PLAYER_ROOM_ID, playerRoomId);
@@ -132,9 +138,10 @@ const useMobileAuth = () => {
     setHostStatus(HostStatus.DISCONNECTED);
   };
 
-  const onHostReconnected = () => {
-    Logger.success('Host Re-connected');
-    setHostStatus(HostStatus.CONNECTED);
+  const onHostReconnected = (hostData: { userId: string; nickname: string }) => {
+    Logger.success('Host Re-connected', hostData);
+    setHost({ userId: hostData.userId, nickname: hostData.nickname });
+    StorageUtils.set(StorageKey.HOST, JSON.stringify(hostData)), setHostStatus(HostStatus.CONNECTED);
     MobilePlayerService.notifyUserReconnection(nicknameRef.current);
   };
 
@@ -162,7 +169,7 @@ const useMobileAuth = () => {
     MobileAuthService.onDisconnected(onDisconnected);
     MobileAuthService.onAuthConfirmation(onAuthResponse);
     MobileAuthService.onHostDisconnected(onHostDisconnected);
-    
+
     MobilePlayerService.onAuthRevocation(onAuthRevocation);
     MobilePlayerService.onHostConnected(onHostConnected);
     MobilePlayerService.onHostReconnected(onHostReconnected);
@@ -190,6 +197,7 @@ const useMobileAuth = () => {
   return {
     status,
     error,
+    host,
     hostStatus,
     isSocketReady,
     connectionId,

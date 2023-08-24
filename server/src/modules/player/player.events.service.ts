@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import RoomType, { checkRoomType } from '../auth/model/RoomType';
 import { Socket } from 'socket.io';
-import { PlayerEventRequest } from './model/PlayerEvents';
+import { InitializeEvent, PlayerEventRequest } from './model/PlayerEvents';
 import { Queue } from './model/Queue';
 import PlayerStatus from './model/PlayerStatus';
+import { PlayerStatusAction } from './model/PlayerStatusAction';
 
 @Injectable()
 export class PlayerEventsService {
@@ -30,15 +31,21 @@ export class PlayerEventsService {
     return true;
   }
 
-  public sendCompleteQueueResponse(client: Socket, clientId: string, queue: Queue) {
-    this.logger.log(`Send complete queue  to ${clientId}`);
-    client.to(clientId).emit('receive-complete-queue', { queue });
+  public sendCompleteQueueResponse(client: Socket, clientId: string, action: InitializeEvent) {
+    this.logger.log(`Send complete queue  to ${clientId}`, action);
+    client.to(clientId).emit('receive-complete-queue', action);
     return true;
   }
 
   public sendPlayerStatus(client: Socket, playerRoomId: string, status: PlayerStatus) {
     this.logger.log(`Send player status to player room: ${playerRoomId}`);
     client.to(playerRoomId).emit('receive-player-status', { status });
+    return true;
+  }
+
+  public sendMobilePlayerStatusAction(client: Socket, playerRoomId: string, action: PlayerStatusAction) {
+    this.logger.log(`Send player status request to player room: ${playerRoomId}`);
+    client.to(playerRoomId).emit('receive-player-status-action', action);
     return true;
   }
 }

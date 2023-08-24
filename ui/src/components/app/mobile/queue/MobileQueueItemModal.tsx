@@ -55,7 +55,6 @@ const Option = ({ onClick, icon, children }: OptionProps) => (
     leftIcon={<Icon as={icon} boxSize={5} />}
     variant='ghost'
     width='100%'
-    size='lg'
     padding={3}
     paddingX={0}
     justifyContent='start'

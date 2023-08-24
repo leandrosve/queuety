@@ -80,15 +80,15 @@ const SearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: P
           </Flex>
         </Flex>
       </Flex>
-      <Flex gap={2} justifyContent={{ base: 'start', md: 'space-between' }} paddingY={3} wrap='wrap'>
+      <Flex gap={2} justifyContent={{ base: 'space-between', md: 'start' }} paddingY={3} wrap='wrap'>
+        <Button size='lg' leftIcon={<LuListEnd />} onClick={() => handlePlay('last')} ref={addToQueueRef} width='100%'>
+          {t('playerSearch.playLast')}
+        </Button>
         <Button leftIcon={<LuPlay />} onClick={() => handlePlay('now')}>
           {t('playerSearch.playNow')}
         </Button>
         <Button leftIcon={<LuListPlus />} onClick={() => handlePlay('next')}>
           {t('playerSearch.playNext')}
-        </Button>
-        <Button leftIcon={<LuListEnd />} onClick={() => handlePlay('last')} ref={addToQueueRef}>
-          {t('playerSearch.playLast')}
         </Button>
       </Flex>
     </Box>

@@ -16,7 +16,6 @@
 
 body {
   overflow-x: hidden;
-
 }
 .layout {
   place-items: center;
@@ -37,9 +36,6 @@ body {
   min-height: 100vh;
 }
 
-html[data-theme='dark'] .app {
-  background: rgb(15, 13, 13);
-}
 html[data-size='xs'] {
   font-size: 12px;
 }

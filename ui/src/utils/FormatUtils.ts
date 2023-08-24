@@ -57,7 +57,18 @@ export default class FormatUtils {
     return number.toString();
   }
 
-  public static shortenUserId(userId: string) : string {
-    return `#${userId.slice(-5)}`
+  public static shortenUserId(userId: string): string {
+    return `#${userId.slice(-5)}`;
   }
+
+  public static getColorForNickname = (nickname: string) => {
+    const COLORS = ['purple', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'cyan', 'pink'];
+    let hash = 0;
+    if (!nickname) return 'teal';
+    for (var i = 0; i < nickname.length; i++) {
+      hash = nickname.charCodeAt(i) + hash;
+    }
+    const position = hash % 9;
+    return COLORS[position];
+  };
 }

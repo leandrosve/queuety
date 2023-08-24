@@ -1,6 +1,8 @@
-import { Box, Flex, Image } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import './player-backdrop.css';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSettingsContext } from '../../../../context/SettingsContext';
+import classNames from 'classnames';
 interface Props {
   videoId?: string;
   image?: string;
@@ -15,12 +17,33 @@ enum PlayerState {
   CUED = 4,
 }
 
-const PlayerBackdrop = ({ videoId, image, state }: Props) => {
+const PlayerBackdrop = (props: Props) => {
+  const { settings } = useSettingsContext();
+  if (!settings.appearance.glassMode) return;
+  return <Backdrop {...props} />;
+};
+
+const Backdrop = ({ videoId, image, state }: Props) => {
   const animate = useMemo(() => [PlayerState.PLAYING, PlayerState.BUFFERING].includes(state), [state]);
+
+  const [sources, setSources] = useState<{ sourceA?: string; sourceB?: string; index: number }>({ index: 0 });
+
+  useEffect(() => {
+    const newSource = image ?? `https://img.youtube.com/vi/${videoId}/sddefault.jpg`;
+    setSources((prev) => {
+      return {
+        index: prev.index + 1,
+        sourceA: prev.index % 2 == 0 ? newSource : prev.sourceA,
+        sourceB: prev.index % 2 == 1 ? newSource : prev.sourceB,
+      };
+    });
+  }, [videoId, image]);
+
   return (
     <Flex className={`player-backdrop ${animate ? 'animate' : ''}`}>
       <div className='player-backdrop__image-container'>
-        <Image className='player-backdrop__image' src={image ?? `https://img.youtube.com/vi/${videoId}/sddefault.jpg`} />
+        <img src={sources.sourceA} className={classNames('player-backdrop__image', { 'fade-in': !!(sources.index % 2) })} />
+        <img src={sources.sourceB} className={classNames('player-backdrop__image', { 'fade-in': !(sources.index % 2) })} />
       </div>
       <Box className='player-backdrop__blur'></Box>
     </Flex>

@@ -1,24 +1,24 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
-import { usePlayerQueueContext } from '../../context/PlayerQueueContext';
 import QueueItem from '../../model/player/QueueItem';
 import PlayerState from '../../model/player/PlayerState';
+import PlayerStatus from '../../model/player/PlayerStatus';
 
 /**
  *
  * @param containerId the ID of the container that will become the iframe
  * @param queueItem the item to play, it's important to differentiate between different items even if they are the same video
  */
-const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
+const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnded: () => void) => {
   const playerRef = useRef<YT.Player>();
   const [isReady, setIsReady] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [state, setState] = useState<PlayerState>(PlayerState.UNSTARTED);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
+  const [initialized, setInitialized] = useState(false);
 
   const { updateStatus } = usePlayerStatusContext();
-  const { goNext } = usePlayerQueueContext();
 
   const initialize = async () => {
     new YT.Player(containerId, {
@@ -55,7 +55,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
 
     if (event.data === PlayerState.ENDED) {
       setCurrentTime(playerRef.current?.getDuration() || 0);
-      goNext();
+      onVideoEnded();
     }
   };
 
@@ -84,6 +84,18 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
     playerRef.current?.pauseVideo();
   };
 
+  const getCurrentPlayerStatus = useCallback((): PlayerStatus | null => {
+    const player = playerRef.current;
+    if (!player) return null;
+    return {
+      state: player.getPlayerState(),
+      currentTime: player.getCurrentTime(),
+      duration: player.getDuration(),
+      isReady: true,
+      playbackRate: player.getPlaybackRate(),
+    };
+  }, [playerRef]);
+
   useEffect(() => {
     if (isReady && queueItem) {
       setCurrentTime(0);
@@ -97,16 +109,21 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem) => {
   }, [state, currentTime, playbackRate, duration, isReady]);
 
   useEffect(() => {
+    if (initialized || !queueItem) return;
     initialize();
-  }, []);
+    setInitialized(true);
+  }, [queueItem]);
 
   return {
     ref: playerRef,
-    isReady,
-    duration,
-    currentTime,
-    state,
-    playbackRate,
+    getCurrentPlayerStatus,
+    status: {
+      isReady,
+      duration,
+      currentTime,
+      state,
+      playbackRate,
+    },
     controls: {
       onTimeChange,
       onPlay,

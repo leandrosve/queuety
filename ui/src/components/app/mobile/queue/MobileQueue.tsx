@@ -37,14 +37,13 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
   );
 
   return (
-    <>
+    <Flex grow={1} position='relative'  alignSelf='stretch'>
       <Flex
         grow={1}
         display='flex'
         flexDirection='column'
         alignSelf='stretch'
         boxShadow='sm'
-        marginTop={3}
         padding={0}
         paddingY={2}
         borderTopRadius='xl'
@@ -116,7 +115,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
         onMoveNext={() => selectedItem && onMoveNext(selectedItem.id, currentIndex + 1)}
         onMoveLast={() => selectedItem && onChangeOrder(selectedItem.id, queue.length)}
       />
-    </>
+    </Flex>
   );
 };
 

@@ -2,8 +2,8 @@ import Layout from '../../common/layout/Layout';
 import { MobileAuthProvider, useMobileAuthContext } from '../../../context/MobileAuthContext';
 import MobileConnectionDebugModal from './connection/MobileConnectionDebugModal';
 import MobileConnectionView from './connection/MobileConnectionView';
-import { MobileAuthStatus } from '../../../hooks/connection/useMobileAuth';
 import MobileAppPlayerView from './MobileAppPlayerView';
+import { MobileAuthStatus } from '../../../hooks/connection/useMobileAuth';
 
 const MobileApp = () => {
   return (
@@ -16,11 +16,16 @@ const MobileApp = () => {
 };
 
 const Content = () => {
-  const asd = useMobileAuthContext();
+  const { playerRoomId, userId, status, host } = useMobileAuthContext();
+  if (!userId) return null;
   return (
     <>
       <MobileConnectionDebugModal />
-      {asd.status !== MobileAuthStatus.JOINED_PLAYER_ROOM ? <MobileConnectionView /> : <MobileAppPlayerView />}
+      {!playerRoomId || status != MobileAuthStatus.JOINED_PLAYER_ROOM ? (
+        <MobileConnectionView />
+      ) : (
+        <MobileAppPlayerView {...{ playerRoomId, userId, host }} />
+      )}
     </>
   );
 };

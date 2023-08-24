@@ -1,17 +1,10 @@
 import { Avatar, AvatarProps } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
-
-const COLORS = ['purple', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'cyan', 'pink'];
+import { useMemo } from 'react';
+import FormatUtils from '../../utils/FormatUtils';
 
 const AutoAvatar = (props: AvatarProps) => {
   const color = useMemo(() => {
-    let hash = 0;
-    if (!props.name) return 'teal';
-    for (var i = 0; i < props.name.length; i++) {
-      hash = props.name.charCodeAt(i) + hash;
-    }
-    const position = hash % 9;
-    return COLORS[position];
+    return FormatUtils.getColorForNickname(props.name ?? '');
   }, [props.name]);
   return (
     <Avatar

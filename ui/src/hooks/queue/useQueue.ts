@@ -18,15 +18,22 @@ export interface QueueControls {
   onSkipBack: () => void;
 }
 
+const emptyQueue: Queue = {
+  items: [],
+  currentId: null,
+  status: QueueStatus.UNSTARTED,
+};
+
 const useQueue = (
-  initialData?: Queue | null,
+  userId: string,
+  initialData: Queue = emptyQueue,
   callback?: (action: QueueAction) => void
 ): { queue: Queue; controls: QueueControls; dispatch: (action: QueueAction, isLocal?: boolean) => void } => {
   const [queue, dispatch] = useReducer((prev: Queue, action: QueueAction) => {
     const next = reducer(prev, action);
     callback?.(action);
     return next;
-  }, initialData ?? { items: [], currentId: null, status: QueueStatus.UNSTARTED });
+  }, initialData ?? emptyQueue);
 
   const dispatchAction = useCallback(
     (action: QueueAction, isLocal = true) => {
@@ -35,31 +42,41 @@ const useQueue = (
     [dispatch]
   );
 
+  const basicAction = () => {
+    return { userId, timestamp: new Date().getTime() };
+  };
   const onAddNow = useCallback(
-    (video: YoutubeVideoDetail) => dispatchAction({ type: QueueActionType.ADD_NOW, payload: { id: uuid(), video } }),
+    (video: YoutubeVideoDetail) => dispatchAction({ type: QueueActionType.ADD_NOW, ...basicAction(), payload: { id: uuid(), video } }),
     [dispatchAction]
   );
   const onAddLast = useCallback(
-    (video: YoutubeVideoDetail) => dispatchAction({ type: QueueActionType.ADD_LAST, payload: { id: uuid(), video } }),
+    (video: YoutubeVideoDetail) => dispatchAction({ type: QueueActionType.ADD_LAST, ...basicAction(), payload: { id: uuid(), video } }),
     [dispatchAction]
   );
 
-  const onSkip = useCallback(() => dispatchAction({ type: QueueActionType.SKIP }), [dispatchAction]);
-  const onSkipBack = useCallback(() => dispatchAction({ type: QueueActionType.SKIP_BACK }), [dispatchAction]);
+  const onSkip = useCallback(() => dispatchAction({ type: QueueActionType.SKIP, ...basicAction() }), [dispatchAction]);
+  const onSkipBack = useCallback(() => dispatchAction({ type: QueueActionType.SKIP_BACK, ...basicAction() }), [dispatchAction]);
 
   const onAddNext = useCallback(
-    (video: YoutubeVideoDetail) => dispatchAction({ type: QueueActionType.ADD_NEXT, payload: { id: uuid(), video } }),
+    (video: YoutubeVideoDetail) => dispatchAction({ type: QueueActionType.ADD_NEXT, ...basicAction(), payload: { id: uuid(), video } }),
     [dispatchAction]
   );
   const onClear = useCallback(() => {
-    dispatchAction({ type: QueueActionType.CLEAR });
+    dispatchAction({ type: QueueActionType.CLEAR, ...basicAction() });
   }, [dispatchAction]);
   const onChangeOrder = useCallback(
-    (itemId: string, destinationIndex: number) => dispatchAction({ type: QueueActionType.CHANGE_ORDER, payload: { itemId, destinationIndex } }),
+    (itemId: string, destinationIndex: number) =>
+      dispatchAction({ type: QueueActionType.CHANGE_ORDER, ...basicAction(), payload: { itemId, destinationIndex } }),
     [dispatchAction]
   );
-  const onRemove = useCallback((itemId: string) => dispatchAction({ type: QueueActionType.REMOVE, payload: itemId }), [dispatchAction]);
-  const onPlay = useCallback((item: QueueItem) => dispatchAction({ type: QueueActionType.PLAY_NOW, payload: { itemId: item.id } }), [dispatchAction]);
+  const onRemove = useCallback(
+    (itemId: string) => dispatchAction({ type: QueueActionType.REMOVE, ...basicAction(), payload: itemId }),
+    [dispatchAction]
+  );
+  const onPlay = useCallback(
+    (item: QueueItem) => dispatchAction({ type: QueueActionType.PLAY_NOW, ...basicAction(), payload: { itemId: item.id } }),
+    [dispatchAction]
+  );
 
   return {
     queue,

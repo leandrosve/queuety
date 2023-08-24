@@ -5,6 +5,7 @@ export default {
       copy: 'Copy',
       copied: 'Copied!',
       save: 'Save',
+      views: 'views',
     },
     time: {
       days_ago: '{{days}} days ago',

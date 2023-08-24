@@ -42,17 +42,16 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         alignItems='start'
         position='relative'
         background={isCurrent ? 'whiteAlpha.100' : 'transparent'}
-        height={'4rem' /* Must be hardcoded so the d&d placeholder does not mess up*/}
+        height={'4.2rem' /* Must be hardcoded so the d&d placeholder does not mess up*/}
       >
-        <Box position='relative' flexShrink={0} paddingX={2}>
-          <Image height='4rem' objectFit='cover' borderRadius='md' aspectRatio={'16/9'} src={video.thumbnail} />
+        <Box position='relative' flexShrink={0} paddingX={2} height='4.2rem' padding='3px'>
+          <Image objectFit='cover' height='100%' borderRadius='md' aspectRatio={'16/9'} src={video.thumbnail} />
           {isPlaying && (
             <Icon as={BsFillPlayFill} borderRadius='full' paddingX={1} position='absolute' bottom='.2rem' left='.2rem' background='bgAlpha.100' />
           )}
           <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
             {FormatUtils.formatDuration(video.duration)}
           </Text>
-          {isCurrent && <QueueItemProgressBar duration={video.duration} />}
         </Box>
         <Flex direction='column' gap={1}>
           <Heading display='inline' size='sm' noOfLines={2} title={video.title}>
@@ -77,7 +76,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
           >
             <Icon as={LuMoreHorizontal} boxSize='1rem' />
           </IconButton>
-          <IconButton variant='link' aria-label='drag' padding={2} paddingX={0} onClick={e => e.stopPropagation()}>
+          <IconButton variant='link' aria-label='drag' padding={2} paddingX={0} onClick={(e) => e.stopPropagation()}>
             <Icon as={LuAlignJustify} boxSize='1rem' />
           </IconButton>
         </Box>

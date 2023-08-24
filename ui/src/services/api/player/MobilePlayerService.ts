@@ -1,6 +1,6 @@
+import { PlayerStatusAction } from '../../../model/player/PlayerActions';
 import PlayerStatus from '../../../model/player/PlayerStatus';
-import { Queue } from '../../../model/queue/Queue';
-import { QueueActionRequest } from '../../../model/queue/QueueActions';
+import { InitializeAction, QueueActionRequest } from '../../../model/queue/QueueActions';
 import PlayerService from './PlayerService';
 
 export default class MobilePlayerService extends PlayerService {
@@ -17,7 +17,7 @@ export default class MobilePlayerService extends PlayerService {
     return this.emit<boolean>('notify-user-changed', { nickname, userId: this.userId, playerRoomId: this.playerRoomId });
   }
 
-  public static onHostReconnected(callback: (res: boolean) => void) {
+  public static onHostReconnected(callback: (res: { userId: string; clientId: string; nickname: string }) => void) {
     this._socket.on('host-reconnected', callback);
   }
 
@@ -45,11 +45,15 @@ export default class MobilePlayerService extends PlayerService {
     return this.emit<boolean>('send-complete-queue-request', { playerRoomId: this.playerRoomId, clientId: this.clientId });
   }
 
-  public static onCompleteQueue(callback: (res: { queue: Queue }) => void) {
+  public static onCompleteQueue(callback: (res: InitializeAction) => void) {
     this._socket.once('receive-complete-queue', callback);
   }
 
   public static onPlayerStatus(callback: (res: { status: PlayerStatus }) => void) {
     this._socket.on('receive-player-status', callback);
+  }
+
+  public static sendPlayerStatusAction(action: PlayerStatusAction) {
+    return this.emit<boolean>('send-player-status-action', { playerRoomId: this.playerRoomId, action });
   }
 }

@@ -8,7 +8,6 @@ interface Props {
   onTimeChange: (time: number) => void;
   currentTime?: number; // Seconds
   playbackRate: number; // Seconds
-
   state: PlayerState;
 }
 const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state }: Props) => {
@@ -21,21 +20,28 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state 
     setTime(value);
     setIsDragging(false);
     onTimeChange(value);
+    setShowTooltip(false);
   };
   useEffect(() => setTime(currentTime || 0), [currentTime]);
 
   useEffect(() => {
     let interval: number;
+    let lastTime = new Date().getTime();
     if (state === PlayerState.PLAYING) {
       interval = setInterval(() => {
-        setTime((p) => p + 0.1 * playbackRate);
+        //setTime((p) => p + 0.1 * playbackRate);
+        const currentTime = new Date().getTime();
+        const timeDiff = (currentTime - lastTime) / 1000; // To seconds
+        lastTime = currentTime;
+        console.log(playbackRate);
+        setTime((p) => p + timeDiff * playbackRate);
       }, 100);
     }
     return () => clearInterval(interval);
   }, [state, playbackRate]);
 
   return (
-    <Flex direction='column' alignItems='center' gap={1} width='100%'>
+    <Flex direction='column' alignItems='center' gap={1} width='100%' mt={2}>
       <Slider
         aria-label='slider-ex-4'
         defaultValue={30}
@@ -43,19 +49,20 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state 
         max={duration}
         onChange={(v) => setDraggingValue(v)}
         onChangeEnd={handleChangeEnd}
-        onChangeStart={() => setIsDragging(true)}
+        onChangeStart={() => {
+          setIsDragging(true);
+          setShowTooltip(true);
+        }}
         colorScheme='primary'
         value={isDragging ? draggingValue : time}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
       >
-        <SliderTrack height='8px'>
+        <SliderTrack height='8px' boxShadow='base'>
           <SliderFilledTrack />
         </SliderTrack>
         <Tooltip
           hasArrow
           bg='bgAlpha.100'
-          color='white'
+          color='text.500'
           placement='top'
           isOpen={showTooltip}
           label={FormatUtils.formatDuration(isDragging ? draggingValue : time)}

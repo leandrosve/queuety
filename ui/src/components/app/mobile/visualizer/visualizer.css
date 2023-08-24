@@ -1,6 +1,3 @@
-.visualizer {
-}
-
 .visualizer-overlay-left {
   height: 100%;
   width: 40%;
@@ -36,18 +33,18 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 4s ease;
+  transition: opacity 3s ease;
+  transform: scaleY(-1);
 }
 
 .visualizer-backdrop-img.fade-in {
-  opacity:.1;
+  opacity: 0.2;
 }
 
-html[data-theme='light'] .visualizer-backdrop-img{
+html[data-theme='light'] .visualizer-backdrop-img {
   mix-blend-mode: hard-light;
 }
 
-
-html[data-theme='light'] .visualizer-backdrop-img.fade-in{
-  opacity: 0.3;
+html[data-theme='light'] .visualizer-backdrop-img.fade-in {
+  opacity: 0.2;
 }

@@ -15,6 +15,7 @@ const getSavedUsers = (): AllowedUser[] => {
 const useAllowedUsers = () => {
   const [initialized, setInitialized] = useState(false);
   const [list, setList] = useState<AllowedUser[]>(getSavedUsers());
+  const [lastAllowed, setLastAllowed] = useState<AllowedUser | null>();
 
   const add = (user: AllowedUser) => {
     setList((prev) => {
@@ -22,6 +23,7 @@ const useAllowedUsers = () => {
       if (index < 0) return [user, ...prev];
       return prev.map((i) => (i.userId !== user.userId ? i : user));
     });
+    setLastAllowed(user);
   };
 
   const remove = (userId: string) => {
@@ -60,6 +62,7 @@ const useAllowedUsers = () => {
     get,
     update,
     list,
+    lastAllowed,
   };
 };
 

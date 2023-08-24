@@ -70,7 +70,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
   };
 
   const onEndSession = () => {
-    StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS] });
+    StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS, StorageKey.USER_ID] });
     location.reload();
   };
   useEffect(() => {

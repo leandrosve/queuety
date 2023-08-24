@@ -9,6 +9,7 @@ interface Props {
   get: (userId: string) => AllowedUser | null;
   list: AllowedUser[];
   update: (user: Partial<AllowedUser>) => void;
+  lastAllowed: AllowedUser | null;
 }
 
 const AllowedUsersContext = React.createContext<Props>({
@@ -18,6 +19,7 @@ const AllowedUsersContext = React.createContext<Props>({
   get: () => null,
   update: () => null,
   list: [],
+  lastAllowed: null,
 });
 
 export const AllowedUsersProvider = ({ children }: PropsWithChildren) => {

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { QueueAction, QueueActionRequest } from '../../model/queue/QueueActions';
+import { QueueAction, QueueActionRequest, QueueActionType } from '../../model/queue/QueueActions';
 import useQueue, { QueueControls } from './useQueue';
 import QueueItem from '../../model/player/QueueItem';
 import { v4 as uuid } from 'uuid';
@@ -8,10 +8,12 @@ import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
 import { Queue, QueueStatus } from '../../model/queue/Queue';
 import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
 import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
+import useDesktopNotifications from '../notifications/useDesktopNotifications';
 
 const getInitialQueueInfo = (): Queue => {
+  const emptyQueue: Queue = { items: [], currentId: null, status: QueueStatus.UNSTARTED };
   const q = StorageUtils.get(StorageKey.QUEUE);
-  if (q) return JSON.parse(q) as Queue;
+  if (q) return { ...emptyQueue, ...JSON.parse(q) };
   return { items: [], currentId: null, status: QueueStatus.UNSTARTED };
 };
 
@@ -22,10 +24,11 @@ export interface QueueData {
   currentItem: QueueItem;
 }
 
-const useDesktopQueue = (playerRoomId?: string | null): { queue: QueueData; controls: QueueControls } => {
+const useDesktopQueue = (playerRoomId: string, userId: string): { queue: QueueData; controls: QueueControls } => {
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
   const onlineUsers = useOnlinePrescenceContext();
   const [actions, setActions] = useState<{ previous?: QueueActionRequest; last: QueueActionRequest }>();
+  const notifications = useDesktopNotifications();
 
   const registerLastAction = useCallback(
     (action: QueueAction) => {
@@ -37,7 +40,7 @@ const useDesktopQueue = (playerRoomId?: string | null): { queue: QueueData; cont
     },
     [setActions]
   );
-  const { queue, controls, dispatch } = useQueue(getInitialQueueInfo(), registerLastAction);
+  const { queue, controls, dispatch } = useQueue(userId, getInitialQueueInfo(), registerLastAction);
 
   const [items, length, currentIndex, currentItem] = useMemo(() => {
     const index = queue.items.findIndex((i) => i.id === queue.currentId);
@@ -51,12 +54,20 @@ const useDesktopQueue = (playerRoomId?: string | null): { queue: QueueData; cont
     if (onlineUsers.data.length) {
       DesktopPlayerService.sendPlayerAction(playerRoomId, actions?.last);
     }
+    if (actions.last) {
+      notifications.queueAction(actions.last);
+    }
   }, [actions]);
 
   useEffect(() => {
     DesktopPlayerService.onCompleteQueueRequest(({ clientId }) => {
       Logger.info(`Received complete status request from clientId: ${clientId}`);
-      DesktopPlayerService.sendCompleteQueue(clientId, queueRef.current);
+      DesktopPlayerService.sendCompleteQueue(clientId, {
+        timestamp: new Date().getTime(),
+        type: QueueActionType.INITIALIZE,
+        userId,
+        payload: queueRef.current,
+      });
     });
     DesktopPlayerService.onMobilePlayerEvent((action) => {
       if (action?.type) Logger.info(`Received mobile player event`, action);

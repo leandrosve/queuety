@@ -4,6 +4,7 @@ export default {
       test: 'probando!',
       copy: 'Copiar',
       copied: 'Copiado!',
+      views: 'visitas',
     },
     layout: {
       theme: {

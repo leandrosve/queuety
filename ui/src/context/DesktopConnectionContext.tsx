@@ -5,6 +5,7 @@ import StorageUtils, { StorageKey } from '../utils/StorageUtils';
 export interface ConnectionData {
   playerRoom: RoomData;
   authRoom: RoomData;
+  userId: string | null;
   settings: Settings;
 }
 
@@ -24,7 +25,7 @@ export type DesktopConnectionContextProps = {
 };
 
 const DesktopConnectionContext = React.createContext<DesktopConnectionContextProps>({
-  connection: { playerRoom: { id: null }, authRoom: { id: null }, settings: { automatic: false } },
+  connection: { playerRoom: { id: null }, authRoom: { id: null }, settings: { automatic: false }, userId: null },
   regenAuthRoom: () => {},
   toggleAutoAuth: () => {},
 });
@@ -48,6 +49,7 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   const [playerRoom, setPlayerRoom] = useState<RoomData>(getInitialPlayerRoom());
   const [authRoom, setAuthRoom] = useState<RoomData>(getInitialAuthRoom());
   const [settings, setSettings] = useState<Settings>(getInitialSettings());
+  const [userId, setUserId] = useState<string | null>(StorageUtils.get(StorageKey.USER_ID));
 
   const retrievePlayerRoomId = async () => {
     setPlayerRoom({ id: null, loading: true });
@@ -61,6 +63,13 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
     const res = await ConnectionService.getAuthRoomId();
     if (res.hasError) return;
     setAuthRoom({ id: res.data.roomId });
+  };
+
+  const retrieveUserId = async () => {
+    const res = await ConnectionService.getUserId();
+    if (!res.hasError) {
+      setUserId(res.data.userId);
+    }
   };
 
   const toggleAutoAuth = (value?: boolean) => {
@@ -78,6 +87,9 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
     if (!authRoom?.id) {
       retrieveAuthRoomId();
     }
+    if (!userId) {
+      retrieveUserId();
+    }
   }, []);
 
   useEffect(() => {
@@ -87,7 +99,9 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   }, [playerRoom, authRoom, settings]);
 
   return (
-    <DesktopConnectionContext.Provider value={{ connection: { playerRoom, authRoom, settings }, regenAuthRoom: retrieveAuthRoomId, toggleAutoAuth }}>
+    <DesktopConnectionContext.Provider
+      value={{ connection: { playerRoom, authRoom, settings, userId }, regenAuthRoom: retrieveAuthRoomId, toggleAutoAuth }}
+    >
       {children}
     </DesktopConnectionContext.Provider>
   );
