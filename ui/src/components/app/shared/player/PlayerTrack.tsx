@@ -1,16 +1,29 @@
 import { Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, Tooltip } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PlayerState from '../../../../model/player/PlayerState';
 import FormatUtils from '../../../../utils/FormatUtils';
+import PlayerStatus from '../../../../model/player/PlayerStatus';
+import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 
 interface Props {
-  duration: number;
   onTimeChange: (time: number) => void;
-  currentTime?: number; // Seconds
-  playbackRate: number; // Seconds
-  state: PlayerState;
+  status: PlayerStatus;
+  currentQueuedVideo?: YoutubeVideoDetail;
 }
-const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state }: Props) => {
+const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo }: Props) => {
+  const { currentTime, duration, playbackRate, state } = useMemo(() => {
+    if (currentQueuedVideo && currentQueuedVideo?.id !== status.videoId) {
+      return {
+        currentTime: 0,
+        duration: currentQueuedVideo.duration,
+        state: PlayerState.BUFFERING,
+        videoId: currentQueuedVideo.id,
+        playbackRate: status.playbackRate,
+      };
+    }
+    return status;
+  }, [status, currentQueuedVideo]);
+
   const [time, setTime] = useState(currentTime || 0);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -33,7 +46,6 @@ const PlayerTrack = ({ duration, onTimeChange, currentTime, playbackRate, state 
         const currentTime = new Date().getTime();
         const timeDiff = (currentTime - lastTime) / 1000; // To seconds
         lastTime = currentTime;
-        console.log(playbackRate);
         setTime((p) => p + timeDiff * playbackRate);
       }, 100);
     }

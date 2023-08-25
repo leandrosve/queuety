@@ -6,4 +6,5 @@ export default interface PlayerStatus {
   currentTime: number;
   state: PlayerState;
   playbackRate: number;
+  videoId: string;
 }

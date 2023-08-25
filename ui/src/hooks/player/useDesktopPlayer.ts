@@ -15,14 +15,29 @@ export interface PlayerControls {
   onForward: (seconds: number) => void;
   onRewind: (seconds: number) => void;
 }
+
+export interface PlayerExtraStatus {
+  fullscreen: boolean;
+}
+
+export interface PlayerExtraControls {
+  onFullscreenChange: (value: boolean) => void;
+}
+
+export interface PlayerExtraOptions {
+  status: PlayerExtraStatus;
+  controls: PlayerExtraControls;
+}
+
 const useDesktopPlayer = (
   playerRoomId: string,
   currentItem: QueueItem,
   onVideoEnded: () => void
-): { status: PlayerStatus; controls: PlayerControls } => {
+): { status: PlayerStatus; controls: PlayerControls; extraOptions: PlayerExtraOptions } => {
   const { status } = usePlayerStatusContext();
   const { controls, getCurrentPlayerStatus } = useYoutubePlayer('player-container', currentItem, onVideoEnded);
   const [lastPlayerAction, setLastPlayerAction] = useState<PlayerStatusAction>();
+  const [extraStatus, setExtraStatus] = useState<PlayerExtraStatus>({ fullscreen: false });
 
   const onPlayerStatusAction = useCallback(
     (action: PlayerStatusAction) => {
@@ -38,7 +53,9 @@ const useDesktopPlayer = (
         case PlayerStatusActionType.CHANGE_TIME:
           controls.onTimeChange(action.payload.time);
           controls.onPlay();
-
+          break;
+        case PlayerStatusActionType.CHANGE_FULLSCREEN:
+          onFullscreenChange(action.payload.value);
           break;
         default:
           break;
@@ -46,6 +63,10 @@ const useDesktopPlayer = (
     },
     [controls]
   );
+
+  const onFullscreenChange = useCallback((fullscreen: boolean) => {
+    setExtraStatus((p) => ({ ...p, fullscreen }));
+  }, []);
 
   useEffect(() => {
     if (lastPlayerAction) {
@@ -76,6 +97,12 @@ const useDesktopPlayer = (
   return {
     status,
     controls,
+    extraOptions: {
+      status: extraStatus,
+      controls: {
+        onFullscreenChange,
+      },
+    },
   };
 };
 

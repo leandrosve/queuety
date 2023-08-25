@@ -41,6 +41,7 @@ import languages from '../../../../data/languages';
 import AllowedUserList from '../../desktop/connection/AllowedUserList';
 import PlayerService from '../../../../services/api/player/PlayerService';
 import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
+import MobilePlayerService from '../../../../services/api/player/MobilePlayerService';
 
 interface Props {
   isOpen: boolean;
@@ -64,7 +65,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
 
   const onSaveNickname = () => {
     if (isMobile && nicknameValue != settings.nickname) {
-      PlayerService.notifyUserChanged(nicknameValue);
+      MobilePlayerService.notifyUserChanged(nicknameValue);
     }
     setNickname(nicknameValue);
   };

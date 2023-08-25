@@ -1,31 +1,29 @@
 import './assets/css/app.css';
-import { ChakraProvider, Flex, Spinner, useMediaQuery } from '@chakra-ui/react';
+import { ChakraProvider, Flex, Spinner } from '@chakra-ui/react';
 import theme from './lib/chakra/chakraTheme';
 import './i18n/i18n';
-import DesktopApp from './components/app/desktop/DesktopApp';
 import { SettingsProvider } from './context/SettingsContext';
-import MobileApp from './components/app/mobile/MobileApp';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Suspense, lazy } from 'react';
+import DeviceSelection, { DeviceType } from './components/app/shared/device/DeviceSelection';
+import StorageUtils, { StorageKey } from './utils/StorageUtils';
 
 const DesktopAppLazy = lazy(() => import('./components/app/desktop/DesktopApp'));
 const MobileAppLazy = lazy(() => import('./components/app/mobile/MobileApp'));
 
 function App() {
   // This damn hooks always run twice for some reason
-  const [initialized, setInitialized] = useState(false);
-  const [isMobile] = useMediaQuery('(max-width: 800px)', { fallback: false });
+  const [deviceType, setDeviceType] = useState<DeviceType>(StorageUtils.get(StorageKey.DEVICE) as DeviceType);
 
-  useEffect(() => {
-    setInitialized(true);
-  }, [isMobile]);
-  if (!initialized) return null;
-
+  const renderContent = () => {
+    if (deviceType === DeviceType.DESKTOP) return <DesktopAppLazy />;
+    return <MobileAppLazy />;
+  };
   return (
     <ChakraProvider theme={theme}>
       <SettingsProvider>
         <div className='app'>
-          <Suspense fallback={<Loader />}>{isMobile ? <MobileAppLazy /> : <DesktopAppLazy />}</Suspense>
+          <Suspense fallback={<Loader />}>{!deviceType ? <DeviceSelection onSelected={(type) => setDeviceType(type)} /> : renderContent()} </Suspense>
         </div>
       </SettingsProvider>
     </ChakraProvider>

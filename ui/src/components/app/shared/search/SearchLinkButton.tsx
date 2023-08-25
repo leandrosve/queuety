@@ -14,7 +14,7 @@ const SearchLinkButton = ({ onClick, ...buttonProps }: Props) => {
     onClick?.();
   };
   return (
-    <Button display='flex' onContextMenu={onContextMenu} justifyContent='start' gap={5} onClick={onClick} {...buttonProps}>
+    <Button display='flex' flexShrink={0} onContextMenu={onContextMenu} justifyContent='start' gap={5} onClick={onClick} {...buttonProps}>
       <BsSearch />
       <Text>{t('playerSearch.pasteUrl')}</Text>
     </Button>

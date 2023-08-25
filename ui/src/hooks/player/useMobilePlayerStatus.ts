@@ -12,9 +12,14 @@ const initialStatus: PlayerStatus = {
   playbackRate: PlayerState.UNSTARTED,
   duration: 1,
   isReady: false,
+  videoId: '',
 };
 
-const useMobilePlayerStatus = (): { status: PlayerStatus; controls: PlayerControls } => {
+export interface MobilePlayerControls extends PlayerControls {
+  onFullscreenChange: (value: boolean) => void;
+}
+
+const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayerControls } => {
   const [status, setStatus] = useState<PlayerStatus>(initialStatus);
 
   const onPlay = () => {
@@ -31,6 +36,10 @@ const useMobilePlayerStatus = (): { status: PlayerStatus; controls: PlayerContro
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_TIME, payload: { time: timeSeconds } });
   };
 
+  const onFullscreenChange = (value: boolean) => {
+    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_FULLSCREEN, payload: { value } });
+  };
+
   useEffect(() => {
     MobilePlayerService.onPlayerStatus((res) => {
       Logger.info('Received player status', res);
@@ -44,6 +53,7 @@ const useMobilePlayerStatus = (): { status: PlayerStatus; controls: PlayerContro
       onPlay,
       onForward: () => {},
       onRewind: () => {},
+      onFullscreenChange,
       onTimeChange,
     },
   };

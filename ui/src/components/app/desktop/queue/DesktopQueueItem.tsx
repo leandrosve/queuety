@@ -39,7 +39,6 @@ export const DesktopQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRe
       _light={{ background: isCurrent ? 'blackAlpha.200' : undefined }}
       onClick={onPlay}
       padding={1}
-      direction={{ base: 'column', md: 'row' }}
       alignItems='start'
       position='relative'
       height={'80px' /* Must be hardcoded so the d&d placeholder does not mess up*/}

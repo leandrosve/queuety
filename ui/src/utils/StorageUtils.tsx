@@ -8,6 +8,7 @@ export enum StorageKey {
   PLAYER_ROOM_ID = 'playerRoomId',
   AUTH_ROOM_ID = 'authRoomId',
   HOST = 'host',
+  DEVICE = 'device',
 }
 
 export default class StorageUtils {

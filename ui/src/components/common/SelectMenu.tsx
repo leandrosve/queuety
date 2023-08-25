@@ -15,6 +15,9 @@ interface Props {
   hideTriggerValue?: boolean;
   hideChevron?: boolean;
   variant?: string;
+  buttonContent?: string | ReactNode;
+  buttonProps?: ButtonProps;
+  menuWidth?: number | string;
 }
 const SelectMenu = ({
   value,
@@ -29,6 +32,9 @@ const SelectMenu = ({
   containerRef,
   onChange,
   variant,
+  buttonContent,
+  buttonProps,
+  menuWidth = '300px',
 }: Props) => {
   const triggerValue = useMemo(() => {
     if (hideTriggerValue) return null;
@@ -43,14 +49,17 @@ const SelectMenu = ({
         width={triggerWidth}
         justifyContent='space-between'
         textAlign={'start'}
+        {...buttonProps}
       >
-        <Flex gap={3} alignItems='center'>
-          {icon}
-          {triggerValue}
-        </Flex>
+        {buttonContent ?? (
+          <Flex gap={3} alignItems='center'>
+            {icon}
+            {triggerValue}
+          </Flex>
+        )}
       </MenuButton>
       <Portal containerRef={containerRef}>
-        <MenuList zIndex={10000} width='300px' fontSize='sm' padding={2} maxHeight={maxHeight} overflow='hidden' overflowY='auto'>
+        <MenuList zIndex={10000} width={menuWidth} fontSize='sm' padding={2} maxHeight={maxHeight} overflow='hidden' overflowY='auto'>
           {options.map(([val, lab]) => (
             <MenuItem key={val} justifyContent='space-between' onClick={() => onChange?.(val)}>
               <span>{lab}</span>

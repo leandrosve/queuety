@@ -54,21 +54,29 @@ const MobileNotifications = () => {
     <Flex
       background={errorDisplay.recovered ? 'green.500' : 'red.400'}
       alignSelf='stretch'
+      alignItems='stretch'
+      justifyContent='stretch'
       borderTopRadius='lg'
-      paddingX={2}
-      justifyContent='center'
       color='white'
-      paddingBottom={'10px'}
-      marginBottom='-10px'
       zIndex={-1}
+      marginBottom={'-10px'}
       opacity={error.code ? 1 : 0}
-      transition='opacity 300ms ease'
-      textShadow='0px 0px 5px #ffffff8f'
+      transition='opacity 800ms ease'
     >
-      <Collapse in={!!error.code}>
-        <Flex alignItems='center' textShadow='md' gap={2}>
+      <Collapse in={!!error.code} style={{ width: '100%' }}>
+        <Flex
+          alignSelf='stretch'
+          grow={1}
+          justifyContent='center'
+          flex={1}
+          textAlign='center'
+          alignItems='center'
+          paddingBottom='10px'
+          textShadow='md'
+          gap={2}
+        >
           <Icon as={errorDisplay.recovered ? PiPlugsConnectedBold : PiPlugsBold} filter='drop-shadow(0px 0px 5px #ffffff8f)' />
-          {errorDisplay.code ?? '  '}
+          {errorDisplay.code ?? '____'}
         </Flex>
       </Collapse>
     </Flex>

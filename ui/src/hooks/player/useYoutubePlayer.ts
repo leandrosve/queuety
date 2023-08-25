@@ -17,6 +17,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   const [state, setState] = useState<PlayerState>(PlayerState.UNSTARTED);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [initialized, setInitialized] = useState(false);
+  const [innerVideoId, setInnerVideoId] = useState(queueItem?.video?.id);
 
   const { updateStatus } = usePlayerStatusContext();
 
@@ -45,9 +46,15 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     setCurrentTime(playerRef.current.getCurrentTime() || 0);
     setPlaybackRate(playerRef.current.getPlaybackRate() || 1);
   };
+  const getVideoIdFromURL = (videoURL?: string) => {
+    // expected format: https://www.youtube.com/watch?v=ciTKItglVZk
+    console.log(videoURL);
+    return videoURL?.split('v=')[1] || '';
+  };
 
   const onStateChange = (event: YT.OnStateChangeEvent) => {
     setState((playerRef.current?.getPlayerState() as PlayerState) || PlayerState.UNSTARTED);
+    setInnerVideoId(getVideoIdFromURL(playerRef.current?.getVideoUrl()));
     if (event.data !== PlayerState.UNSTARTED) {
       setDuration(playerRef.current?.getDuration() || 0);
       setCurrentTime(playerRef.current?.getCurrentTime() || 0);
@@ -65,6 +72,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
 
   const onTimeChange = (time: number) => {
     playerRef.current?.seekTo(time, true);
+    playerRef.current?.playVideo();
   };
   const onPlay = () => {
     playerRef.current?.playVideo();
@@ -93,6 +101,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
       duration: player.getDuration(),
       isReady: true,
       playbackRate: player.getPlaybackRate(),
+      videoId: getVideoIdFromURL(player.getVideoUrl()),
     };
   }, [playerRef]);
 
@@ -105,8 +114,8 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   }, [queueItem]);
 
   useEffect(() => {
-    updateStatus({ state, currentTime, playbackRate, duration, isReady });
-  }, [state, currentTime, playbackRate, duration, isReady]);
+    updateStatus({ state, currentTime, playbackRate, duration, isReady, videoId: innerVideoId });
+  }, [state, currentTime, playbackRate, duration, isReady, innerVideoId]);
 
   useEffect(() => {
     if (initialized || !queueItem) return;

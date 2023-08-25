@@ -4,9 +4,10 @@ export enum PlayerStatusActionType {
   CHANGE_TIME = 'CHANGE_TIME',
   REWIND = 'REWIND',
   FORWARD = 'FORWARD',
+  CHANGE_FULLSCREEN = 'CHANGE_FULLSCREEN',
 }
 
-export type PlayerStatusAction = PlayAction | PauseAction | ChangeTimeAction | RewindAction;
+export type PlayerStatusAction = PlayAction | PauseAction | ChangeTimeAction | RewindAction | ChangeFullscreenAction;
 
 export type PlayAction = {
   type: PlayerStatusActionType.PLAY;
@@ -36,5 +37,12 @@ export type ForwardAction = {
   type: PlayerStatusActionType.FORWARD;
   payload: {
     seconds: number;
+  };
+};
+
+export type ChangeFullscreenAction = {
+  type: PlayerStatusActionType.CHANGE_FULLSCREEN;
+  payload: {
+    value: boolean;
   };
 };
