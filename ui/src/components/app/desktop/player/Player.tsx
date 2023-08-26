@@ -1,11 +1,10 @@
-import { Box, Button, Flex, Skeleton } from '@chakra-ui/react';
+import { Box, Flex, Skeleton } from '@chakra-ui/react';
 import './player.css';
 import QueueItem from '../../../../model/player/QueueItem';
 import PlayerBackdrop from './PlayerBackdrop';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import classNames from 'classnames';
 import PlayerFullScreenOverlay from './PlayerFullscreenOverlay';
-import { useRef, useEffect } from 'react';
 
 interface Props {
   queueItem: QueueItem;
@@ -15,7 +14,7 @@ interface Props {
 }
 const Player = ({ queueItem, status, fullscreen, onFullscreenChange }: Props) => {
   return (
-    <Flex direction='column' gap={3} width={{ base: '95vw', md: 750, lg: 900 }}>
+    <Flex direction='column' gap={3} width={{ base: '95vw', md: 800, lg: 1000, xl: 1100 }} maxWidth={'95vw'}>
       {fullscreen && <div className='player-fullscreen-backdrop' onClick={() => onFullscreenChange(false)} />}
       {fullscreen && <PlayerFullScreenOverlay onFullscreenChange={() => onFullscreenChange(false)} />}
       <Flex

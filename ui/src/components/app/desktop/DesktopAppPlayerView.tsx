@@ -18,7 +18,7 @@ const DesktopAppPlayerView = ({ playerRoomId, userId }: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { queue, controls: queueControls } = useDesktopQueue(playerRoomId, userId);
   // We need to ensure the container div is rendered before initializing the player
-  const { controls: playerControls, status: playerStatus, extraOptions } = useDesktopPlayer(playerRoomId, queue.currentItem, queueControls.onSkip);
+  const { controls: playerControls, status: playerStatus } = useDesktopPlayer(playerRoomId, queue.currentItem, queueControls.onSkip);
   return (
     <Flex direction='column' gap={5} paddingTop={10}>
       <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} />
@@ -45,8 +45,8 @@ const DesktopAppPlayerView = ({ playerRoomId, userId }: Props) => {
           <Player
             queueItem={queue.currentItem}
             status={playerStatus}
-            fullscreen={extraOptions.status.fullscreen}
-            onFullscreenChange={extraOptions.controls.onFullscreenChange}
+            fullscreen={playerStatus.fullscreen}
+            onFullscreenChange={playerControls.onFullscreenChange}
           />
           <PlayerDescription video={queue.currentItem.video} />
           <PlayerControlsBar status={playerStatus} queueControls={queueControls} playerControls={playerControls} />

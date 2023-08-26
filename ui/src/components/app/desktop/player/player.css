@@ -33,10 +33,13 @@
   width: 100vw;
   position: fixed;
   z-index: 101;
+  cursor: none;
 }
 
 .player-fullscreen-overlay.isMovingMouse {
   pointer-events: none;
+  cursor: auto;
+  cursor: none;
 }
 
 .player-fullscreen-overlay button {

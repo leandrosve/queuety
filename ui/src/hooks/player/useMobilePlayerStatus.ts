@@ -9,10 +9,12 @@ import { PlayerStatusActionType } from '../../model/player/PlayerActions';
 const initialStatus: PlayerStatus = {
   currentTime: 0,
   state: -1,
-  playbackRate: PlayerState.UNSTARTED,
   duration: 1,
   isReady: false,
   videoId: '',
+  fullscreen: false,
+  rate: 1,
+  volume: 1,
 };
 
 export interface MobilePlayerControls extends PlayerControls {
@@ -40,10 +42,18 @@ const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayer
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_FULLSCREEN, payload: { value } });
   };
 
+  const onRateChange = (value: number) => {
+    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_RATE, payload: { value } });
+  };
+
+  const onVolumeChange = (value: number) => {
+    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_VOLUME, payload: { value } });
+  };
+
   useEffect(() => {
     MobilePlayerService.onPlayerStatus((res) => {
-      Logger.info('Received player status', res);
-      setStatus({ ...res.status });
+      Logger.info('Received player status', res?.status);
+      setStatus((p) => ({ ...p, ...res.status }));
     });
   }, []);
   return {
@@ -55,6 +65,8 @@ const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayer
       onRewind: () => {},
       onFullscreenChange,
       onTimeChange,
+      onRateChange,
+      onVolumeChange,
     },
   };
 };

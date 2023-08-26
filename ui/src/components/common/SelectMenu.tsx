@@ -1,14 +1,14 @@
-import { Button, ButtonProps, Flex, Menu, MenuButton, MenuItem, MenuList, Portal, forwardRef } from '@chakra-ui/react';
+import { Button, ButtonProps, Flex, Menu, MenuButton, MenuItem, MenuList, Portal } from '@chakra-ui/react';
 import { LuCheck, LuChevronDown } from 'react-icons/lu';
 import { RefObject, ReactNode, useMemo } from 'react';
 
-interface Props {
-  value: string;
-  options: [value: string, label: string][];
+interface Props<T> {
+  value: T;
+  options: [value: T, label: string][];
   placeholder?: string;
-  defaultValue?: string;
+  defaultValue?: T;
   containerRef?: RefObject<HTMLElement>;
-  onChange?: (value: string) => void;
+  onChange?: (value: T) => void;
   icon?: ReactNode;
   triggerWidth?: string | number;
   maxHeight?: string | number;
@@ -18,8 +18,9 @@ interface Props {
   buttonContent?: string | ReactNode;
   buttonProps?: ButtonProps;
   menuWidth?: number | string;
+  renderItem?: (value: T) => ReactNode;
 }
-const SelectMenu = ({
+const SelectMenu = <T,>({
   value,
   options,
   placeholder,
@@ -35,7 +36,8 @@ const SelectMenu = ({
   buttonContent,
   buttonProps,
   menuWidth = '300px',
-}: Props) => {
+  renderItem,
+}: Props<T>) => {
   const triggerValue = useMemo(() => {
     if (hideTriggerValue) return null;
     return options.find(([val]) => val === (value ?? defaultValue))?.[1] || placeholder;
@@ -61,9 +63,15 @@ const SelectMenu = ({
       <Portal containerRef={containerRef}>
         <MenuList zIndex={10000} width={menuWidth} fontSize='sm' padding={2} maxHeight={maxHeight} overflow='hidden' overflowY='auto'>
           {options.map(([val, lab]) => (
-            <MenuItem key={val} justifyContent='space-between' onClick={() => onChange?.(val)}>
-              <span>{lab}</span>
-              {val === value && <LuCheck />}
+            <MenuItem key={`${val}`} justifyContent='space-between' onClick={() => onChange?.(val)}>
+              {renderItem ? (
+                renderItem(val)
+              ) : (
+                <>
+                  <span>{lab}</span>
+                  {val === value && <LuCheck />}
+                </>
+              )}
             </MenuItem>
           ))}
         </MenuList>

@@ -36,7 +36,7 @@ export default class DesktopPlayerService extends PlayerService {
     return this.emit('send-complete-queue', { clientId, action });
   }
 
-  public static sendPlayerStatus(playerRoomId: string, status: PlayerStatus) {
+  public static sendPlayerStatus(playerRoomId: string, status: Partial<PlayerStatus>) {
     return this.emit('send-player-status', { playerRoomId, status });
   }
 

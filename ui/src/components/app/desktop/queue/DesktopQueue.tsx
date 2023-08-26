@@ -8,6 +8,7 @@ import { BsDash } from 'react-icons/bs';
 import QueueItem from '../../../../model/player/QueueItem';
 import GlassContainer from '../../../common/glass/GlassContainer';
 import DragAndDropList from '../../../common/DragAndDropList';
+import PlayerStatus from '../../../../model/player/PlayerStatus';
 
 interface Props {
   queue: QueueItem[];
@@ -37,7 +38,7 @@ const DesktopQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, on
       >
         <Flex justifyContent='space-between' gap={2}>
           <Flex direction='column' gap={1}>
-            {currentIndex + 1< queue.length ? (
+            {currentIndex + 1 < queue.length ? (
               <Stack spacing={0}>
                 <Text fontSize='sm'>{t('playerQueue.next')}: </Text>
                 <Text noOfLines={1} title={queue[currentIndex + 1].video.title}>

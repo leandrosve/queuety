@@ -7,6 +7,7 @@ import { QueueControls } from '../../../../hooks/queue/useQueue';
 import { LuSettings, LuSpeaker, LuVolume1 } from 'react-icons/lu';
 import VisualizerControlOptionsModal from './VisualizerControlsOptionsModal';
 import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerStatus';
+import VisualizerSoundMenu from './VisualizerSoundMenu';
 
 interface Props {
   status: PlayerStatus;
@@ -35,7 +36,7 @@ const VisualizerControls = ({ status, controls, queueControls }: Props) => {
   return (
     <Flex alignItems='center' justifyContent='space-between' alignSelf='stretch' paddingX={5} gap={2}>
       <VisualizerControlOptionsModal isOpen={openExtraOptions} onClose={() => setOpenExtraOptions(false)} status={status} controls={controls} />
-      <IconButton variant='ghost' icon={<Icon as={LuVolume1} boxSize={4} />} aria-label='sound' color='text.300' />
+      <VisualizerSoundMenu volume={status.volume} onChangeVolume={controls.onVolumeChange} />
       <ButtonGroup variant='ghost' borderRadius='md'>
         <IconButton
           icon={<Icon as={BsSkipStartFill} boxSize={5} />}

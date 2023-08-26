@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
-import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
 import PlayerState from '../../model/player/PlayerState';
 import useYoutubePlayer from './useYoutubePlayer';
@@ -7,6 +6,9 @@ import QueueItem from '../../model/player/QueueItem';
 import PlayerStatus from '../../model/player/PlayerStatus';
 import { PlayerStatusAction, PlayerStatusActionType } from '../../model/player/PlayerActions';
 import Logger from '../../utils/Logger';
+import PlayerUtils from '../../utils/PlayerUtils';
+import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
+import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
 
 export interface PlayerControls {
   onTimeChange: (time: number) => void;
@@ -14,30 +16,34 @@ export interface PlayerControls {
   onPause: () => void;
   onForward: (seconds: number) => void;
   onRewind: (seconds: number) => void;
-}
-
-export interface PlayerExtraStatus {
-  fullscreen: boolean;
-}
-
-export interface PlayerExtraControls {
   onFullscreenChange: (value: boolean) => void;
-}
-
-export interface PlayerExtraOptions {
-  status: PlayerExtraStatus;
-  controls: PlayerExtraControls;
+  onRateChange: (value: number) => void;
+  onVolumeChange: (value: number) => void;
 }
 
 const useDesktopPlayer = (
   playerRoomId: string,
   currentItem: QueueItem,
   onVideoEnded: () => void
-): { status: PlayerStatus; controls: PlayerControls; extraOptions: PlayerExtraOptions } => {
-  const { status } = usePlayerStatusContext();
-  const { controls, getCurrentPlayerStatus } = useYoutubePlayer('player-container', currentItem, onVideoEnded);
+): { status: PlayerStatus; controls: PlayerControls } => {
+  //const { status } = usePlayerStatusContext();
+  const { controls: innerControls, getCurrentPlayerStatus, status } = useYoutubePlayer('player-container', currentItem, onVideoEnded);
   const [lastPlayerAction, setLastPlayerAction] = useState<PlayerStatusAction>();
-  const [extraStatus, setExtraStatus] = useState<PlayerExtraStatus>({ fullscreen: false });
+  const [fullscreen, setFullscreen] = useState<boolean>(false);
+  const { updateStatus: updateStatusContext } = usePlayerStatusContext();
+  const onlineUsers = useOnlinePrescenceContext();
+
+  // Need to keep track of the previous and current status to avoid sending full payloads
+  const [statusHistory, setStatusHistory] = useState<{ prev: PlayerStatus; current: PlayerStatus }>({
+    prev: { ...status, fullscreen },
+    current: { ...status, fullscreen },
+  });
+
+  const onFullscreenChange = useCallback((value: boolean) => {
+    setFullscreen(value);
+  }, []);
+
+  const controls: PlayerControls = useMemo(() => ({ ...innerControls, onFullscreenChange }), [innerControls, onFullscreenChange]);
 
   const onPlayerStatusAction = useCallback(
     (action: PlayerStatusAction) => {
@@ -45,28 +51,30 @@ const useDesktopPlayer = (
       if (!action.type) return;
       switch (action.type) {
         case PlayerStatusActionType.PLAY:
-          controls.onPlay();
+          innerControls.onPlay();
           break;
         case PlayerStatusActionType.PAUSE:
-          controls.onPause();
+          innerControls.onPause();
           break;
         case PlayerStatusActionType.CHANGE_TIME:
-          controls.onTimeChange(action.payload.time);
-          controls.onPlay();
+          innerControls.onTimeChange(action.payload.time);
+          innerControls.onPlay();
           break;
         case PlayerStatusActionType.CHANGE_FULLSCREEN:
           onFullscreenChange(action.payload.value);
+          break;
+        case PlayerStatusActionType.CHANGE_RATE:
+          innerControls.onRateChange(action.payload.value);
+          break;
+        case PlayerStatusActionType.CHANGE_VOLUME:
+          innerControls.onVolumeChange(action.payload.value);
           break;
         default:
           break;
       }
     },
-    [controls]
+    [innerControls]
   );
-
-  const onFullscreenChange = useCallback((fullscreen: boolean) => {
-    setExtraStatus((p) => ({ ...p, fullscreen }));
-  }, []);
 
   useEffect(() => {
     if (lastPlayerAction) {
@@ -86,23 +94,32 @@ const useDesktopPlayer = (
   }, []);
 
   useEffect(() => {
-    if (!playerRoomId || !DesktopPlayerService.isReady()) return;
     const isBuffering = status.state === PlayerState.BUFFERING;
-    const timeoutTime = isBuffering ? 600 : 200;
+    const current = { ...status, fullscreen };
+    updateStatusContext(current);
+    // So it doesn't make too many unnecesary requests
+    const debounceTime = isBuffering ? 600 : 200;
     const timeout = setTimeout(() => {
-      DesktopPlayerService.sendPlayerStatus(playerRoomId, status);
-    }, timeoutTime);
+      // Need to do this in separate effects so it doesn't generate any loops
+      setStatusHistory((prev) => ({ prev: prev.current, current }));
+    }, debounceTime);
+
     return () => clearTimeout(timeout);
-  }, [status]);
+  }, [status, fullscreen]);
+
+  useEffect(() => {
+    if (!playerRoomId || !DesktopPlayerService.isReady()) return;
+    if (!onlineUsers.data.length) return;
+    let payload: Partial<PlayerStatus> = statusHistory.current;
+    if (statusHistory.prev) {
+      payload = PlayerUtils.getStatusDifference(statusHistory.prev, statusHistory.current);
+    }
+    DesktopPlayerService.sendPlayerStatus(playerRoomId, payload);
+  }, [statusHistory]);
+
   return {
-    status,
+    status: statusHistory.current,
     controls,
-    extraOptions: {
-      status: extraStatus,
-      controls: {
-        onFullscreenChange,
-      },
-    },
   };
 };
 

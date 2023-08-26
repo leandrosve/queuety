@@ -19,15 +19,15 @@ interface Props {
 }
 const MobileAppPlayerView = ({ playerRoomId, userId, host }: Props) => {
   const { queue, controls: queueControls } = useMobileQueue(playerRoomId, userId);
-  const { status, controls: playerControls } = useMobilePlayerStatus();
+  const { status: playerStatus, controls: playerControls } = useMobilePlayerStatus();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   return (
     <Flex direction='column' alignItems='center' justifyContent='start' alignSelf='stretch' gap={0}>
       <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} marginX={4} alignSelf='stretch' />
-      <VisualizerVideo video={queue.currentItem?.video} status={status} playerControls={playerControls} host={host} />
-      <VisualizerControls status={status} controls={playerControls} queueControls={queueControls} />
+      <VisualizerVideo video={queue.currentItem?.video} status={playerStatus} playerControls={playerControls} host={host} />
+      <VisualizerControls status={playerStatus} controls={playerControls} queueControls={queueControls} />
       <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5} mb={4}>
-        <PlayerTrack status={status} onTimeChange={playerControls.onTimeChange} currentQueuedVideo={queue.currentItem?.video} />
+        <PlayerTrack status={playerStatus} onTimeChange={playerControls.onTimeChange} currentQueuedVideo={queue.currentItem?.video} />
       </Flex>
       <MobileNotifications />
       <MobileQueue

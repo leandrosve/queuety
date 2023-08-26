@@ -1,13 +1,11 @@
-import { Button, Flex, Icon, Text } from '@chakra-ui/react';
+import { Button, Flex, Icon, Spinner, Text } from '@chakra-ui/react';
 import GlassModal from '../../../common/glass/GlassModal';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import { LuMaximize, LuSlidersHorizontal } from 'react-icons/lu';
 import { RiSpeedUpFill } from 'react-icons/ri';
-import { useTranslation } from 'react-i18next';
 import SelectMenu from '../../../common/SelectMenu';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { useMemo } from 'react';
-import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
 import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerStatus';
 
 interface Props {
@@ -16,41 +14,72 @@ interface Props {
   status: PlayerStatus;
   controls: MobilePlayerControls;
 }
-const playbackRateOptions: [string, string][] = ['0.25', '0.5', '0.7', '1', '1.25', '1.5', '1.75', '2'].map((o) => [o, o]);
-const qualityOptions: [string, string][] = ['High', 'Medium', 'Low'].map((o) => [o, o]);
+const playbackRateOptions: [number, string][] = [0.25, 0.5, 0.7, 1, 1.25, 1.5, 1.75, 2].map((o) => [o, o.toString()]);
 
-const VisualizerControlOptionsModal = ({ isOpen, onClose, controls }: Props) => {
-  const { t } = useTranslation();
+const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Props) => {
+  const [loading, setLoading] = useState({ fullscreen: false, rate: false });
+
+  const onToggleFullscreen = () => {
+    setLoading((p) => ({ ...p, fullscreen: true }));
+    controls.onFullscreenChange(!status.fullscreen);
+  };
+  const onChangeRate = (rate: number) => {
+    setLoading((p) => ({ ...p, rate: true }));
+    controls.onRateChange(rate);
+  };
+
+  useEffect(() => {
+    setLoading((p) => ({ ...p, fullscreen: false }));
+  }, [status.fullscreen]);
+  useEffect(() => {
+    setLoading((p) => ({ ...p, rate: false }));
+  }, [status.rate]);
 
   return (
     <GlassModal isOpen={isOpen} onClose={onClose} isCentered maxWidth={'90vw'} bodyProps={{ padding: 2 }}>
-      <Option onClick={() => controls.onFullscreenChange(true)} icon={LuMaximize}>
+      <Option onClick={onToggleFullscreen} icon={LuMaximize}>
         <Flex alignItems='center' grow={1} justifyContent={'space-between'}>
           <div>Fullscreen</div>
-          <Text color='text.300' fontSize='sm'>
-            off
-          </Text>
+          {loading.fullscreen ? (
+            <Spinner size='sm' color='text.300' />
+          ) : (
+            <Text color='text.300' fontSize='sm'>
+              {status.fullscreen ? 'on' : 'off'}
+            </Text>
+          )}
         </Flex>
       </Option>
-      <Menu options={playbackRateOptions} label='Playback Rate' icon={RiSpeedUpFill} value='1' />
-      <Menu options={qualityOptions} label='Video Quality' icon={LuSlidersHorizontal} value='High' />
+      <Menu
+        options={playbackRateOptions}
+        onChange={onChangeRate}
+        label='Playback Rate'
+        icon={RiSpeedUpFill}
+        value={status.rate}
+        isLoading={loading.rate}
+      />
     </GlassModal>
   );
 };
-interface MenuProps {
-  options: [value: string, label: string][];
+interface MenuProps<T> {
+  options: [value: T, label: string][];
   label: string;
   icon: () => JSX.Element;
-  value: string;
+  value: T;
+  renderItem?: (value: T) => ReactNode;
+  isDisabled?: boolean;
+  onChange?: (value: T) => void;
+  isLoading?: boolean;
 }
-const Menu = ({ options, label, icon, value }: MenuProps) => {
+const Menu = <T,>({ options, label, icon, value, renderItem, isDisabled, onChange, isLoading }: MenuProps<T>) => {
   const selectedLabel = useMemo(() => options.find(([v]) => v == value)?.[1], [value, options]);
   return (
     <SelectMenu
       triggerWidth='100%'
       icon={<LuSlidersHorizontal />}
       variant='ghost'
-      buttonProps={{ paddingX: 3, paddingY: 3 }}
+      onChange={onChange}
+      renderItem={renderItem}
+      buttonProps={{ paddingX: 3, paddingY: 3, isDisabled }}
       buttonContent={
         <Flex fontWeight='normal' gap={2} alignItems='center' justifyContent='space-between'>
           <Flex fontWeight='normal' gap={4} alignItems='center'>
@@ -58,12 +87,11 @@ const Menu = ({ options, label, icon, value }: MenuProps) => {
             {label}
           </Flex>
           <Text as='span' fontSize='sm' color='text.300'>
-            {selectedLabel}
+            {isLoading ? <Spinner size='sm' /> : selectedLabel}
           </Text>
         </Flex>
       }
       value={value}
-      onChange={(v) => {}}
       options={options}
     />
   );

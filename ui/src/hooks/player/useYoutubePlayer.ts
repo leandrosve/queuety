@@ -1,9 +1,18 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
 import QueueItem from '../../model/player/QueueItem';
 import PlayerState from '../../model/player/PlayerState';
 import PlayerStatus from '../../model/player/PlayerStatus';
 
+interface PlayerInnerStatus extends Omit<PlayerStatus, 'fullscreen'> {}
+const defaultStatus: PlayerInnerStatus = {
+  isReady: false,
+  currentTime: 0,
+  duration: 0,
+  videoId: '',
+  state: PlayerState.UNSTARTED,
+  rate: 1,
+  volume: 1,
+};
 /**
  *
  * @param containerId the ID of the container that will become the iframe
@@ -11,15 +20,8 @@ import PlayerStatus from '../../model/player/PlayerStatus';
  */
 const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnded: () => void) => {
   const playerRef = useRef<YT.Player>();
-  const [isReady, setIsReady] = useState<boolean>(false);
-  const [duration, setDuration] = useState<number>(0);
-  const [currentTime, setCurrentTime] = useState<number>(0);
-  const [state, setState] = useState<PlayerState>(PlayerState.UNSTARTED);
-  const [playbackRate, setPlaybackRate] = useState<number>(1);
-  const [initialized, setInitialized] = useState(false);
-  const [innerVideoId, setInnerVideoId] = useState(queueItem?.video?.id);
-
-  const { updateStatus } = usePlayerStatusContext();
+  const [initialized, setInitialized] = useState<boolean>(false);
+  const [status, setStatus] = useState<PlayerInnerStatus>(defaultStatus);
 
   const initialize = async () => {
     new YT.Player(containerId, {
@@ -39,41 +41,65 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   };
 
   const onReady = (event: YT.PlayerEvent) => {
-    setIsReady(true);
+    const player = event.target;
     playerRef.current = event.target;
-    playerRef.current.playVideo();
-    setDuration(playerRef.current.getDuration() || 0);
-    setCurrentTime(playerRef.current.getCurrentTime() || 0);
-    setPlaybackRate(playerRef.current.getPlaybackRate() || 1);
+    player.playVideo();
+    setStatus((p) => ({
+      ...p,
+      isReady: true,
+      duration: player.getDuration() || 0,
+      currentTime: player.getCurrentTime() || 0,
+      playbackRate: player.getPlaybackRate() || 1,
+    }));
   };
   const getVideoIdFromURL = (videoURL?: string) => {
     // expected format: https://www.youtube.com/watch?v=ciTKItglVZk
-    console.log(videoURL);
     return videoURL?.split('v=')[1] || '';
   };
 
   const onStateChange = (event: YT.OnStateChangeEvent) => {
-    setState((playerRef.current?.getPlayerState() as PlayerState) || PlayerState.UNSTARTED);
-    setInnerVideoId(getVideoIdFromURL(playerRef.current?.getVideoUrl()));
+    const player = event.target;
+    let nextStatus: Partial<PlayerInnerStatus> = {
+      state: (player.getPlayerState() as PlayerState) || PlayerState.UNSTARTED,
+      videoId: getVideoIdFromURL(player?.getVideoUrl()),
+      rate: player.getPlaybackRate(),
+      volume: player.getVolume(),
+    };
+
     if (event.data !== PlayerState.UNSTARTED) {
-      setDuration(playerRef.current?.getDuration() || 0);
-      setCurrentTime(playerRef.current?.getCurrentTime() || 0);
+      nextStatus.duration = player.getDuration() || 0;
+      nextStatus.currentTime = player.getCurrentTime() || 0;
     }
 
     if (event.data === PlayerState.ENDED) {
-      setCurrentTime(playerRef.current?.getDuration() || 0);
-      onVideoEnded();
+      nextStatus.currentTime = player.getCurrentTime() || 0;
     }
+
+    setStatus((p) => {
+      return { ...p, ...nextStatus };
+    });
   };
 
   const onPlaybackRateChange = (e: YT.OnPlaybackRateChangeEvent) => {
-    setPlaybackRate(e.data);
+    setStatus((p) => ({ ...p, playbackRate: e.data }));
   };
 
   const onTimeChange = (time: number) => {
+    console.log('TIME CHANGE', !!playerRef.current, time);
     playerRef.current?.seekTo(time, true);
     playerRef.current?.playVideo();
   };
+
+  const onRateChange = (rate: number) => {
+    playerRef.current?.setPlaybackRate(rate);
+    setStatus((p) => ({ ...p, rate }));
+  };
+
+  const onVolumeChange = (level: number) => {
+    playerRef.current?.setVolume(level);
+    setStatus((p) => ({ ...p, volume: level }));
+  };
+
   const onPlay = () => {
     playerRef.current?.playVideo();
   };
@@ -92,7 +118,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     playerRef.current?.pauseVideo();
   };
 
-  const getCurrentPlayerStatus = useCallback((): PlayerStatus | null => {
+  const getCurrentPlayerStatus = useCallback((): PlayerInnerStatus | null => {
     const player = playerRef.current;
     if (!player) return null;
     return {
@@ -100,22 +126,20 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
       currentTime: player.getCurrentTime(),
       duration: player.getDuration(),
       isReady: true,
-      playbackRate: player.getPlaybackRate(),
       videoId: getVideoIdFromURL(player.getVideoUrl()),
+      rate: player.getPlaybackRate(),
+      volume: player.getVolume(),
     };
   }, [playerRef]);
 
   useEffect(() => {
-    if (isReady && queueItem) {
-      setCurrentTime(0);
+    if (status.isReady && queueItem) {
+      setStatus((p) => ({ ...p, currentTime: 0 }));
       playerRef.current?.stopVideo();
       playerRef.current?.loadVideoById(queueItem.video.id, 0.01);
+      playerRef.current?.playVideo();
     }
   }, [queueItem]);
-
-  useEffect(() => {
-    updateStatus({ state, currentTime, playbackRate, duration, isReady, videoId: innerVideoId });
-  }, [state, currentTime, playbackRate, duration, isReady, innerVideoId]);
 
   useEffect(() => {
     if (initialized || !queueItem) return;
@@ -126,19 +150,15 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   return {
     ref: playerRef,
     getCurrentPlayerStatus,
-    status: {
-      isReady,
-      duration,
-      currentTime,
-      state,
-      playbackRate,
-    },
+    status,
     controls: {
       onTimeChange,
       onPlay,
       onPause,
       onForward,
       onRewind,
+      onRateChange,
+      onVolumeChange,
     },
   };
 };

@@ -12,6 +12,7 @@ const defaultStatus = {
   playbackRate: 1,
   duration: 0,
   isReady: false,
+  videoId: '',
 };
 
 export const PlayerStatusContext = React.createContext<PlayerStatusContextProps>({

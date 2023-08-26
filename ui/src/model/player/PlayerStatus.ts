@@ -5,6 +5,12 @@ export default interface PlayerStatus {
   duration: number;
   currentTime: number;
   state: PlayerState;
-  playbackRate: number;
   videoId: string;
+  fullscreen: boolean;
+  rate: number;
+  volume: number;
+}
+
+export interface MobilePlayerStatus extends PlayerStatus {
+  fullscreen: boolean;
 }

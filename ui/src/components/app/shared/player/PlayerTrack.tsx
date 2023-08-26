@@ -11,16 +11,17 @@ interface Props {
   currentQueuedVideo?: YoutubeVideoDetail;
 }
 const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo }: Props) => {
-  const { currentTime, duration, playbackRate, state } = useMemo(() => {
+  const { currentTime, duration, rate, state } = useMemo(() => {
     if (currentQueuedVideo && currentQueuedVideo?.id !== status.videoId) {
       return {
         currentTime: 0,
         duration: currentQueuedVideo.duration,
         state: PlayerState.BUFFERING,
         videoId: currentQueuedVideo.id,
-        playbackRate: status.playbackRate,
+        rate: status.rate,
       };
     }
+
     return status;
   }, [status, currentQueuedVideo]);
 
@@ -46,11 +47,14 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo }: Props) => {
         const currentTime = new Date().getTime();
         const timeDiff = (currentTime - lastTime) / 1000; // To seconds
         lastTime = currentTime;
-        setTime((p) => p + timeDiff * playbackRate);
-      }, 100);
+
+        setTime((p) => {
+          return p + timeDiff * rate;
+        });
+      }, 1000);
     }
     return () => clearInterval(interval);
-  }, [state, playbackRate]);
+  }, [state, rate]);
 
   return (
     <Flex direction='column' alignItems='center' gap={1} width='100%' mt={2}>

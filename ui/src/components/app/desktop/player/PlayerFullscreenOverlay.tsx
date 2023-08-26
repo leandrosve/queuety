@@ -13,7 +13,6 @@ const PlayerFullScreenOverlay = ({ onFullscreenChange }: Props) => {
 
   useEffect(() => {
     ref.current?.addEventListener('mousemove', () => {
-      console.log('MOUS MOVED');
       setIsMovingMouse(true);
     });
     document.addEventListener('fullscreenchange', () => {

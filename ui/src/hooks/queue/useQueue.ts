@@ -134,11 +134,13 @@ const reducer = (queue: Queue, { type, payload }: QueueAction): Queue => {
 };
 
 const addLast = (queue: Queue, item: QueueItem): Queue => {
+  if (contains(queue, item)) return queue;
   const nextCurrent = queue.status === QueueStatus.ENDED || queue.items.length === 0 ? item.id : queue.currentId;
   return { ...queue, items: [...queue.items, item], currentId: nextCurrent };
 };
 
 const addNow = (queue: Queue, item: QueueItem): Queue => {
+  if (contains(queue, item)) return queue;
   const index = queue.items.findIndex((i) => i.id === queue.currentId);
   const nextItems = [...queue.items];
   nextItems.splice(index + 1, 0, item);
@@ -146,6 +148,7 @@ const addNow = (queue: Queue, item: QueueItem): Queue => {
 };
 
 const addNext = (queue: Queue, item: QueueItem): Queue => {
+  if (contains(queue, item)) return queue;
   const index = queue.items.findIndex((i) => i.id === queue.currentId);
   const nextItems = [...queue.items];
   nextItems.splice(index + 1, 0, item);
@@ -186,5 +189,10 @@ const playNow = (queue: Queue, itemId: string): Queue => {
   const index = queue.items.findIndex((i) => i.id === itemId);
   if (index < 0) return queue;
   return { ...queue, currentId: itemId };
+};
+
+const contains = (queue: Queue, item: QueueItem): boolean => {
+  const index = queue.items.findIndex((i) => i.id === item.id);
+  return index > 0;
 };
 export default useQueue;

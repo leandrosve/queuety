@@ -28,7 +28,6 @@ const useDesktopNotifications = () => {
 
   const queueAction = useCallback((action: QueueAction) => {
     const applicableActions = [QueueActionType.ADD_LAST, QueueActionType.ADD_NEXT, QueueActionType.ADD_NOW];
-    console.log("Queue action", action)
     if (!applicableActions.includes(action.type)) return;
     // Can't seem to access context inside render function
     const user = getAllowedUser(action.userId);
