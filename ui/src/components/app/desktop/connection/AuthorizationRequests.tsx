@@ -9,6 +9,7 @@ import { AuthResponseStatus } from '../../../../model/auth/AuthResponse';
 import { LuCheckCircle } from 'react-icons/lu';
 import { useAuthRequestsContext } from '../../../../context/AuthRequestsContext';
 import FormatUtils from '../../../../utils/FormatUtils';
+import { Trans, useTranslation } from 'react-i18next';
 
 const AuthorizationRequests = () => {
   const { authorizeRequest } = useDesktopAuthContext();
@@ -58,6 +59,7 @@ const Item = ({ request, onAccept, onDeny }: AuthorizationRequestItemProps) => {
 };
 
 export const AuthorizationRequestItem = ({ request, onAccept, onDeny }: AuthorizationRequestItemProps) => {
+  const { t } = useTranslation();
   const [accepted, setAccepted] = useState(false);
   const handleAccept = () => {
     if (accepted) return;
@@ -73,11 +75,11 @@ export const AuthorizationRequestItem = ({ request, onAccept, onDeny }: Authoriz
           {FormatUtils.shortenUserId(request.userId)}
         </Text>
         <Text lineHeight='shorter'>
-          <b>{request.nickname}</b> está solicitando conectarse a la cola
+          <Trans i18nKey={'connection.userRequest'} components={[<b></b>]} values={{ nickname: request.nickname }} />
         </Text>
         <Flex gap={3} marginLeft='auto' marginTop={2} wrap='wrap'>
           <Button opacity={accepted ? 0 : 1} transition='opacity 200ms' onClick={onDeny}>
-            Rechazar
+            {t('connection.reject')}
           </Button>
           <Button
             onClick={handleAccept}
@@ -88,7 +90,7 @@ export const AuthorizationRequestItem = ({ request, onAccept, onDeny }: Authoriz
             background={accepted ? `primary.500` : undefined}
           >
             <Text as='span' opacity={accepted ? 0 : 1} transition='opacity 200ms'>
-              Aceptar
+              {t('connection.accept')}
             </Text>
             <Box
               visibility={accepted ? 'visible' : 'hidden'}

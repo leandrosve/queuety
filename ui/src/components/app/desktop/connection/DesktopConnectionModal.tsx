@@ -1,10 +1,10 @@
-import { Box, Button, Flex, Heading, Icon, IconButton, Spinner, Stack, Switch, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Icon, Spinner, Stack, Switch, Text } from '@chakra-ui/react';
 import { useState, useEffect, PropsWithChildren, useCallback, useRef, useMemo } from 'react';
 import QRCode from 'react-qr-code';
 import CopyToClipboard from '../../../common/CopyToClipboard';
 import { LuCheckCircle, LuLink, LuRefreshCcw, LuSettings } from 'react-icons/lu';
 import { TbDeviceMobilePlus } from 'react-icons/tb';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDesktopConnectionContext } from '../../../../context/DesktopConnectionContext';
 import GlassModal from '../../../common/glass/GlassModal';
 import { useAuthRequestsContext } from '../../../../context/AuthRequestsContext';
@@ -78,18 +78,18 @@ const QRView = ({ onClose }: QRViewProps) => {
           </Flex>
           <Flex direction='column' gap={3} alignSelf='stretch'>
             <CopyToClipboard isDisabled={disabled} icon={<LuLink />} value={authRoomLink}>
-              Copiar Link
+              {t('connection.copyLink')}
             </CopyToClipboard>
             <CopyToClipboard isDisabled={disabled} value={connection.authRoom.id || ''}>
-              Copiar Código
+              {t('connection.copyCode')}
             </CopyToClipboard>
             <Button isDisabled={disabled} leftIcon={<LuRefreshCcw />} onClick={() => regenAuthRoom()}>
-              Regenerar Código
+              {t('connection.regenCode')}
             </Button>
           </Flex>
         </Flex>
         <Button isDisabled={disabled} leftIcon={<LuSettings />} onClick={() => onClose(SettingsModalSections.CONNECTIONS)}>
-          Ver configuración y dispositivos conectados
+          {t('connection.settingsLink')}
         </Button>
       </Stack>
     </Flex>
@@ -108,6 +108,8 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
   const [accepted, setAccepted] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const onAcceptedRef = useRef(onAccepted);
+  const { t } = useTranslation();
+
   const handleAccept = async () => {
     if (isSubmitted) return;
     setIsSubmitted(true);
@@ -141,10 +143,10 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
           <Heading size='md'>{request.nickname}</Heading>
         </Stack>
         <Text>
-          <b>{request.nickname}</b> está solicitando unirse a la sesión de reproducción
+          <Trans i18nKey={'connection.userRequest'} components={[<b></b>]} values={{ nickname: request.nickname }} />
         </Text>
         <Button width='100%' onClick={handleDeny} isDisabled={accepted}>
-          Rechazar
+          {t('connection.reject')}
         </Button>
 
         <Button
@@ -157,7 +159,7 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
           background={accepted ? `primary.500` : undefined}
         >
           <Text as='span' opacity={accepted ? 0 : 1}>
-            Aceptar
+            {t('connection.accept')}
           </Text>
           <Box
             visibility={accepted ? 'visible' : 'hidden'}
@@ -177,7 +179,7 @@ const AuthorizationRequestView = ({ request, onAccepted }: AuthorizationRequestV
         </Button>
 
         <Flex marginLeft='auto' alignItems='center' fontSize='sm' gap={3}>
-          <Text>Autorizar nuevos dispositivos automaticamente</Text>{' '}
+          <Text>{t('connection.automaticAuth')}</Text>{' '}
           <Switch isDisabled={isSubmitted} colorScheme='primary' isChecked={autoAuth} onChange={() => setAutoAuth((p) => !p)} />
         </Flex>
       </Stack>

@@ -6,11 +6,10 @@ import VisualizerControlsOverlay from './VisualizerControlsOverlay';
 import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
 import VisualizerBackdrop from './VisualizerBackdrop';
 import HostData from '../../../../model/auth/HostData';
-import AutoAvatar from '../../../common/AutoAvatar';
 import { useMemo } from 'react';
 import FormatUtils from '../../../../utils/FormatUtils';
-import { LuCast } from 'react-icons/lu';
 import { PiScreencastFill } from 'react-icons/pi';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   video: YoutubeVideoDetail;
@@ -19,6 +18,8 @@ interface Props {
   playerControls: PlayerControls;
 }
 const VisualizerVideo = ({ video, status, playerControls, host }: Props) => {
+  const { t } = useTranslation();
+
   const hostColor = useMemo(() => FormatUtils.getColorForNickname(host.nickname), [host]);
   if (!video) return <VisualizerPlaceholder />;
   return (
@@ -53,9 +54,10 @@ const VisualizerVideo = ({ video, status, playerControls, host }: Props) => {
             width='100%'
             textShadow='0px 1px 3px grey'
             bgGradient='linear(to-t, blackAlpha.700, transparent)'
+            color='white'
           >
             <Flex alignItems='center' gap={2}>
-              <Text>Playing in desktop</Text>
+              <Text>{t('player.playingInDesktop')}</Text>
             </Flex>
             <Flex alignItems='center' position='relative' color='white' zIndex={1}>
               <Box height='100%' width='100%' opacity='.7' position='absolute' backgroundColor={`${hostColor}.500`} borderRadius='md' zIndex={-1} />

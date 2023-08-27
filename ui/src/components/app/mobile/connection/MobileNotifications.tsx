@@ -3,6 +3,7 @@ import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
 import { Collapse, Flex, Icon } from '@chakra-ui/react';
 import { PiPlugsBold, PiPlugsConnectedBold } from 'react-icons/pi';
+import { useTranslation } from 'react-i18next';
 
 interface ConnectionError {
   code: string | null;
@@ -10,7 +11,7 @@ interface ConnectionError {
 }
 const MobileNotifications = () => {
   const { hostStatus, isSocketReady } = useMobileAuthContext();
-
+  const { t } = useTranslation();
   const [error, setError] = useState<ConnectionError>({ code: null, recovered: false });
   const [errorDisplay, setErrorDisplay] = useState<ConnectionError>({ code: null, recovered: false });
 
@@ -76,7 +77,7 @@ const MobileNotifications = () => {
           gap={2}
         >
           <Icon as={errorDisplay.recovered ? PiPlugsConnectedBold : PiPlugsBold} filter='drop-shadow(0px 0px 5px #ffffff8f)' />
-          {errorDisplay.code ?? '____'}
+          {t(`notifications.${errorDisplay.code}`) ?? '____'}
         </Flex>
       </Collapse>
     </Flex>

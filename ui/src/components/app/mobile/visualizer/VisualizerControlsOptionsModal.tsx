@@ -7,6 +7,7 @@ import SelectMenu from '../../../common/SelectMenu';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { useMemo } from 'react';
 import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerStatus';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   isOpen: boolean;
@@ -18,6 +19,7 @@ const playbackRateOptions: [number, string][] = [0.25, 0.5, 0.7, 1, 1.25, 1.5, 1
 
 const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Props) => {
   const [loading, setLoading] = useState({ fullscreen: false, rate: false });
+  const { t } = useTranslation();
 
   const onToggleFullscreen = () => {
     setLoading((p) => ({ ...p, fullscreen: true }));
@@ -39,12 +41,12 @@ const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Pr
     <GlassModal isOpen={isOpen} onClose={onClose} isCentered maxWidth={'90vw'} bodyProps={{ padding: 2 }}>
       <Option onClick={onToggleFullscreen} icon={LuMaximize}>
         <Flex alignItems='center' grow={1} justifyContent={'space-between'}>
-          <div>Fullscreen</div>
+          <div>{t('player.fullscreen')}</div>
           {loading.fullscreen ? (
             <Spinner size='sm' color='text.300' />
           ) : (
             <Text color='text.300' fontSize='sm'>
-              {status.fullscreen ? 'on' : 'off'}
+              {t(`common.${status.fullscreen ? 'on' : 'off'}`)}
             </Text>
           )}
         </Flex>
@@ -52,7 +54,7 @@ const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Pr
       <Menu
         options={playbackRateOptions}
         onChange={onChangeRate}
-        label='Playback Rate'
+        label={t('player.playbackRate')}
         icon={RiSpeedUpFill}
         value={status.rate}
         isLoading={loading.rate}

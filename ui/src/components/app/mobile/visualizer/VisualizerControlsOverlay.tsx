@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import PlayerState from '../../../../model/player/PlayerState';
 import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
+import { LuRotateCcw, LuRotateCw } from 'react-icons/lu';
 
 interface Props {
   status: PlayerStatus;
@@ -18,26 +19,50 @@ const getPlayerStateIcon = (state: PlayerState) => {
 };
 
 const VisualizerControlsOverlay = ({ status, controls }: Props) => {
-  const [clicked, setClicked] = useState(false);
-  const [tapLeft, setTapLeft] = useState(0);
+  const [clicked, setClicked] = useState(0);
+  const [rewindSeconds, setRewindSeconds] = useState(0);
+  const [forwardSeconds, setForwardSeconds] = useState(0);
 
-  const onDoubleTapLeft = () => {
-    setTapLeft((prev) => prev + 1);
+  const onRewind = () => {
+    setClicked((p) => p + 1);
+    setRewindSeconds((p) => p + 10);
   };
-
+  const onForward = () => {
+    setClicked((p) => p + 1);
+    setForwardSeconds((p) => p + 10);
+  };
   useEffect(() => {
-    const timeout = setTimeout(() => setClicked(false), 2000);
+    const timeout = setTimeout(() => setClicked(0), 3000);
     return () => clearTimeout(timeout);
   }, [clicked]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setTapLeft(0), 1000);
+    let timeout: number;
+    if (rewindSeconds > 0) {
+      timeout = setTimeout(() => {
+        controls.onRewind(rewindSeconds);
+        setRewindSeconds(0);
+        setClicked(0);
+      }, 800);
+    }
     return () => clearTimeout(timeout);
-  }, [tapLeft]);
+  }, [rewindSeconds]);
+
+  useEffect(() => {
+    let timeout: number;
+    if (forwardSeconds > 0) {
+      timeout = setTimeout(() => {
+        controls.onForward(forwardSeconds);
+        setForwardSeconds(0);
+        setClicked(0);
+      }, 800);
+    }
+    return () => clearTimeout(timeout);
+  }, [forwardSeconds]);
 
   return (
     <Flex
-      onClick={() => setClicked(true)}
+      onClick={() => setClicked((p) => p + 1)}
       position='absolute'
       height='100%'
       top={0}
@@ -47,36 +72,35 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
       background='blackAlpha.500'
       transition='opacity 400ms'
     >
-      <motion.div onDoubleClick={onDoubleTapLeft} className='visualizer-overlay-left' style={{ opacity: tapLeft ? 1 : 0 }}>
-        <Stack align='center'>
-          <Icon as={BsFastForwardFill} boxSize='2rem' transform='rotate(180deg)' />
-          <Text opacity={tapLeft ? 1 : 0}>{`-${tapLeft * 10} secs`}</Text>
-        </Stack>
-        <Flex
-          position='absolute'
-          height='100%'
-          width='120%'
-          zIndex={-1}
-          top={0}
-          left={0}
-          pointerEvents='none'
-          background='whiteAlpha.300'
-          borderRightRadius={'40%'}
-        ></Flex>
-      </motion.div>
-      <Flex height={'100%'} width='20%' position='relative' alignItems='center' justifyContent='center'>
-        {status.state == PlayerState.BUFFERING ? (
-          <Spinner color='white' />
-        ) : (
-          <IconButton
-            aria-label='toggle play'
-            icon={<Icon as={getPlayerStateIcon(status.state)} fill='white' stroke='white' boxSize='3rem' />}
-            onClick={status.state == PlayerState.PLAYING ? controls.onPause : controls.onPlay}
-          />
-        )}
-      </Flex>
-      <Flex height={'100%'} width='40%' alignItems='center' opacity={0} justifyContent='center'>
-        <Icon as={BsFastForwardFill} boxSize='2rem' />
+      <Flex width='100%' height='100%' pointerEvents={clicked ? 'all' : 'none'} color='white'>
+        <Flex height={'100%'} width='40%' direction='column' alignItems='center' justifyContent='center'>
+          <Flex position='relative'>
+            <IconButton rounded='full' aria-label='rewind' icon={<Icon as={LuRotateCcw} boxSize='2rem' />} onClick={onRewind} />
+            <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={rewindSeconds ? 1 : 0}>
+              -{rewindSeconds}s
+            </Text>
+          </Flex>
+        </Flex>
+        <Flex height={'100%'} width='20%' position='relative' alignItems='center' justifyContent='center'>
+          {status.state == PlayerState.BUFFERING ? (
+            <Spinner color='white' />
+          ) : (
+            <IconButton
+              aria-label='toggle play'
+              rounded='full'
+              icon={<Icon as={getPlayerStateIcon(status.state)} fill='white' stroke='white' boxSize='3rem' />}
+              onClick={status.state == PlayerState.PLAYING ? controls.onPause : controls.onPlay}
+            />
+          )}
+        </Flex>
+        <Flex height={'100%'} width='40%' direction='column' alignItems='center' justifyContent='center'>
+          <Flex position='relative'>
+            <IconButton rounded='full' aria-label='fast-forward' icon={<Icon as={LuRotateCw} boxSize='2rem' />} onClick={onForward} />
+            <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={forwardSeconds ? 1 : 0}>
+              +{forwardSeconds}s
+            </Text>
+          </Flex>
+        </Flex>
       </Flex>
     </Flex>
   );

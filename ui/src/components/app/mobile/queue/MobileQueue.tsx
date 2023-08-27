@@ -37,7 +37,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
   );
 
   return (
-    <Flex grow={1} position='relative'  alignSelf='stretch'>
+    <Flex grow={1} position='relative' alignSelf='stretch'>
       <Flex
         grow={1}
         display='flex'
@@ -67,7 +67,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
                 </Stack>
               ) : currentItem ? (
                 <Stack spacing={0}>
-                  <Text fontSize='sm'>{t('playerQueue.playing')}:</Text>
+                  <Text fontSize='xs'>{t('playerQueue.playing')}:</Text>
                   <Text noOfLines={1}>{currentItem.video.title}</Text>
                 </Stack>
               ) : null}
@@ -76,15 +76,18 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
             {queue.length > 1 && (
               <Flex gap={3}>
                 <Text fontSize='sm' color='text.300'>
-                  en cola {`${currentIndex + 1}/${queue.length}`}
+                  {t('playerQueue.queue')}:{' '}
+                  <Text as='span' letterSpacing={3}>
+                    {currentIndex + 1}/{queue.length}
+                  </Text>
                 </Text>
                 <Button variant='link' size='sm' onClick={onClear}>
-                  clear
+                  {t('playerQueue.clear')}
                 </Button>
               </Flex>
             )}
           </Stack>
-          {queue.length > 1 && (
+          {currentIndex + 1 < queue.length && (
             <IconButton variant='ghost' icon={<Icon as={BsSkipEndFill} boxSize='1.5rem' />} aria-label='play next' onClick={onSkip} />
           )}
         </Flex>

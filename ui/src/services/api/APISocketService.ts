@@ -21,9 +21,9 @@ export default class APISocketService {
     Logger.danger(`API Returned error for message: ${message} - params: ${JSON.stringify(params)} - res: ${JSON.stringify(res)}`);
   };
 
-  public static async emit<T>(message: string, params?: Object): Promise<APISocketResponse<T>> {
+  public static async emit<T>(message: string, params?: Object, extraOptions?: { disableLog?: boolean }): Promise<APISocketResponse<T>> {
     return new Promise((resolve) => {
-      if (this.logRequests) Logger.socket('Socket - sending message: ' + message);
+      if (this.logRequests && !extraOptions?.disableLog) Logger.socket('Socket - sending message: ' + message);
       this._socket.emit(message, params, (res: APISocketResponse<T>) => {
         if (res.hasError) this.logError(message, params, res);
         resolve(res);

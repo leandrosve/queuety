@@ -1,7 +1,8 @@
-import { Flex, Heading, Icon, IconButton, ModalHeader, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from '@chakra-ui/react';
+import { Flex, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from '@chakra-ui/react';
 import { LuVolume1, LuVolumeX } from 'react-icons/lu';
 import { useState, useEffect } from 'react';
 import GlassModal from '../../../common/glass/GlassModal';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   volume: number;
@@ -13,6 +14,7 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState({ prev: volume, current: volume });
   const [draggingValue, setDraggingValue] = useState<number | null>(volume);
+  const { t } = useTranslation();
 
   const onChangeEnd = (val: number) => {
     setDraggingValue(null);
@@ -48,7 +50,14 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
         onClick={() => setIsOpen(true)}
         isLoading={loading}
       />
-      <GlassModal isOpen={isOpen} onClose={() => setIsOpen(false)} title='Volume' isCentered contentProps={{ padding: 0 }} maxWidth='95vw'>
+      <GlassModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={t('player.volume')}
+        isCentered
+        contentProps={{ padding: 0 }}
+        maxWidth='95vw'
+      >
         <Flex alignItems='center' justifyContent='center' paddingRight={4} gap={3}>
           <IconButton
             variant='ghost'

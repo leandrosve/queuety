@@ -8,7 +8,6 @@ import { BsDash } from 'react-icons/bs';
 import QueueItem from '../../../../model/player/QueueItem';
 import GlassContainer from '../../../common/glass/GlassContainer';
 import DragAndDropList from '../../../common/DragAndDropList';
-import PlayerStatus from '../../../../model/player/PlayerStatus';
 
 interface Props {
   queue: QueueItem[];

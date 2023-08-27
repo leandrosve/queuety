@@ -2,9 +2,9 @@ import { ButtonGroup, Flex, Icon, IconButton, Spinner } from '@chakra-ui/react';
 import { BsPauseFill, BsPlayFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import PlayerState from '../../../../model/player/PlayerState';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { QueueControls } from '../../../../hooks/queue/useQueue';
-import { LuSettings, LuSpeaker, LuVolume1 } from 'react-icons/lu';
+import { LuSettings } from 'react-icons/lu';
 import VisualizerControlOptionsModal from './VisualizerControlsOptionsModal';
 import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerStatus';
 import VisualizerSoundMenu from './VisualizerSoundMenu';
@@ -22,17 +22,9 @@ const getIconForState = (state: PlayerState) => {
   return BsPauseFill;
 };
 const VisualizerControls = ({ status, controls, queueControls }: Props) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [openExtraOptions, setOpenExtraOptions] = useState(false);
+  const isLoading = status.state === PlayerState.BUFFERING;
 
-  useEffect(() => {
-    let timeout: number;
-    if (status.state === PlayerState.BUFFERING) {
-      timeout = setTimeout(() => setIsLoading(true), 2000);
-    }
-    setIsLoading(false);
-    return () => clearTimeout(timeout);
-  }, [status]);
   return (
     <Flex alignItems='center' justifyContent='space-between' alignSelf='stretch' paddingX={5} gap={2}>
       <VisualizerControlOptionsModal isOpen={openExtraOptions} onClose={() => setOpenExtraOptions(false)} status={status} controls={controls} />
@@ -49,7 +41,7 @@ const VisualizerControls = ({ status, controls, queueControls }: Props) => {
             <Spinner size='sm' />
           ) : (
             <IconButton
-              onClick={status.state != PlayerState.PLAYING ? controls.onPlay : controls.onPause}
+              onClick={status.state === PlayerState.PAUSED ? controls.onPlay : controls.onPause}
               icon={<Icon as={getIconForState(status.state)} boxSize={7} />}
               aria-label={status.state != PlayerState.PLAYING ? 'play' : 'pause'}
             />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import MobilePlayerService from '../../services/api/player/MobilePlayerService';
 import PlayerStatus from '../../model/player/PlayerStatus';
 import PlayerState from '../../model/player/PlayerState';
@@ -24,31 +24,40 @@ export interface MobilePlayerControls extends PlayerControls {
 const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayerControls } => {
   const [status, setStatus] = useState<PlayerStatus>(initialStatus);
 
-  const onPlay = () => {
+  const onPlay = useCallback(() => {
     setStatus((p) => ({ ...p, state: PlayerState.PLAYING }));
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.PLAY, payload: null });
-  };
-  const onPause = () => {
+  }, []);
+
+  const onPause = useCallback(() => {
     setStatus((p) => ({ ...p, state: PlayerState.PAUSED }));
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.PAUSE, payload: null });
-  };
+  }, []);
 
-  const onTimeChange = (timeSeconds: number) => {
-    setStatus((p) => ({ ...p, state: PlayerState.BUFFERING }));
+  const onTimeChange = useCallback((timeSeconds: number) => {
+    setStatus((p) => ({ ...p, state: PlayerState.PLAYING }));
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_TIME, payload: { time: timeSeconds } });
-  };
+  }, []);
 
-  const onFullscreenChange = (value: boolean) => {
+  const onFullscreenChange = useCallback((value: boolean) => {
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_FULLSCREEN, payload: { value } });
-  };
+  }, []);
 
-  const onRateChange = (value: number) => {
+  const onRateChange = useCallback((value: number) => {
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_RATE, payload: { value } });
-  };
+  }, []);
 
-  const onVolumeChange = (value: number) => {
+  const onVolumeChange = useCallback((value: number) => {
     MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_VOLUME, payload: { value } });
-  };
+  }, []);
+
+  const onRewind = useCallback((seconds: number) => {
+    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.REWIND, payload: { seconds } });
+  }, []);
+
+  const onForward = useCallback((seconds: number) => {
+    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.FORWARD, payload: { seconds } });
+  }, []);
 
   useEffect(() => {
     MobilePlayerService.onPlayerStatus((res) => {
@@ -61,8 +70,8 @@ const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayer
     controls: {
       onPause,
       onPlay,
-      onForward: () => {},
-      onRewind: () => {},
+      onForward,
+      onRewind,
       onFullscreenChange,
       onTimeChange,
       onRateChange,

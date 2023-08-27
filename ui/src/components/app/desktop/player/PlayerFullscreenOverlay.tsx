@@ -1,6 +1,7 @@
 import { Box, Button, Fade } from '@chakra-ui/react';
 import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LuMinimize } from 'react-icons/lu';
 
 interface Props {
@@ -10,7 +11,7 @@ const PlayerFullScreenOverlay = ({ onFullscreenChange }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isMovingMouse, setIsMovingMouse] = useState(false);
   const [isOverButton, setIsOverButton] = useState(false);
-
+  const { t } = useTranslation();
   useEffect(() => {
     ref.current?.addEventListener('mousemove', () => {
       setIsMovingMouse(true);
@@ -38,7 +39,7 @@ const PlayerFullScreenOverlay = ({ onFullscreenChange }: Props) => {
           onMouseLeave={() => setIsOverButton(false)}
           onClick={() => onFullscreenChange(false)}
         >
-          Exit Fullscreen
+          {t('player.exitFullscreen')}
         </Button>
       </Fade>
     </Box>

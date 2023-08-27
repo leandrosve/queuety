@@ -14,6 +14,7 @@ export type PlayerStatusAction =
   | PauseAction
   | ChangeTimeAction
   | RewindAction
+  | ForwardAction
   | ChangeFullscreenAction
   | ChangeRateAction
   | ChangeVolumeAction;

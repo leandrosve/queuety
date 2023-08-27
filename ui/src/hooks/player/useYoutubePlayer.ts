@@ -57,66 +57,84 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     return videoURL?.split('v=')[1] || '';
   };
 
-  const onStateChange = (event: YT.OnStateChangeEvent) => {
-    const player = event.target;
-    let nextStatus: Partial<PlayerInnerStatus> = {
-      state: (player.getPlayerState() as PlayerState) || PlayerState.UNSTARTED,
-      videoId: getVideoIdFromURL(player?.getVideoUrl()),
-      rate: player.getPlaybackRate(),
-      volume: player.getVolume(),
-    };
+  const onStateChange = useCallback(
+    (event: YT.OnStateChangeEvent) => {
+      const player = event.target;
+      let nextStatus: Partial<PlayerInnerStatus> = {
+        state: (player.getPlayerState() as PlayerState) || PlayerState.UNSTARTED,
+        videoId: getVideoIdFromURL(player?.getVideoUrl()),
+        rate: player.getPlaybackRate(),
+        volume: player.getVolume(),
+      };
 
-    if (event.data !== PlayerState.UNSTARTED) {
-      nextStatus.duration = player.getDuration() || 0;
-      nextStatus.currentTime = player.getCurrentTime() || 0;
-    }
+      if (event.data !== PlayerState.UNSTARTED) {
+        nextStatus.duration = player.getDuration() || 0;
+        nextStatus.currentTime = player.getCurrentTime() || 0;
+      }
 
-    if (event.data === PlayerState.ENDED) {
-      nextStatus.currentTime = player.getCurrentTime() || 0;
-    }
+      if (event.data === PlayerState.ENDED) {
+        nextStatus.currentTime = player.getDuration() || 0;
+      }
 
-    setStatus((p) => {
-      return { ...p, ...nextStatus };
-    });
-  };
+      setStatus((p) => {
+        return { ...p, ...nextStatus };
+      });
+    },
+    [playerRef]
+  );
 
-  const onPlaybackRateChange = (e: YT.OnPlaybackRateChangeEvent) => {
+  const onPlaybackRateChange = useCallback((e: YT.OnPlaybackRateChangeEvent) => {
     setStatus((p) => ({ ...p, playbackRate: e.data }));
-  };
+  }, []);
 
-  const onTimeChange = (time: number) => {
-    console.log('TIME CHANGE', !!playerRef.current, time);
-    playerRef.current?.seekTo(time, true);
+  const onTimeChange = useCallback(
+    (time: number) => {
+      console.log('TIME CHANGE', !!playerRef.current, time);
+      playerRef.current?.seekTo(time, true);
+      playerRef.current?.playVideo();
+    },
+    [playerRef]
+  );
+
+  const onRateChange = useCallback(
+    (rate: number) => {
+      playerRef.current?.setPlaybackRate(rate);
+      setStatus((p) => ({ ...p, rate }));
+    },
+    [playerRef]
+  );
+
+  const onVolumeChange = useCallback(
+    (level: number) => {
+      playerRef.current?.setVolume(level);
+      setStatus((p) => ({ ...p, volume: level }));
+    },
+    [playerRef]
+  );
+
+  const onPlay = useCallback(() => {
     playerRef.current?.playVideo();
-  };
+  }, [playerRef]);
 
-  const onRateChange = (rate: number) => {
-    playerRef.current?.setPlaybackRate(rate);
-    setStatus((p) => ({ ...p, rate }));
-  };
+  const onForward = useCallback(
+    (seconds: number) => {
+      const player = playerRef.current;
+      player?.seekTo((player?.getCurrentTime() || 0) + seconds, true);
+    },
+    [playerRef]
+  );
 
-  const onVolumeChange = (level: number) => {
-    playerRef.current?.setVolume(level);
-    setStatus((p) => ({ ...p, volume: level }));
-  };
+  const onRewind = useCallback(
+    (seconds: number) => {
+      const player = playerRef.current;
+      player?.seekTo((player?.getCurrentTime() || 0) - seconds, true);
+    },
+    [playerRef]
+  );
 
-  const onPlay = () => {
-    playerRef.current?.playVideo();
-  };
-
-  const onForward = (seconds: number) => {
-    const player = playerRef.current;
-    player?.seekTo((player?.getCurrentTime() || 0) + seconds, true);
-  };
-
-  const onRewind = (seconds: number) => {
-    const player = playerRef.current;
-    player?.seekTo((player?.getCurrentTime() || 0) - seconds, true);
-  };
-
-  const onPause = () => {
+  const onPause = useCallback(() => {
     playerRef.current?.pauseVideo();
-  };
+  }, [playerRef]);
 
   const getCurrentPlayerStatus = useCallback((): PlayerInnerStatus | null => {
     const player = playerRef.current;

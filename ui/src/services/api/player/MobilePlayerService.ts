@@ -1,6 +1,7 @@
 import { PlayerStatusAction } from '../../../model/player/PlayerActions';
 import PlayerStatus from '../../../model/player/PlayerStatus';
 import { InitializeAction, QueueActionRequest } from '../../../model/queue/QueueActions';
+import Logger from '../../../utils/Logger';
 import PlayerService from './PlayerService';
 
 export default class MobilePlayerService extends PlayerService {
@@ -54,6 +55,7 @@ export default class MobilePlayerService extends PlayerService {
   }
 
   public static sendPlayerStatusAction(action: PlayerStatusAction) {
-    return this.emit<boolean>('send-player-status-action', { playerRoomId: this.playerRoomId, action });
+    Logger.socket('Sending Player Status Action', action.type);
+    return this.emit<boolean>('send-player-status-action', { playerRoomId: this.playerRoomId, action }, { disableLog: true });
   }
 }

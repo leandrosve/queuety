@@ -1,7 +1,7 @@
-import { Button, Flex, Icon, Image, MenuItem, ModalProps, Text } from '@chakra-ui/react';
+import { Button, Icon } from '@chakra-ui/react';
 import GlassModal from '../../../common/glass/GlassModal';
 import QueueItem from '../../../../model/player/QueueItem';
-import { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 import { BsPlayFill } from 'react-icons/bs';
 import { LuListEnd, LuListStart, LuTrash2 } from 'react-icons/lu';
 import { useTranslation } from 'react-i18next';
@@ -33,10 +33,10 @@ const MobileQueueItemModal = ({ isOpen, onClose, onPlay, onRemove, onMoveLast, o
         {t('playerQueue.playNow')}
       </Option>
       <Option onClick={() => handleAction('moveNext')} icon={LuListStart}>
-        Move to next in queue
+        {t('playerQueue.moveNext')}
       </Option>
       <Option onClick={() => handleAction('moveLast')} icon={LuListEnd}>
-        Move to last in queue
+        {t('playerQueue.moveLast')}
       </Option>
       <Option onClick={() => handleAction('remove')} icon={LuTrash2}>
         {t('playerQueue.remove')}

@@ -69,6 +69,12 @@ const useDesktopPlayer = (
         case PlayerStatusActionType.CHANGE_VOLUME:
           innerControls.onVolumeChange(action.payload.value);
           break;
+        case PlayerStatusActionType.REWIND:
+          innerControls.onRewind(action.payload.seconds);
+          break;
+        case PlayerStatusActionType.FORWARD:
+          innerControls.onForward(action.payload.seconds);
+          break;
         default:
           break;
       }
