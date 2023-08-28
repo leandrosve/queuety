@@ -8,7 +8,7 @@ import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
 import { Queue, QueueStatus } from '../../model/queue/Queue';
 import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
 import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
-import useDesktopNotifications from '../notifications/useDesktopNotifications';
+import { useDesktopNotificationsContext } from '../../context/DesktopNotificationsContext';
 
 const getInitialQueueInfo = (): Queue => {
   const emptyQueue: Queue = { items: [], currentId: null, status: QueueStatus.UNSTARTED };
@@ -28,7 +28,7 @@ const useDesktopQueue = (playerRoomId: string, userId: string): { queue: QueueDa
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
   const onlineUsers = useOnlinePrescenceContext();
   const [actions, setActions] = useState<{ previous?: QueueActionRequest; last: QueueActionRequest }>();
-  const notifications = useDesktopNotifications();
+  const notifications = useDesktopNotificationsContext();
 
   const registerLastAction = useCallback(
     (action: QueueAction) => {
@@ -55,7 +55,7 @@ const useDesktopQueue = (playerRoomId: string, userId: string): { queue: QueueDa
       DesktopPlayerService.sendPlayerAction(playerRoomId, actions?.last);
     }
     if (actions.last) {
-      notifications.queueAction(actions.last);
+      notifications.addQueueAction(actions.last);
     }
   }, [actions]);
 

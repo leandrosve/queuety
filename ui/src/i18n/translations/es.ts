@@ -107,8 +107,11 @@ export default {
     },
     notifications: {
       addToQueue: '{{nickname}} agregó un video a la cola',
+      joined: '<0>{{nickname}}</0> se ha unido',
       desktop_offline: 'Escritorio desconectado',
       desktop_online: 'Escritorio se ha vuelto a conectar!',
+      offline: 'Estas desconectado',
+      offline_recovered: 'Te has vuelto a conectar!',
     },
     tabChecker: {
       error: 'Parece que el sitio se ha abierto desde otra pestaña.<0></0>Deseas continuar reproduciendo en esta pestaña y detener la otra?',

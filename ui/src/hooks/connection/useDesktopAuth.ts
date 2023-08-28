@@ -10,8 +10,8 @@ import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext'
 import useSocketStatus from './useSocketStatus';
 import AuthService from '../../services/api/auth/AuthService';
 import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
-import useDesktopNotifications from '../notifications/useDesktopNotifications';
 import { useSettingsContext } from '../../context/SettingsContext';
+import { useDesktopNotificationsContext } from '../../context/DesktopNotificationsContext';
 
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
@@ -21,7 +21,7 @@ const useDesktopAuth = () => {
   const authRequests = useAuthRequestsContext();
   const allowedUsers = useAllowedUsersContext();
   const onlinePrescence = useOnlinePrescenceContext();
-  const notifications = useDesktopNotifications();
+  const notifications = useDesktopNotificationsContext();
   const { settings } = useSettingsContext();
   // Need to access these inside the socket callback :(
   const acceptAutomatic = useRef(connection.settings.automatic);
@@ -57,7 +57,7 @@ const useDesktopAuth = () => {
       // Add to the list of authorized users before sending response
       const allowedUser = { nickname: request.nickname, userId: request.userId, joinedAt: new Date(), clientId: request.clientId };
       allowedUsers.add(allowedUser);
-      notifications.userJoined(allowedUser);
+      notifications.addUserJoined(allowedUser);
     }
 
     const res = await DesktopAuthService.sendAuthResponse(response);

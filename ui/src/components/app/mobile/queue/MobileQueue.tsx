@@ -53,10 +53,11 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
         overflow='hidden'
         bottom={0}
         left={0}
+        maxWidth='100vw'
       >
         <GlassContainer asBefore />
         <Flex padding={3} gap={2} justifyContent='space-between'>
-          <Stack spacing={2}>
+          <Stack spacing={2} minWidth={0} overflow='hidden'>
             <Flex gap={2}>
               {currentIndex + 1 < queue.length ? (
                 <Stack spacing={0}>
@@ -66,7 +67,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
                   </Text>
                 </Stack>
               ) : currentItem ? (
-                <Stack spacing={0}>
+                <Stack spacing={0} flexShrink={0}>
                   <Text fontSize='xs'>{t('playerQueue.playing')}:</Text>
                   <Text noOfLines={1}>{currentItem.video.title}</Text>
                 </Stack>

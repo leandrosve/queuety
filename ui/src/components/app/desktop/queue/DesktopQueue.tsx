@@ -36,7 +36,7 @@ const DesktopQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, on
         onClick={isExpanded ? undefined : () => setIsExpanded(true)}
       >
         <Flex justifyContent='space-between' gap={2}>
-          <Flex direction='column' gap={1}>
+          <Flex direction='column' gap={1} minWidth={0}>
             {currentIndex + 1 < queue.length ? (
               <Stack spacing={0}>
                 <Text fontSize='sm'>{t('playerQueue.next')}: </Text>
@@ -47,7 +47,7 @@ const DesktopQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, on
             ) : currentItem ? (
               <Stack spacing={0}>
                 <Text fontSize='sm'>{t('playerQueue.playing')}:</Text>
-                <Text>{currentItem.video.title}</Text>
+                <Text noOfLines={1}>{currentItem.video.title}</Text>
               </Stack>
             ) : null}
             <Flex alignItems='center' gap={1}>

@@ -115,7 +115,8 @@ export default {
       },
     },
     notifications: {
-      addToQueue: '{{nickname}} has added a video to the queue',
+      addToQueue: '<0>{{nickname}}</0> has added a video to the queue',
+      joined: '<0>{{nickname}}</0> has joined',
       desktop_offline: 'Desktop went offline',
       desktop_offline_recovered: 'Desktop is back online!',
       offline: 'You are offline',

@@ -13,6 +13,9 @@ const defaultStatus = {
   duration: 0,
   isReady: false,
   videoId: '',
+  fullscreen: false,
+  rate: 1,
+  volume: 50,
 };
 
 export const PlayerStatusContext = React.createContext<PlayerStatusContextProps>({

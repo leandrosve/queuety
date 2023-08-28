@@ -40,6 +40,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         gap={0}
         onClick={onPlay}
         alignItems='start'
+        maxWidth='100vw'
         position='relative'
         background={isCurrent ? 'whiteAlpha.100' : 'transparent'}
         height={'4.2rem' /* Must be hardcoded so the d&d placeholder does not mess up*/}
@@ -54,7 +55,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
           </Text>
         </Box>
         <Flex direction='column' gap={1}>
-          <Heading display='inline' size='sm' noOfLines={2} title={video.title}>
+          <Heading display='inline' size='sm' noOfLines={2} title={video.title} wordBreak='break-word'>
             {video.title}
           </Heading>
           <Flex alignItems='center' gap={1}>

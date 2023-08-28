@@ -58,17 +58,17 @@ const SearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: P
             {FormatUtils.formatDuration(video.duration)}
           </Text>
         </Box>
-        <Flex direction='column' gap={2}>
+        <Flex direction='column' gap={2} minWidth={0} overflow='hidden'>
           <Flex gap={1}>
-            <Heading display='inline' size='md'>
+            <Heading display='inline' size='md' noOfLines={1}>
               {video.title}
             </Heading>
           </Flex>
           <Flex alignItems='center' gap={3}>
-            <Link target='_blank' href={`https://www.youtube.com/channel/${video.channelId}`}>
+            <Link target='_blank' href={`https://www.youtube.com/channel/${video.channelId}`} flexShrink={0}>
               <Image borderRadius='full' cursor='pointer' width='30px' objectFit='cover' aspectRatio={'1/1'} src={video.channelThumbnail} />
             </Link>
-            <Text as='a' fontWeight='bold' target='_blank' href={`https://www.youtube.com/channel/${video.channelId}`}>
+            <Text as='a' fontWeight='bold' target='_blank' href={`https://www.youtube.com/channel/${video.channelId}`} noOfLines={1}>
               {video.channelTitle}
             </Text>
           </Flex>

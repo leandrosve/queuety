@@ -20,7 +20,7 @@ const DesktopAppPlayerView = ({ playerRoomId, userId }: Props) => {
   // We need to ensure the container div is rendered before initializing the player
   const { controls: playerControls, status: playerStatus } = useDesktopPlayer(playerRoomId, queue.currentItem, queueControls.onSkip);
   return (
-    <Flex direction='column' gap={5} paddingTop={10}>
+    <Flex direction='column' gap={5} paddingTop={10} width={{ base: '95vw', md: 800, lg: 1000, xl: 1100 }}>
       <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} />
       <SearchModal
         isOpen={isSearchModalOpen}
