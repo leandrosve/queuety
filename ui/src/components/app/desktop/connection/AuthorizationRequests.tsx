@@ -3,44 +3,24 @@ import { useState } from 'react';
 import AuthRequest from '../../../../model/auth/AuthRequest';
 import AutoAvatar from '../../../common/AutoAvatar';
 import GlassContainer from '../../../common/glass/GlassContainer';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useDesktopAuthContext } from '../../../../context/DesktopAuthContext';
 import { AuthResponseStatus } from '../../../../model/auth/AuthResponse';
 import { LuCheckCircle } from 'react-icons/lu';
-import { useAuthRequestsContext } from '../../../../context/AuthRequestsContext';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { Trans, useTranslation } from 'react-i18next';
 
-const AuthorizationRequests = () => {
-  const { authorizeRequest } = useDesktopAuthContext();
-  const authRequests = useAuthRequestsContext();
-  return (
-    <Box position='fixed' bottom='0' left='1rem' width={600} maxWidth={'50vw'} zIndex={'var(--z-index-toast)'}>
-      <AnimatePresence>
-        {authRequests.list.map((request) => (
-          <Item
-            key={request.userId}
-            request={request}
-            onAccept={() => authorizeRequest(request, AuthResponseStatus.AUTHORIZED)}
-            onDeny={() => authorizeRequest(request, AuthResponseStatus.DENIED)}
-          />
-        ))}
-      </AnimatePresence>
-    </Box>
-  );
-};
-
 interface AuthorizationRequestItemProps {
   request: AuthRequest;
-  onAccept: () => void;
-  onDeny: () => void;
 }
-const Item = ({ request, onAccept, onDeny }: AuthorizationRequestItemProps) => {
+export const AuthorizationRequestItem = ({ request }: AuthorizationRequestItemProps) => {
   const [accepted, setAccepted] = useState(false);
+  const { authorizeRequest } = useDesktopAuthContext();
+
   const handleAccept = () => {
     if (accepted) return;
     setAccepted(true);
-    onAccept();
+    authorizeRequest(request, AuthResponseStatus.AUTHORIZED);
   };
 
   return (
@@ -52,13 +32,23 @@ const Item = ({ request, onAccept, onDeny }: AuthorizationRequestItemProps) => {
       exit={{ scaleY: 0, height: 0, transition: { delay: accepted ? 0.8 : 0 } }}
     >
       <GlassContainer padding={4} borderRadius='lg' boxShadow='md' marginY={2}>
-        <AuthorizationRequestItem onAccept={handleAccept} onDeny={onDeny} request={request} />
+        <AuthorizationRequestItemContent
+          onAccept={handleAccept}
+          onDeny={() => authorizeRequest(request, AuthResponseStatus.DENIED)}
+          request={request}
+        />
       </GlassContainer>
     </motion.div>
   );
 };
 
-export const AuthorizationRequestItem = ({ request, onAccept, onDeny }: AuthorizationRequestItemProps) => {
+interface AuthorizationRequestItemContentProps {
+  request: AuthRequest;
+  onAccept: () => void;
+  onDeny: () => void;
+}
+
+export const AuthorizationRequestItemContent = ({ request, onAccept, onDeny }: AuthorizationRequestItemContentProps) => {
   const { t } = useTranslation();
   const [accepted, setAccepted] = useState(false);
   const handleAccept = () => {
@@ -114,5 +104,3 @@ export const AuthorizationRequestItem = ({ request, onAccept, onDeny }: Authoriz
     </Flex>
   );
 };
-
-export default AuthorizationRequests;

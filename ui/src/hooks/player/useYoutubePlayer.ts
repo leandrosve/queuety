@@ -22,6 +22,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   const playerRef = useRef<YT.Player>();
   const [initialized, setInitialized] = useState<boolean>(false);
   const [status, setStatus] = useState<PlayerInnerStatus>(defaultStatus);
+  const [isFocused, setIsFocused] = useState(false);
 
   const initialize = async () => {
     new YT.Player(containerId, {
@@ -65,7 +66,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
         state: (player.getPlayerState() as PlayerState) || PlayerState.UNSTARTED,
         videoId: getVideoIdFromURL(player?.getVideoUrl()),
         rate: player.getPlaybackRate(),
-        volume: player.getVolume(),
+        volume: player.isMuted() ? 0 : player.getVolume(),
       };
 
       if (event.data !== PlayerState.UNSTARTED) {
@@ -91,7 +92,6 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
 
   const onTimeChange = useCallback(
     (time: number) => {
-      console.log('TIME CHANGE', !!playerRef.current, time);
       playerRef.current?.seekTo(time, true);
       playerRef.current?.playVideo();
     },
@@ -109,6 +109,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   const onVolumeChange = useCallback(
     (level: number) => {
       playerRef.current?.setVolume(level);
+      if (level > 0) playerRef.current?.unMute();
       setStatus((p) => ({ ...p, volume: level }));
     },
     [playerRef]
@@ -138,6 +139,12 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     playerRef.current?.pauseVideo();
   }, [playerRef]);
 
+  const checkVolume = useCallback(() => {
+    const player = playerRef.current;
+    const vol = player?.isMuted() ? 0 : player?.getVolume();
+    setStatus((p) => ({ ...p, volume: vol ?? p.volume }));
+  }, [playerRef]);
+
   const getCurrentPlayerStatus = useCallback((): PlayerInnerStatus | null => {
     const player = playerRef.current;
     if (!player) return null;
@@ -148,7 +155,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
       isReady: true,
       videoId: getVideoIdFromURL(player.getVideoUrl()),
       rate: player.getPlaybackRate(),
-      volume: player.getVolume(),
+      volume: player.isMuted() ? 0 : player.getVolume(),
     };
   }, [playerRef]);
 
@@ -166,6 +173,25 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     initialize();
     setInitialized(true);
   }, [queueItem]);
+
+  useEffect(() => {
+    window.addEventListener('focusin', () => {
+      setTimeout(() => setIsFocused(document.activeElement?.id == 'player-container'), 300);
+    });
+    window.addEventListener('blur', () => {
+      setTimeout(() => setIsFocused(document.activeElement?.id == 'player-container'), 300);
+    });
+  }, []);
+
+  useEffect(() => {
+    let interval: number;
+    if (isFocused) {
+      interval = setInterval(checkVolume, 1000);
+    } else {
+      checkVolume();
+    }
+    return () => clearInterval(interval);
+  }, [isFocused]);
 
   return {
     ref: playerRef,

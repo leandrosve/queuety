@@ -19,7 +19,6 @@ const DuplicateTabChecker = ({ children }: PropsWithChildren) => {
     channel.postMessage({ type: 'check-unique-tab', tabId });
     // note that listener is added after posting the message
     channel.addEventListener('message', (msg) => {
-      console.log('mensaje', msg);
       if (msg.data?.type === 'check-unique-tab' && msg.data?.tabId !== tabId) {
         // message received from other tab
         setShowError(true);

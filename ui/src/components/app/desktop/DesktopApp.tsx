@@ -12,14 +12,13 @@ import SettingsModal, { SettingsModalSections } from '../shared/settings/Setting
 import { combineProviders } from '../../../utils/ContextUtils';
 import DesktopConnectionView from './connection/DesktopConnectionView';
 import DesktopConnectionModal from './connection/DesktopConnectionModal';
-import AuthorizationRequests from './connection/AuthorizationRequests';
 import DesktopAppPlayerView from './DesktopAppPlayerView';
 import DesktopNotifications from './notifications.tsx/DesktopNotifications';
 import { DesktopNotificationsProvider } from '../../../context/DesktopNotificationsContext';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
-  DesktopNotificationsProvider,
   AuthRequestsProvider,
+  DesktopNotificationsProvider,
   AllowedUsersProvider,
   OnlinePrescenceProvider,
   DesktopAuthProvider,
@@ -51,8 +50,7 @@ const DesktopApp = () => {
           <DesktopConnectionView />
           <DesktopConnectionModal isOpen={isConnectionModalOpen} onClose={onDesktopConnectionModalClosed} />
           <SettingsModal isOpen={isSettingsModalOpen} onClose={onSettingsModalClosed} defaultSection={settingsSection} />
-          {!isConnectionModalOpen && <AuthorizationRequests />}
-          <DesktopNotifications />
+          <DesktopNotifications hideAuthRequests={isConnectionModalOpen} />
           <PlayerProviders>
             <Content />
           </PlayerProviders>
