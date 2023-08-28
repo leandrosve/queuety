@@ -77,7 +77,7 @@ const MobileNotifications = () => {
           gap={2}
         >
           <Icon as={errorDisplay.recovered ? PiPlugsConnectedBold : PiPlugsBold} filter='drop-shadow(0px 0px 5px #ffffff8f)' />
-          {t(`notifications.${errorDisplay.code}`) ?? '____'}
+          {errorDisplay.recovered ? t(`notifications.${errorDisplay.code}_recovered`) : t(`notifications.${errorDisplay.code}`)}
         </Flex>
       </Collapse>
     </Flex>

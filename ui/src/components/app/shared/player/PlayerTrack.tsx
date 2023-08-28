@@ -62,6 +62,7 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo }: Props) => {
         aria-label='slider-ex-4'
         defaultValue={30}
         focusThumbOnChange={false}
+        step={1}
         max={duration}
         onChange={(v) => setDraggingValue(v)}
         onChangeEnd={handleChangeEnd}

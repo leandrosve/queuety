@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Suspense, lazy } from 'react';
 import DeviceSelection, { DeviceType } from './components/app/shared/device/DeviceSelection';
 import StorageUtils, { StorageKey } from './utils/StorageUtils';
-import OnlyTabChecker from './components/app/shared/device/OnlyTabChecker';
+import DuplicateTabChecker from './components/app/shared/device/DuplicateTabChecker';
 
 const DesktopAppLazy = lazy(() => import('./components/app/desktop/DesktopApp'));
 const MobileAppLazy = lazy(() => import('./components/app/mobile/MobileApp'));
@@ -24,11 +24,11 @@ function App() {
     <ChakraProvider theme={theme}>
       <SettingsProvider>
         <div className='app'>
-          <OnlyTabChecker>
+          <DuplicateTabChecker>
             <Suspense fallback={<Loader />}>
               {!deviceType ? <DeviceSelection onSelected={(type) => setDeviceType(type)} /> : renderContent()}{' '}
             </Suspense>
-          </OnlyTabChecker>
+          </DuplicateTabChecker>
         </div>
       </SettingsProvider>
     </ChakraProvider>

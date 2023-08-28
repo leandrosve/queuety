@@ -15,7 +15,7 @@ interface Props {
   status: PlayerStatus;
   controls: MobilePlayerControls;
 }
-const playbackRateOptions: [number, string][] = [0.25, 0.5, 0.7, 1, 1.25, 1.5, 1.75, 2].map((o) => [o, o.toString()]);
+const playbackRateOptions: [number, string][] = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((o) => [o,  o.toString()]);
 
 const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Props) => {
   const [loading, setLoading] = useState({ fullscreen: false, rate: false });
@@ -26,6 +26,7 @@ const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Pr
     controls.onFullscreenChange(!status.fullscreen);
   };
   const onChangeRate = (rate: number) => {
+    if (status.rate == rate) return;
     setLoading((p) => ({ ...p, rate: true }));
     controls.onRateChange(rate);
   };

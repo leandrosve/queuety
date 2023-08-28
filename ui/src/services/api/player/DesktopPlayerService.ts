@@ -8,8 +8,8 @@ export default class DesktopPlayerService extends PlayerService {
     return super.joinRoom(playerRoomId, true, userId, nickname);
   }
 
-  public static notifyHostConnection(clientId: string) {
-    return this.emit('notify-host-connection', { clientId });
+  public static notifyHostConnection(clientId: string, nickname: string, userId: string) {
+    return this.emit('notify-host-connection', { clientId, nickname, userId });
   }
 
   public static onUserConnected(callback: (res: { userId: string; clientId: string; nickname: string }) => void) {

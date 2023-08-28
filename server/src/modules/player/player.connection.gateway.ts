@@ -45,8 +45,14 @@ export class PlayerConnectionGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('notify-host-connection')
-  private async onNotifyHostConnection(@ConnectedSocket() client: Socket, @MessageBody('clientId') clientId: string) {
-    return this.playerConnectionService.notifyHostConnection(client, clientId);
+  private async onNotifyHostConnection(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('clientId') clientId: string,
+    @MessageBody('nickname') hostNickname: string,
+    @MessageBody('userId') hostUserId: string,
+
+  ) {
+    return this.playerConnectionService.notifyHostConnection(client, clientId, hostNickname, hostUserId);
   }
 
   @SubscribeMessage('notify-auth-revocation')

@@ -37,7 +37,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
   );
 
   return (
-    <Flex grow={1} position='relative' alignSelf='stretch'>
+    <Flex grow={1} position='relative' alignSelf='stretch' minHeight={0}>
       <Flex
         grow={1}
         display='flex'

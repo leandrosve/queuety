@@ -113,11 +113,17 @@ export default {
         revoke: 'Revoke',
         revokeAll: 'Revoke all',
       },
-      notifications: {
-        addToQueue: '{{nickname}} has added a video to the queue',
-        desktop_offline: 'Desktop device is offline',
-        desktop_online: 'Desktop device is back again!',
-      },
+    },
+    notifications: {
+      addToQueue: '{{nickname}} has added a video to the queue',
+      desktop_offline: 'Desktop went offline',
+      desktop_offline_recovered: 'Desktop is back online!',
+      offline: 'You are offline',
+      offline_recovered: 'Back online!',
+    },
+    tabChecker: {
+      error: 'It appears the page was opened from another tab.<0></0>Do you want to stop the other tab and continue playing from this one?',
+      button: 'Continue from this tab',
     },
   },
 };

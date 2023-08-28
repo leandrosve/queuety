@@ -104,11 +104,15 @@ export default {
         revoke: 'Eliminar',
         revokeAll: 'Eliminar todos',
       },
-      notifications: {
-        addToQueue: '{{nickname}} agregó un video a la cola',
-        desktop_offline: 'Escritorio desconectado',
-        desktop_online: 'Escritorio se ha vuelto a conectar!',
-      },
+    },
+    notifications: {
+      addToQueue: '{{nickname}} agregó un video a la cola',
+      desktop_offline: 'Escritorio desconectado',
+      desktop_online: 'Escritorio se ha vuelto a conectar!',
+    },
+    tabChecker: {
+      error: 'Parece que el sitio se ha abierto desde otra pestaña.<0></0>Deseas continuar reproduciendo en esta pestaña y detener la otra?',
+      button: 'Continuar en esta pestaña',
     },
   },
 };

@@ -110,7 +110,7 @@ const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props)
           <Collapse in={(inputFocus && !inputValue) || !inputValue || !!error}>
             {((inputFocus && !inputValue) || !inputValue) && (
               <Text as='span' fontWeight='normal' fontSize={{ base: 'xs', lg: 'sm' }}>
-                {t('playerSearch.example')} https://www.youtube.com/watch?v=zz5ksvYBfEc
+                {t('playerSearch.example')} https://youtu.be/zz5ksvYBfEc
               </Text>
             )}
             {error && (

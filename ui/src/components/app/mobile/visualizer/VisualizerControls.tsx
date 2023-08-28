@@ -19,6 +19,9 @@ const buttonWidth = '4rem';
 const getIconForState = (state: PlayerState) => {
   if (state == PlayerState.PLAYING) return BsPauseFill;
   if (state == PlayerState.PAUSED) return BsPlayFill;
+  if (state == PlayerState.ENDED) return BsPlayFill;
+  if (state == PlayerState.UNSTARTED) return BsPlayFill;
+
   return BsPauseFill;
 };
 const VisualizerControls = ({ status, controls, queueControls }: Props) => {

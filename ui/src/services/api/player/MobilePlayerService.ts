@@ -26,7 +26,7 @@ export default class MobilePlayerService extends PlayerService {
     this._socket.on('host-disconnected', callback);
   }
 
-  public static onHostConnected(callback: (res: boolean) => void) {
+  public static onHostConnected(callback: (res: { nickname: string; userId: string }) => void) {
     this._socket.on('host-connected', callback);
   }
 

@@ -1,5 +1,5 @@
 import { Flex, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from '@chakra-ui/react';
-import { LuVolume1, LuVolumeX } from 'react-icons/lu';
+import { LuVolume1, LuVolume2, LuVolumeX } from 'react-icons/lu';
 import { useState, useEffect } from 'react';
 import GlassModal from '../../../common/glass/GlassModal';
 import { useTranslation } from 'react-i18next';
@@ -8,12 +8,18 @@ interface Props {
   volume: number;
   onChangeVolume: (value: number) => void;
 }
+
+const getVolumeIcon = (volume:number) => {
+  if (volume <= 0) return LuVolumeX;
+  if (volume >= 100) return LuVolume2;
+  return LuVolume1;
+}
 const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState({ prev: volume, current: volume });
-  const [draggingValue, setDraggingValue] = useState<number | null>(volume);
+  const [draggingValue, setDraggingValue] = useState<number | null>(null);
   const { t } = useTranslation();
 
   const onChangeEnd = (val: number) => {
@@ -61,15 +67,15 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
         <Flex alignItems='center' justifyContent='center' paddingRight={4} gap={3}>
           <IconButton
             variant='ghost'
-            icon={<Icon as={value.current > 0 ? LuVolume1 : LuVolumeX} boxSize={4} />}
+            icon={<Icon as={getVolumeIcon(value.current)} boxSize={5} />}
             aria-label='sound'
+            padding={1}
             color='text.300'
             onClick={() => onToggleMute(value.current > 0)}
           />
           <Slider
             value={draggingValue !== null ? draggingValue : value.current}
             aria-label='slider-ex-1'
-            defaultValue={1}
             min={0}
             max={100}
             step={10}

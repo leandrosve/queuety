@@ -77,9 +77,9 @@ export class PlayerConnectionService {
     return true;
   }
 
-  public async notifyHostConnection(client: Socket, clientId: string) {
+  public async notifyHostConnection(client: Socket, clientId: string, hostNickname: string, hostUserId: string) {
     if (!this.isHost(client)) return;
-    await client.to(clientId).emit('host-connected', true);
+    await client.to(clientId).emit('host-connected', { nickname: hostNickname, userId: hostUserId });
     return true;
   }
 }

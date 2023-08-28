@@ -145,8 +145,10 @@ const useMobileAuth = () => {
     MobilePlayerService.notifyUserReconnection(nicknameRef.current);
   };
 
-  const onHostConnected = () => {
+  const onHostConnected = (hostData: { userId: string; nickname: string }) => {
     Logger.success('Host Connected');
+    setHost({ userId: hostData.userId, nickname: hostData.nickname });
+    StorageUtils.set(StorageKey.HOST, JSON.stringify(hostData)), setHostStatus(HostStatus.CONNECTED);
     setHostStatus(HostStatus.CONNECTED);
   };
 

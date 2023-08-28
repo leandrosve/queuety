@@ -17,7 +17,7 @@ const NavbarDesktop = ({ onOpenConnectionModal, onOpenSettingsModal }: Props) =>
 
   return (
     <Flex as='header' gap={2} shrink={0} justifyContent='space-between' alignItems='center' padding={2} paddingX={4}>
-      <Text as='span' color='text.300' fontWeight='bold'>
+      <Text as='span' fontWeight='bold'>
         Queuety
       </Text>
 
@@ -37,13 +37,12 @@ const NavbarDesktop = ({ onOpenConnectionModal, onOpenSettingsModal }: Props) =>
         />
         <IconButton
           rounded='full'
-          color='text.300'
           variant='ghost'
           icon={<Icon as={colorMode == 'dark' ? HiMoon : HiSun} />}
           aria-label={t('layout.theme.switch')}
           onClick={toggleColorMode}
         />
-        <IconButton rounded='full' color='text.300' variant='ghost' icon={<LuSettings />} aria-label={'settings'} onClick={onOpenSettingsModal} />
+        <IconButton rounded='full' variant='ghost' icon={<LuSettings />} aria-label={'settings'} onClick={onOpenSettingsModal} />
       </Flex>
     </Flex>
   );

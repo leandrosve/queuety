@@ -29,6 +29,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
       playerVars: {
         autoplay: 1,
         start: 0,
+        rel: 0,
         loop: 1,
         mute: 0, // N.B. here the mute settings.
       },
@@ -74,6 +75,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
 
       if (event.data === PlayerState.ENDED) {
         nextStatus.currentTime = player.getDuration() || 0;
+        onVideoEnded();
       }
 
       setStatus((p) => {
