@@ -75,7 +75,7 @@ const useDesktopAuth = () => {
   };
 
   const onUserConnected = (userId: string, clientId: string, reconnected?: boolean, nickname?: string) => {
-    if (!connection.userId) return;
+    console.log('USER RECONNECTED', userId, clientId, nickname);
     if (!allowedUsersRef.current.get(userId)) {
       revokeAuthorization(userId, clientId);
       Logger.warn('Unauthorized user tried to connect', { userId });
@@ -85,6 +85,7 @@ const useDesktopAuth = () => {
     Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}: ${userId}`);
     onlinePrescence.addUnique(userId);
     Logger.info('SEND NOTIFY HOST CONNECTION');
+    if (!connection.userId) return;
     DesktopPlayerService.notifyHostConnection(clientId, settings.nickname, connection.userId);
   };
 

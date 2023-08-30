@@ -51,7 +51,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
       isReady: true,
       duration: player.getDuration() || 0,
       currentTime: player.getCurrentTime() || 0,
-      playbackRate: player.getPlaybackRate() || 1,
+      rate: player.getPlaybackRate() || 1,
     }));
   };
   const getVideoIdFromURL = (videoURL?: string) => {
@@ -87,7 +87,9 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   );
 
   const onPlaybackRateChange = useCallback((e: YT.OnPlaybackRateChangeEvent) => {
-    setStatus((p) => ({ ...p, playbackRate: e.data }));
+    const player = playerRef.current;
+    if (!player) return;
+    setStatus((p) => ({ ...p, rate: e.data, currentTime: player.getCurrentTime() }));
   }, []);
 
   const onTimeChange = useCallback(
@@ -142,7 +144,10 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   const checkVolume = useCallback(() => {
     const player = playerRef.current;
     const vol = player?.isMuted() ? 0 : player?.getVolume();
-    setStatus((p) => ({ ...p, volume: vol ?? p.volume }));
+    setStatus((p) => {
+      if (p.volume == vol) return p;
+      return { ...p, volume: vol ?? p.volume };
+    });
   }, [playerRef]);
 
   const getCurrentPlayerStatus = useCallback((): PlayerInnerStatus | null => {
@@ -188,7 +193,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     if (isFocused) {
       interval = setInterval(checkVolume, 1000);
     } else {
-      checkVolume();
+      setTimeout(checkVolume, 500);
     }
     return () => clearInterval(interval);
   }, [isFocused]);

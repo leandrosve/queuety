@@ -53,7 +53,7 @@ const MobileQueue = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, on
         overflow='hidden'
         bottom={0}
         left={0}
-        maxWidth='100vw'
+        maxWidth='100%'
       >
         <GlassContainer asBefore />
         <Flex padding={3} gap={2} justifyContent='space-between'>

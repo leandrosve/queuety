@@ -1,7 +1,6 @@
 import useMobileQueue from '../../../hooks/queue/useMobileQueue';
 import { Flex } from '@chakra-ui/react';
 import VisualizerControls from './visualizer/VisualizerControls';
-import MobileQueue from './queue/MobileQueue';
 import VisualizerVideo from './visualizer/VisualizerVideo';
 import './visualizer/visualizer.css';
 import SearchModal from '../shared/search/SearchModal';
@@ -11,6 +10,8 @@ import PlayerTrack from '../shared/player/PlayerTrack';
 import MobileNotifications from './connection/MobileNotifications';
 import HostData from '../../../model/auth/HostData';
 import SearchLinkButton from '../shared/search/SearchLinkButton';
+import { useMobileAuthContext } from '../../../context/MobileAuthContext';
+import MobileQueuePortrait from './queue/MobileQueuePortrait';
 
 interface Props {
   playerRoomId: string;
@@ -21,16 +22,22 @@ const MobileAppPlayerView = ({ playerRoomId, userId, host }: Props) => {
   const { queue, controls: queueControls } = useMobileQueue(playerRoomId, userId);
   const { status: playerStatus, controls: playerControls } = useMobilePlayerStatus();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const { hostStatus } = useMobileAuthContext();
   return (
-    <Flex direction='column' alignItems='center' justifyContent='start' alignSelf='stretch' gap={0}>
+    <Flex direction='column' alignItems='center' justifyContent='start' alignSelf='stretch' gap={0} width={'100vw'}>
       <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} marginX={4} alignSelf='stretch' />
       <VisualizerVideo video={queue.currentItem?.video} status={playerStatus} playerControls={playerControls} host={host} />
       <VisualizerControls status={playerStatus} controls={playerControls} queueControls={queueControls} />
       <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5} mb={4}>
-        <PlayerTrack status={playerStatus} onTimeChange={playerControls.onTimeChange} currentQueuedVideo={queue.currentItem?.video} />
+        <PlayerTrack
+          status={playerStatus}
+          onTimeChange={playerControls.onTimeChange}
+          currentQueuedVideo={queue.currentItem?.video}
+          hostStatus={hostStatus}
+        />
       </Flex>
       <MobileNotifications />
-      <MobileQueue
+      <MobileQueuePortrait
         queue={queue.items}
         currentItem={queue.currentItem}
         currentIndex={queue.currentIndex}

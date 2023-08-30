@@ -4,13 +4,15 @@ import PlayerState from '../../../../model/player/PlayerState';
 import FormatUtils from '../../../../utils/FormatUtils';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
+import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
 
 interface Props {
   onTimeChange: (time: number) => void;
   status: PlayerStatus;
+  hostStatus?: HostStatus;
   currentQueuedVideo?: YoutubeVideoDetail;
 }
-const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo }: Props) => {
+const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus }: Props) => {
   const { currentTime, duration, rate, state } = useMemo(() => {
     if (currentQueuedVideo && currentQueuedVideo?.id !== status.videoId) {
       return {
@@ -41,7 +43,9 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo }: Props) => {
   useEffect(() => {
     let interval: number;
     let lastTime = new Date().getTime();
-    if (state === PlayerState.PLAYING) {
+    const hostConnected = hostStatus && hostStatus == HostStatus.CONNECTED;
+    const awaiting = state === PlayerState.AWAITING_PLAYING || state === PlayerState.AWAITING_PAUSED;
+    if (!awaiting && hostConnected && state === PlayerState.PLAYING) {
       interval = setInterval(() => {
         //setTime((p) => p + 0.1 * playbackRate);
         const currentTime = new Date().getTime();
@@ -51,16 +55,17 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo }: Props) => {
         setTime((p) => {
           return p + timeDiff * rate;
         });
-      }, 1000);
+      }, 1000 / rate);
     }
     return () => clearInterval(interval);
-  }, [state, rate]);
+  }, [state, rate, hostStatus]);
 
   return (
     <Flex direction='column' alignItems='center' gap={1} width='100%' mt={2}>
       <Slider
         aria-label='slider-ex-4'
         defaultValue={30}
+        isDisabled={hostStatus === HostStatus.DISCONNECTED}
         focusThumbOnChange={false}
         step={1}
         max={duration}

@@ -43,8 +43,11 @@ export class PlayerEventsGateway {
   }
 
   @SubscribeMessage('send-player-status')
-  private async onSendPlayerStatus(@ConnectedSocket() client: Socket, @MessageBody() dto: { playerRoomId: string; status: PlayerStatus }) {
-    this.playerEventsService.sendPlayerStatus(client, dto.playerRoomId, dto.status);
+  private async onSendPlayerStatus(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: { timestamp: number; playerRoomId: string; status: PlayerStatus }
+  ) {
+    this.playerEventsService.sendPlayerStatus(client, dto.playerRoomId, dto.timestamp, dto.status);
     return true;
   }
 

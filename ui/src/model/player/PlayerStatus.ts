@@ -10,7 +10,3 @@ export default interface PlayerStatus {
   rate: number;
   volume: number;
 }
-
-export interface MobilePlayerStatus extends PlayerStatus {
-  fullscreen: boolean;
-}

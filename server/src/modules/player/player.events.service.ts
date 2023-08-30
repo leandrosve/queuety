@@ -37,9 +37,9 @@ export class PlayerEventsService {
     return true;
   }
 
-  public sendPlayerStatus(client: Socket, playerRoomId: string, status: PlayerStatus) {
+  public sendPlayerStatus(client: Socket, playerRoomId: string, timestamp: number, status: PlayerStatus) {
     this.logger.log(`Send player status to player room: ${playerRoomId}`);
-    client.to(playerRoomId).emit('receive-player-status', { status });
+    client.to(playerRoomId).emit('receive-player-status', { timestamp, status });
     return true;
   }
 

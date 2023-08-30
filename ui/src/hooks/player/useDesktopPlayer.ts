@@ -116,10 +116,11 @@ const useDesktopPlayer = (
   useEffect(() => {
     if (!playerRoomId || !DesktopPlayerService.isReady()) return;
     if (!onlineUsers.data.length) return;
-    let payload: Partial<PlayerStatus> = statusHistory.current;
+    let payload: null | Partial<PlayerStatus> = statusHistory.current;
     if (statusHistory.prev) {
       payload = PlayerUtils.getStatusDifference(statusHistory.prev, statusHistory.current);
     }
+    if (!payload) return;
     DesktopPlayerService.sendPlayerStatus(playerRoomId, payload);
   }, [statusHistory]);
 

@@ -1,8 +1,7 @@
-import { Flex, Icon, IconButton, Spinner, Stack, Text } from '@chakra-ui/react';
+import { Flex, Icon, IconButton, Spinner, Text } from '@chakra-ui/react';
 import './visualizer.css';
 import { useEffect, useState } from 'react';
-import { BsFastForwardFill, BsPauseFill, BsPlayFill } from 'react-icons/bs';
-import { motion } from 'framer-motion';
+import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import PlayerState from '../../../../model/player/PlayerState';
 import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
@@ -63,6 +62,7 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
   return (
     <Flex
       onClick={() => setClicked((p) => p + 1)}
+      onMouseEnter={() => setClicked((p) => p + 1)}
       position='absolute'
       height='100%'
       top={0}
@@ -75,7 +75,7 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
       <Flex width='100%' height='100%' pointerEvents={clicked ? 'all' : 'none'} color='white'>
         <Flex height={'100%'} width='40%' direction='column' alignItems='center' justifyContent='center'>
           <Flex position='relative'>
-            <IconButton rounded='full' aria-label='rewind' icon={<Icon as={LuRotateCcw} boxSize='2rem' />} onClick={onRewind} />
+            <IconButton rounded='full' color='white' aria-label='rewind' icon={<Icon as={LuRotateCcw} boxSize='2rem' />} onClick={onRewind} />
             <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={rewindSeconds ? 1 : 0}>
               -{rewindSeconds}s
             </Text>
@@ -95,7 +95,7 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
         </Flex>
         <Flex height={'100%'} width='40%' direction='column' alignItems='center' justifyContent='center'>
           <Flex position='relative'>
-            <IconButton rounded='full' aria-label='fast-forward' icon={<Icon as={LuRotateCw} boxSize='2rem' />} onClick={onForward} />
+            <IconButton rounded='full' color='white' aria-label='fast-forward' icon={<Icon as={LuRotateCw} boxSize='2rem' />} onClick={onForward} />
             <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={forwardSeconds ? 1 : 0}>
               +{forwardSeconds}s
             </Text>

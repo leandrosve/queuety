@@ -1,31 +1,32 @@
-import { Flex, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from '@chakra-ui/react';
+import { Flex, Icon, IconButton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner } from '@chakra-ui/react';
 import { LuVolume1, LuVolume2, LuVolumeX } from 'react-icons/lu';
 import { useState, useEffect } from 'react';
 import GlassModal from '../../../common/glass/GlassModal';
-import { useTranslation } from 'react-i18next';
+import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
+import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
 
 interface Props {
   volume: number;
   onChangeVolume: (value: number) => void;
 }
 
-const getVolumeIcon = (volume:number) => {
+const getVolumeIcon = (volume: number) => {
   if (volume <= 0) return LuVolumeX;
   if (volume >= 100) return LuVolume2;
   return LuVolume1;
-}
+};
 const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const { hostStatus } = useMobileAuthContext();
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState({ prev: volume, current: volume });
   const [draggingValue, setDraggingValue] = useState<number | null>(null);
-  const { t } = useTranslation();
 
   const onChangeEnd = (val: number) => {
     setDraggingValue(null);
-    setLoading(true);
     setValue((p) => ({ prev: p.current, current: val }));
+    if (hostStatus == HostStatus.DISCONNECTED) return;
+    setLoading(true);
     onChangeVolume(val);
   };
 
@@ -50,25 +51,18 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
         variant='ghost'
         className='volume-trigger'
         id='volume-trigger'
-        icon={<Icon as={value.current > 0 ? LuVolume1 : LuVolumeX} boxSize={4} />}
+        icon={loading ? <Spinner size='sm' /> : <Icon as={value.current > 0 ? LuVolume1 : LuVolumeX} boxSize={4} />}
         aria-label='sound'
         color='text.300'
         onClick={() => setIsOpen(true)}
-        isLoading={loading}
       />
-      <GlassModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title={t('player.volume')}
-        isCentered
-        contentProps={{ padding: 0 }}
-        maxWidth='95vw'
-      >
-        <Flex alignItems='center' justifyContent='center' paddingRight={4} gap={3}>
+      <GlassModal isOpen={isOpen} onClose={() => setIsOpen(false)} isCentered contentProps={{ padding: 0 }} maxWidth='95vw'>
+        <Flex alignItems='center' justifyContent='center' padding={2} gap={3}>
           <IconButton
             variant='ghost'
             icon={<Icon as={getVolumeIcon(value.current)} boxSize={5} />}
             aria-label='sound'
+            isDisabled={hostStatus === HostStatus.DISCONNECTED}
             padding={1}
             color='text.300'
             onClick={() => onToggleMute(value.current > 0)}
@@ -77,6 +71,7 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
             value={draggingValue !== null ? draggingValue : value.current}
             aria-label='slider-ex-1'
             min={0}
+            isDisabled={hostStatus === HostStatus.DISCONNECTED}
             max={100}
             step={10}
             onChange={(v) => setDraggingValue(v)}

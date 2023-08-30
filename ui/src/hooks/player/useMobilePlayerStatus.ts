@@ -4,7 +4,9 @@ import PlayerStatus from '../../model/player/PlayerStatus';
 import PlayerState from '../../model/player/PlayerState';
 import Logger from '../../utils/Logger';
 import { PlayerControls } from './useDesktopPlayer';
-import { PlayerStatusActionType } from '../../model/player/PlayerActions';
+import { PlayerStatusAction, PlayerStatusActionType } from '../../model/player/PlayerActions';
+import { useMobileAuthContext } from '../../context/MobileAuthContext';
+import { HostStatus } from '../connection/useMobileAuth';
 
 const initialStatus: PlayerStatus = {
   currentTime: 0,
@@ -23,46 +25,84 @@ export interface MobilePlayerControls extends PlayerControls {
 
 const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayerControls } => {
   const [status, setStatus] = useState<PlayerStatus>(initialStatus);
+  const { hostStatus } = useMobileAuthContext();
+
+  const sendPlayerStatusAction = useCallback(
+    (action: PlayerStatusAction) => {
+      if (hostStatus == HostStatus.DISCONNECTED) return false;
+      const res = MobilePlayerService.sendPlayerStatusAction(action);
+      return res;
+    },
+    [hostStatus]
+  );
 
   const onPlay = useCallback(() => {
-    setStatus((p) => ({ ...p, state: PlayerState.PLAYING }));
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.PLAY, payload: null });
-  }, []);
+    if (sendPlayerStatusAction({ type: PlayerStatusActionType.PLAY, payload: null })) {
+      setStatus((p) => ({ ...p, state: PlayerState.PLAYING }));
+    }
+  }, [sendPlayerStatusAction]);
 
   const onPause = useCallback(() => {
-    setStatus((p) => ({ ...p, state: PlayerState.PAUSED }));
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.PAUSE, payload: null });
-  }, []);
+    if (sendPlayerStatusAction({ type: PlayerStatusActionType.PAUSE, payload: null })) {
+      setStatus((p) => ({ ...p, state: PlayerState.PAUSED }));
+    }
+  }, [sendPlayerStatusAction]);
 
-  const onTimeChange = useCallback((timeSeconds: number) => {
-    setStatus((p) => ({ ...p, state: PlayerState.PLAYING }));
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_TIME, payload: { time: timeSeconds } });
-  }, []);
+  const onTimeChange = useCallback(
+    (timeSeconds: number) => {
+      setStatus((p) => ({ ...p, state: p.state === PlayerState.PLAYING ? PlayerState.AWAITING_PLAYING : PlayerState.AWAITING_PAUSED }));
+      sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_TIME, payload: { time: timeSeconds } });
+    },
+    [sendPlayerStatusAction]
+  );
 
-  const onFullscreenChange = useCallback((value: boolean) => {
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_FULLSCREEN, payload: { value } });
-  }, []);
+  const onFullscreenChange = useCallback(
+    (value: boolean) => {
+      return sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_FULLSCREEN, payload: { value } });
+    },
+    [sendPlayerStatusAction]
+  );
 
-  const onRateChange = useCallback((value: number) => {
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_RATE, payload: { value } });
-  }, []);
+  const onRateChange = useCallback(
+    (value: number) => {
+      return sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_RATE, payload: { value } });
+    },
+    [sendPlayerStatusAction]
+  );
 
-  const onVolumeChange = useCallback((value: number) => {
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_VOLUME, payload: { value } });
-  }, []);
+  const onVolumeChange = useCallback(
+    (value: number) => {
+      return sendPlayerStatusAction({ type: PlayerStatusActionType.CHANGE_VOLUME, payload: { value } });
+    },
+    [sendPlayerStatusAction]
+  );
 
-  const onRewind = useCallback((seconds: number) => {
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.REWIND, payload: { seconds } });
-  }, []);
+  const onRewind = useCallback(
+    (seconds: number) => {
+      sendPlayerStatusAction({ type: PlayerStatusActionType.REWIND, payload: { seconds } });
+    },
+    [sendPlayerStatusAction]
+  );
 
-  const onForward = useCallback((seconds: number) => {
-    MobilePlayerService.sendPlayerStatusAction({ type: PlayerStatusActionType.FORWARD, payload: { seconds } });
-  }, []);
+  const onForward = useCallback(
+    (seconds: number) => {
+      sendPlayerStatusAction({ type: PlayerStatusActionType.FORWARD, payload: { seconds } });
+    },
+    [sendPlayerStatusAction]
+  );
 
   useEffect(() => {
     MobilePlayerService.onPlayerStatus((res) => {
       Logger.info('Received player status', res?.status);
-      setStatus((p) => ({ ...p, ...res.status }));
+      setStatus((p) => {
+        if (res.timestamp && res.status.currentTime !== undefined) {
+          const playbackRate = res.status.rate ?? p.rate;
+          const timeDiff = (new Date().getTime() - res.timestamp) / 1000;
+          const currentTime = res.status.currentTime + timeDiff * playbackRate;
+          return { ...p, ...res.status, currentTime };
+        }
+        return { ...p, ...res.status };
+      });
     });
   }, []);
   return {

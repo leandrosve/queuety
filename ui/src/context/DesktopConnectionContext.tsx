@@ -25,7 +25,7 @@ export type DesktopConnectionContextProps = {
 };
 
 const DesktopConnectionContext = React.createContext<DesktopConnectionContextProps>({
-  connection: { playerRoom: { id: null }, authRoom: { id: null }, settings: { automatic: false }, userId: null },
+  connection: { playerRoom: { id: null }, authRoom: { id: null }, settings: { automatic: true }, userId: null },
   regenAuthRoom: () => {},
   toggleAutoAuth: () => {},
 });
@@ -40,7 +40,7 @@ const getInitialAuthRoom = () => {
 };
 
 const getInitialSettings = () => {
-  const defaults = { automatic: false };
+  const defaults = { automatic: true };
   const connectionSettings = JSON.parse(StorageUtils.get(StorageKey.CONNECTION_SETTINGS) || '{}');
   return { ...defaults, ...connectionSettings };
 };

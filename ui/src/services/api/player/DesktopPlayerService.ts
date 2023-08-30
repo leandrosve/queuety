@@ -41,7 +41,7 @@ export default class DesktopPlayerService extends PlayerService {
   }
 
   public static sendPlayerAction(playerRoomId: string, action: QueueActionRequest) {
-    return this.emit<boolean>('send-player-event', { playerRoomId, action });
+    return this.emit<boolean>('send-player-event', { timestamp: new Date().getTime, playerRoomId, action });
   }
 
   public static sendAuthRevocation(userId: string, clientId: string) {

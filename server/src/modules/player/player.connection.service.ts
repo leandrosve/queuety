@@ -66,6 +66,7 @@ export class PlayerConnectionService {
   public notifyUserReconnection(client: Socket, roomId: string, nickname: string) {
     const userId = this.userId(client);
     if (userId) {
+      this.logger.log(`Notify user reconnection - userId: ${userId}`);
       client.to(roomId).emit('user-reconnected', { userId, clientId: client.id, nickname });
     }
   }

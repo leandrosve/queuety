@@ -6,6 +6,8 @@ enum PlayerState {
   PAUSED = 2,
   BUFFERING = 3,
   CUED = 4,
+  AWAITING_PLAYING = 5, // Only for mobile to indicate that it's awaiting desktop's response
+  AWAITING_PAUSED = 6,
 }
 
 export default PlayerState;

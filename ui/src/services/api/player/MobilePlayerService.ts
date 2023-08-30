@@ -50,7 +50,7 @@ export default class MobilePlayerService extends PlayerService {
     this._socket.once('receive-complete-queue', callback);
   }
 
-  public static onPlayerStatus(callback: (res: { status: Partial<PlayerStatus> }) => void) {
+  public static onPlayerStatus(callback: (res: { timestamp?: number; status: Partial<PlayerStatus> }) => void) {
     this._socket.on('receive-player-status', callback);
   }
 

@@ -12,21 +12,22 @@ import DuplicateTabChecker from './components/app/shared/device/DuplicateTabChec
 const DesktopAppLazy = lazy(() => import('./components/app/desktop/DesktopApp'));
 const MobileAppLazy = lazy(() => import('./components/app/mobile/MobileApp'));
 
+const renderContent = (deviceType: DeviceType) => {
+  if (deviceType === DeviceType.DESKTOP) return <DesktopAppLazy />;
+  return <MobileAppLazy />;
+};
+
 function App() {
   // This damn hooks always run twice for some reason
   const [deviceType, setDeviceType] = useState<DeviceType>(StorageUtils.get(StorageKey.DEVICE) as DeviceType);
 
-  const renderContent = () => {
-    if (deviceType === DeviceType.DESKTOP) return <DesktopAppLazy />;
-    return <MobileAppLazy />;
-  };
   return (
     <ChakraProvider theme={theme}>
       <SettingsProvider>
         <div className='app'>
           <DuplicateTabChecker>
             <Suspense fallback={<Loader />}>
-              {!deviceType ? <DeviceSelection onSelected={(type) => setDeviceType(type)} /> : renderContent()}{' '}
+              {!deviceType ? <DeviceSelection onSelected={(type) => setDeviceType(type)} /> : renderContent(deviceType)}
             </Suspense>
           </DuplicateTabChecker>
         </div>

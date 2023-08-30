@@ -8,6 +8,8 @@ import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { useMemo } from 'react';
 import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerStatus';
 import { useTranslation } from 'react-i18next';
+import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
+import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
 
 interface Props {
   isOpen: boolean;
@@ -15,17 +17,20 @@ interface Props {
   status: PlayerStatus;
   controls: MobilePlayerControls;
 }
-const playbackRateOptions: [number, string][] = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((o) => [o,  o.toString()]);
+const playbackRateOptions: [number, string][] = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((o) => [o, o.toString()]);
 
 const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Props) => {
   const [loading, setLoading] = useState({ fullscreen: false, rate: false });
+  const { hostStatus } = useMobileAuthContext();
   const { t } = useTranslation();
 
   const onToggleFullscreen = () => {
+    if (hostStatus == HostStatus.DISCONNECTED) return;
     setLoading((p) => ({ ...p, fullscreen: true }));
     controls.onFullscreenChange(!status.fullscreen);
   };
   const onChangeRate = (rate: number) => {
+    if (hostStatus == HostStatus.DISCONNECTED) return;
     if (status.rate == rate) return;
     setLoading((p) => ({ ...p, rate: true }));
     controls.onRateChange(rate);
