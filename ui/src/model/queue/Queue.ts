@@ -4,6 +4,7 @@ export interface Queue {
   items: QueueItem[];
   currentId: string | null;
   status: QueueStatus;
+  loop: boolean;
 }
 
 export enum QueueStatus {

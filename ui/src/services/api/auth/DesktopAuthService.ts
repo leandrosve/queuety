@@ -23,6 +23,7 @@ export default class DesktopAuthService extends AuthService {
    */
 
   public static onAuthRequested(callback: (res: AuthRequest) => void) {
+    this._socket.off('receive-auth-request');
     this._socket.on('receive-auth-request', callback);
   }
 }

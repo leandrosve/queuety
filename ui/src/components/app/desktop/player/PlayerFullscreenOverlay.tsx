@@ -38,6 +38,7 @@ const PlayerFullScreenOverlay = ({ onFullscreenChange }: Props) => {
           onMouseEnter={() => setIsOverButton(true)}
           onMouseLeave={() => setIsOverButton(false)}
           onClick={() => onFullscreenChange(false)}
+          backdropFilter='blur(10px)'
         >
           {t('player.exitFullscreen')}
         </Button>

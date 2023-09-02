@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import HostData from '../../../../model/auth/HostData';
-import MobileAppPlayerView from '../MobileAppPlayerView';
+import MobileAppPortraitView from '../MobileAppPortraitView';
 
 interface Props {
   playerRoomId: string;
@@ -17,9 +17,9 @@ const MobileAppOrientation = (props: Props) => {
       setPortrait(isPortrait);
     });
   }, []);
-  if (portrait) return <MobileAppPlayerView {...props} />;
+  if (portrait) return <MobileAppPortraitView {...props} />;
 
-  return <MobileAppPlayerView {...props} />;
+  return <MobileAppPortraitView {...props} />;
 };
 
 export default MobileAppOrientation;

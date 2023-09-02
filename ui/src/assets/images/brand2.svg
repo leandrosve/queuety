@@ -1,0 +1,18 @@
+<svg id="Group_1_copy" data-name="Group 1 copy" xmlns="http://www.w3.org/2000/svg" width="700" height="700" viewBox="0 0 700 700">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #0c0c0c;
+      }
+
+      .cls-2 {
+        fill: #fff;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <rect class="cls-1" x="33" y="12" width="635" height="677"/>
+  <path class="cls-2" d="M145.423,655.352V45.029H79.371V655.352h66.053Zm140.691,0V592.6h-147.3v62.75h147.3Zm0-547.573V45.029h-147.3v62.75h147.3Z"/>
+  <path  class="cls-2" d="M465.233,654.824V44.5h66.052V654.824H465.233Zm-140.691,0V592.075h147.3v62.749h-147.3Zm0-547.573V44.5h147.3v62.75h-147.3Z"/>
+  <path class="cls-2" d="M285.5,368.459V302.326H620.629v66.133H285.5Zm0,177.776V480.1H620.629v66.133H285.5Z"/>
+</svg>

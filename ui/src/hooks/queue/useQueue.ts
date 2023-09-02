@@ -16,12 +16,15 @@ export interface QueueControls {
   onPlay: (item: QueueItem) => void;
   onSkip: () => void;
   onSkipBack: () => void;
+  onChangeStatus: (status: QueueStatus) => void;
+  onToggleLoop: (loop: boolean) => void;
 }
 
 const emptyQueue: Queue = {
   items: [],
   currentId: null,
   status: QueueStatus.UNSTARTED,
+  loop: false,
 };
 
 const useQueue = (
@@ -77,6 +80,14 @@ const useQueue = (
     (item: QueueItem) => dispatchAction({ type: QueueActionType.PLAY_NOW, ...basicAction(), payload: { itemId: item.id } }),
     [dispatchAction]
   );
+  const onChangeStatus = useCallback(
+    (status: QueueStatus) => dispatchAction({ type: QueueActionType.CHANGE_STATUS, ...basicAction(), payload: { status } }),
+    [dispatchAction]
+  );
+  const onToggleLoop = useCallback(
+    (loop: boolean) => dispatchAction({ type: QueueActionType.TOGGLE_LOOP, ...basicAction(), payload: { loop } }),
+    [dispatchAction]
+  );
 
   return {
     queue,
@@ -91,6 +102,8 @@ const useQueue = (
       onChangeOrder,
       onSkip,
       onSkipBack,
+      onChangeStatus,
+      onToggleLoop,
     },
   };
 };
@@ -125,8 +138,14 @@ const reducer = (queue: Queue, { type, payload }: QueueAction): Queue => {
     case QueueActionType.CLEAR: {
       return { ...queue, items: queue.items.filter((i) => i.id === queue.currentId) };
     }
+    case QueueActionType.CHANGE_STATUS: {
+      return { ...queue, status: payload.status };
+    }
     case QueueActionType.INITIALIZE: {
       return payload;
+    }
+    case QueueActionType.TOGGLE_LOOP: {
+      return toggleLoop(queue, payload.loop);
     }
     default:
       return queue;
@@ -144,7 +163,7 @@ const addNow = (queue: Queue, item: QueueItem): Queue => {
   const index = queue.items.findIndex((i) => i.id === queue.currentId);
   const nextItems = [...queue.items];
   nextItems.splice(index + 1, 0, item);
-  return { items: nextItems, currentId: item.id, status: QueueStatus.ACTIVE };
+  return { items: nextItems, currentId: item.id, status: QueueStatus.ACTIVE, loop: queue.loop };
 };
 
 const addNext = (queue: Queue, item: QueueItem): Queue => {
@@ -153,7 +172,7 @@ const addNext = (queue: Queue, item: QueueItem): Queue => {
   const nextItems = [...queue.items];
   nextItems.splice(index + 1, 0, item);
   const nextCurrent = queue.status === QueueStatus.ENDED || queue.items.length === 0 ? item.id : queue.currentId;
-  return { items: nextItems, currentId: nextCurrent, status: QueueStatus.ACTIVE };
+  return { items: nextItems, currentId: nextCurrent, status: QueueStatus.ACTIVE, loop: queue.loop };
 };
 
 const remove = (queue: Queue, itemId: string): Queue => {
@@ -165,7 +184,10 @@ const skip = (queue: Queue): Queue => {
   const index = queue.items.findIndex((i) => i.id === queue.currentId);
   const nextItem = queue.items[index + 1];
   Logger.info('Current:', queue.currentId, 'Next:', nextItem?.video?.title);
-  if (!nextItem) return queue;
+  if (!nextItem) {
+    if (queue.loop) return { ...queue, currentId: queue.items[0].id };
+    return queue;
+  }
   return { ...queue, currentId: nextItem.id };
 };
 
@@ -195,4 +217,11 @@ const contains = (queue: Queue, item: QueueItem): boolean => {
   const index = queue.items.findIndex((i) => i.id === item.id);
   return index > 0;
 };
+
+const toggleLoop = (queue: Queue, loop: boolean): Queue => {
+  const hasFinished = queue.status == QueueStatus.ENDED;
+  const currentId = hasFinished ? queue.items[0].id : queue.currentId;
+  return { ...queue, loop, currentId };
+};
+
 export default useQueue;

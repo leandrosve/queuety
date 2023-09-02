@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
-import { Collapse, Flex, Icon } from '@chakra-ui/react';
+import { Button, Collapse, Flex, Icon, Spinner, Stack, chakra, shouldForwardProp } from '@chakra-ui/react';
 import { PiPlugsBold, PiPlugsConnectedBold } from 'react-icons/pi';
 import { useTranslation } from 'react-i18next';
+import { LuLogOut } from 'react-icons/lu';
+import { AnimatePresence, isValidMotionProp, motion } from 'framer-motion';
+import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 
 interface ConnectionError {
   code: string | null;
   recovered: boolean;
 }
+
+const ChakraBox = chakra(motion.div, {
+  shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
+});
+
 const MobileNotifications = () => {
   const { hostStatus, isSocketReady } = useMobileAuthContext();
-  const { t } = useTranslation();
   const [error, setError] = useState<ConnectionError>({ code: null, recovered: false });
   const [errorDisplay, setErrorDisplay] = useState<ConnectionError>({ code: null, recovered: false });
 
@@ -52,35 +59,76 @@ const MobileNotifications = () => {
   }, [error]);
 
   return (
-    <Flex
-      background={errorDisplay.recovered ? 'green.500' : 'red.400'}
-      alignSelf='stretch'
-      alignItems='stretch'
-      justifyContent='stretch'
-      borderTopRadius='lg'
-      color='white'
-      zIndex={-1}
-      marginBottom={'-10px'}
-      opacity={error.code ? 1 : 0}
-      transition='opacity 800ms ease'
-    >
-      <Collapse in={!!error.code} style={{ width: '100%' }}>
-        <Flex
-          alignSelf='stretch'
-          grow={1}
-          justifyContent='center'
-          flex={1}
-          textAlign='center'
+    <AnimatePresence>
+      {error.code && (
+        <ChakraBox
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          position='absolute'
+          height='100%'
+          top={0}
+          left={0}
+          width='100vw'
+          display='flex'
+          flexDirection='column'
+          gap={3}
           alignItems='center'
-          paddingBottom='10px'
-          textShadow='md'
-          gap={2}
+          justifyContent='center'
+          zIndex={20}
+          bgGradient='linear-gradient(to-t,blackAlpha.700 95%, transparent)'
+          _light={{ bgGradient: 'linear-gradient(to-t, blackAlpha.600 95%, transparent)' }}
         >
-          <Icon as={errorDisplay.recovered ? PiPlugsConnectedBold : PiPlugsBold} filter='drop-shadow(0px 0px 5px #ffffff8f)' />
-          {errorDisplay.recovered ? t(`notifications.${errorDisplay.code}_recovered`) : t(`notifications.${errorDisplay.code}`)}
-        </Flex>
-      </Collapse>
-    </Flex>
+          <ErrorDisplay key='error-display' error={errorDisplay} />
+        </ChakraBox>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const ErrorDisplay = ({ error }: { error: { code: string | null; recovered: boolean } }) => {
+  const { t } = useTranslation();
+  const onEndSession = () => {
+    StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS, StorageKey.USER_ID] });
+    location.reload();
+  };
+  return (
+    <>
+      <Flex
+        background={error.recovered ? 'green.500' : 'red.400'}
+        borderRadius='lg'
+        color='white'
+        transition='background 800ms ease'
+        marginTop='-10rem'
+        width={'80vw'}
+      >
+        <Stack align='center' width='100%' spacing={0} padding={2}>
+          <Flex
+            fontWeight='bold'
+            alignSelf='stretch'
+            grow={1}
+            justifyContent='center'
+            flex={1}
+            textAlign='center'
+            alignItems='center'
+            textShadow='md'
+            gap={2}
+          >
+            <Icon as={error.recovered ? PiPlugsConnectedBold : PiPlugsBold} filter='drop-shadow(0px 0px 5px #ffffff8f)' />
+            {error.recovered ? t(`notifications.${error.code}_recovered`) : t(`notifications.${error.code}`)}
+          </Flex>
+          <Flex alignItems='center' gap={2}>
+            <Spinner size='xs' speed='1s' /> {t('notifications.awaiting_reconnection')}
+          </Flex>
+        </Stack>
+      </Flex>
+
+      {!error.recovered && (
+        <Button leftIcon={<LuLogOut />} bottom='2rem' variant='solid' backdropFilter='blur(10px)' position='absolute' onClick={onEndSession}>
+          {t('notifications.disconnect_device')}
+        </Button>
+      )}
+    </>
   );
 };
 

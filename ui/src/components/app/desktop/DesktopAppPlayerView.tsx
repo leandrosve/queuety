@@ -16,9 +16,15 @@ interface Props {
 }
 const DesktopAppPlayerView = ({ playerRoomId, userId }: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const { queue, controls: queueControls } = useDesktopQueue(playerRoomId, userId);
+  const { queue, controls: queueControls, updatePlayerState } = useDesktopQueue(playerRoomId, userId);
   // We need to ensure the container div is rendered before initializing the player
-  const { controls: playerControls, status: playerStatus } = useDesktopPlayer(playerRoomId, queue.currentItem, queueControls.onSkip);
+  const { controls: playerControls, status: playerStatus } = useDesktopPlayer(
+    playerRoomId,
+    queue.currentItem,
+    queueControls.onSkip,
+    updatePlayerState
+  );
+
   return (
     <Flex direction='column' gap={5} paddingTop={10} width={{ base: '95vw', md: 800, lg: 1000, xl: 1100 }}>
       <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} />
@@ -38,6 +44,8 @@ const DesktopAppPlayerView = ({ playerRoomId, userId }: Props) => {
           onUpdate={queueControls.onChangeOrder}
           onRemove={queueControls.onRemove}
           onPlay={queueControls.onPlay}
+          loop={queue.loop}
+          onToggleLoop={queueControls.onToggleLoop}
         />
       )}
       {queue.currentItem ? (

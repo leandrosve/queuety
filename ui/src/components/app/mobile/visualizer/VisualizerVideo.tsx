@@ -25,8 +25,8 @@ const VisualizerVideo = ({ video, status, playerControls, host }: Props) => {
   return (
     <Stack align='center' spacing={0} width='100%'>
       <Flex className='visualizer' position='relative' width='100%' aspectRatio='16/9' justifyContent='center' alignItems='center'>
-        <Box borderRadius='md' aspectRatio='16/9' width='90%' margin={'5px'} boxShadow='xl' position='relative'>
-          <Image aspectRatio='16/9' width='100%' objectFit='cover' src={`https://i.ytimg.com/vi/${video.id}/0.jpg`} borderRadius='md'></Image>
+        <Box borderRadius='md' aspectRatio='16/9' width='90%' margin={'5px'} boxShadow='xl' position='relative' overflow='hidden'>
+          <Image aspectRatio='16/9' width='100%' objectFit='cover' src={`https://i.ytimg.com/vi/${video.id}/0.jpg`}></Image>
           <VisualizerControlsOverlay status={status} controls={playerControls} />
           <Flex position='absolute' top={0} gap={2} padding={2} paddingBottom={7} bgGradient='linear(to-b, blackAlpha.700, transparent)' width='100%'>
             <Image

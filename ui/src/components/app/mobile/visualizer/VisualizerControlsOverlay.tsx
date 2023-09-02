@@ -63,6 +63,8 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
     <Flex
       onClick={() => setClicked((p) => p + 1)}
       onMouseEnter={() => setClicked((p) => p + 1)}
+      onBlur={() => setClicked(0)}
+      onMouseLeave={() => setClicked(0)}
       position='absolute'
       height='100%'
       top={0}

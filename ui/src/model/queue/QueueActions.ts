@@ -1,5 +1,5 @@
 import QueueItem from '../player/QueueItem';
-import { Queue } from './Queue';
+import { Queue, QueueStatus } from './Queue';
 
 export enum QueueActionType {
   ADD_LAST = 'ADD_LAST',
@@ -12,6 +12,8 @@ export enum QueueActionType {
   PLAY_NOW = 'PLAY_NOW',
   CLEAR = 'CLEAR',
   INITIALIZE = 'INITIALIZE',
+  CHANGE_STATUS = 'CHANGE_STATUS',
+  TOGGLE_LOOP = 'TOGGLE_LOOP',
 }
 
 type BasicActionData = { isLocal?: boolean; timestamp: number; userId: string };
@@ -24,7 +26,9 @@ export type QueueAction =
   | ChangeOrderAction
   | PlayNowAction
   | ClearAction
-  | InitializeAction;
+  | InitializeAction
+  | ChangeStatusAction
+  | ToggleLoopAction;
 
 export type QueueActionRequest = QueueAction & { eventId: string; previousEventId?: string };
 export type AddItemAction = BasicActionData & {
@@ -69,5 +73,19 @@ export type PlayNowAction = BasicActionData & {
   type: QueueActionType.PLAY_NOW;
   payload: {
     itemId: string;
+  };
+};
+
+export type ChangeStatusAction = BasicActionData & {
+  type: QueueActionType.CHANGE_STATUS;
+  payload: {
+    status: QueueStatus;
+  };
+};
+
+export type ToggleLoopAction = BasicActionData & {
+  type: QueueActionType.TOGGLE_LOOP;
+  payload: {
+    loop: boolean;
   };
 };

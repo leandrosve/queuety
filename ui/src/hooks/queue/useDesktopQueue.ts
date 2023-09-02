@@ -9,12 +9,13 @@ import { Queue, QueueStatus } from '../../model/queue/Queue';
 import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
 import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
 import { useDesktopNotificationsContext } from '../../context/DesktopNotificationsContext';
+import PlayerState from '../../model/player/PlayerState';
 
 const getInitialQueueInfo = (): Queue => {
-  const emptyQueue: Queue = { items: [], currentId: null, status: QueueStatus.UNSTARTED };
+  const emptyQueue: Queue = { items: [], currentId: null, status: QueueStatus.UNSTARTED, loop: false };
   const q = StorageUtils.get(StorageKey.QUEUE);
   if (q) return { ...emptyQueue, ...JSON.parse(q) };
-  return { items: [], currentId: null, status: QueueStatus.UNSTARTED };
+  return emptyQueue;
 };
 
 export interface QueueData {
@@ -22,13 +23,18 @@ export interface QueueData {
   currentIndex: number;
   length: number;
   currentItem: QueueItem;
+  loop: boolean;
 }
 
-const useDesktopQueue = (playerRoomId: string, userId: string): { queue: QueueData; controls: QueueControls } => {
+const useDesktopQueue = (
+  playerRoomId: string,
+  userId: string
+): { queue: QueueData; controls: QueueControls; updatePlayerState: (state: PlayerState) => void } => {
   const [isSocketReady, setIsSocketReady] = useState<boolean>(false);
   const onlineUsers = useOnlinePrescenceContext();
   const [actions, setActions] = useState<{ previous?: QueueActionRequest; last: QueueActionRequest }>();
   const notifications = useDesktopNotificationsContext();
+  const [queueStatus, setQueueStatus] = useState<QueueStatus>(QueueStatus.ENDED);
 
   const registerLastAction = useCallback(
     (action: QueueAction) => {
@@ -48,6 +54,14 @@ const useDesktopQueue = (playerRoomId: string, userId: string): { queue: QueueDa
   }, [queue]);
 
   const queueRef = useRef(queue);
+
+  const updatePlayerState = useCallback(
+    (state: PlayerState) => {
+      const finished = state === PlayerState.ENDED && currentIndex + 1 >= length;
+      setQueueStatus(finished ? QueueStatus.ENDED : QueueStatus.ACTIVE);
+    },
+    [currentIndex, length]
+  );
 
   useEffect(() => {
     if (!actions?.last || !playerRoomId || !isSocketReady) return;
@@ -83,14 +97,20 @@ const useDesktopQueue = (playerRoomId: string, userId: string): { queue: QueueDa
     StorageUtils.set(StorageKey.QUEUE, JSON.stringify(queue));
   }, [queue]);
 
+  useEffect(() => {
+    controls.onChangeStatus(queueStatus);
+  }, [queueStatus, dispatch]);
+
   return {
     queue: {
       items,
       length,
       currentIndex,
       currentItem,
+      loop: queue.loop,
     },
     controls,
+    updatePlayerState,
   };
 };
 export default useDesktopQueue;

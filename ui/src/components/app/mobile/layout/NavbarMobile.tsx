@@ -1,4 +1,4 @@
-import { Flex, Icon, IconButton, Text, useColorMode } from '@chakra-ui/react';
+import { Flex, Icon, IconButton, Image, Text, useColorMode } from '@chakra-ui/react';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { HiMoon, HiSun } from 'react-icons/hi';
@@ -7,6 +7,7 @@ import { useState } from 'react';
 import SelectMenu from '../../../common/SelectMenu';
 import languages from '../../../../data/languages';
 import SettingsModal from '../../shared/settings/SettingsModal';
+import BrandIcon from '../../../../assets/images/BrandIcon';
 
 const NavbarMobile = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -15,8 +16,8 @@ const NavbarMobile = () => {
 
   return (
     <Flex as='header' gap={2} shrink={0} justifyContent='space-between' alignItems='center' padding={2} paddingLeft={4}>
-      <Text as='span' color='text.300' fontWeight='bold'>
-        Queuety
+      <Text as='span' fontWeight='bold' display='flex' gap={1} title='Queuety'>
+        <Icon as={BrandIcon} boxSize='1.5rem' aria-label='Queuety' />
       </Text>
       <Flex gap={3}>
         <SelectMenu

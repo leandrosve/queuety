@@ -11,11 +11,9 @@ html {
   --primary-800: hsl(252, 88%, 55%);
   --primary-900: hsl(252, 88%, 53%);
 
-
   --z-index-queue: 10;
   --z-index-toast: 15;
   --z-index-auth-requests: 16;
-
 
   --z-index-select: 10000;
 }
@@ -24,19 +22,20 @@ html[data-theme='light'] {
   --bg-400: #e9e8e8; /* Skeleton */
   --bg-300: #ffffff; /* Cards and Navbar*/
   --bg-200: #eeeaff;
-  --bg-100: #f7f5fe; /* Background */
+  --bg-100: #fcfbff; /* Background */
 
   --bg-alpha-100: #ffffffd9;
   --bg-alpha-200: rgba(229, 228, 228, 0.68);
   --bg-alpha-300: rgba(209, 209, 209, 0.68);
 
-  
   --border-color: #c0c0c0;
-  --chakra-colors-chakra-border-color: #c0c0c0!important;
-  
+  --chakra-colors-chakra-border-color: #c0c0c0 !important;
+
   --text-600: #000000;
   --text-500: #343434;
   --text-300: #5c5c5c;
+
+  --brand-background: #343434;
 }
 
 html[data-theme='dark'] {
@@ -48,7 +47,7 @@ html[data-theme='dark'] {
   --bg-100: rgb(6, 6, 6);
 
   --border-color: rgb(255, 255, 255, 0.16);
-  --chakra-colors-chakra-border-color: rgb(255, 255, 255, 0.16)!important;
+  --chakra-colors-chakra-border-color: rgb(255, 255, 255, 0.16) !important;
 
   --bg-alpha-100: hsla(240, 14.3%, 12.4%, 0.63);
   --bg-alpha-200: hsla(240, 10%, 25%, 0.63);
@@ -56,4 +55,7 @@ html[data-theme='dark'] {
   --text-600: #ffffff;
   --text-500: #f2f1f1;
   --text-300: #c9c9c9;
+
+  --brand-background: transparent;
+
 }

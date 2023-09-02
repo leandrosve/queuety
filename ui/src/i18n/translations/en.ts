@@ -41,6 +41,7 @@ export default {
       clear: 'Clear',
       moveNext: 'Move to next in queue',
       moveLast: 'Move to last in queue',
+      loop: 'Loop',
     },
     player: {
       exitFullscreen: 'Exit Fullscreen',
@@ -121,6 +122,8 @@ export default {
       desktop_offline_recovered: 'Desktop is back online!',
       offline: 'You are offline',
       offline_recovered: 'Back online!',
+      awaiting_reconnection: 'Awaiting reconnection',
+      disconnect_device: 'Disconnect this device',
     },
     tabChecker: {
       error: 'It appears the page was opened from another tab.<0></0>Do you want to stop the other tab and continue playing from this one?',

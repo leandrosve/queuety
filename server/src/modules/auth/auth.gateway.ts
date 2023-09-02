@@ -26,6 +26,11 @@ export class AuthGateway implements OnGatewayConnection {
     return this.authService.joinAuthRoom(client, dto);
   }
 
+  @SubscribeMessage('leave-auth-room')
+  private async leaveAuthRoom(@ConnectedSocket() client: Socket, @MessageBody('authRoomId') authRoomId: string) {
+    return this.authService.leaveAuthRoom(client, authRoomId);
+  } 
+
   @SubscribeMessage('send-auth-request')
   private async onSendAuthRequest(@ConnectedSocket() client: Socket, @MessageBody() dto: AuthRequestDTO) {
     await client.to(dto.authRoomId).emit('receive-auth-request', { ...dto, clientId: client.id });

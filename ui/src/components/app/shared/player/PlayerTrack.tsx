@@ -78,7 +78,7 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus }: P
         colorScheme='primary'
         value={isDragging ? draggingValue : time}
       >
-        <SliderTrack height='8px' boxShadow='base'>
+        <SliderTrack height='8px' boxShadow='base' _light={{background: 'white'}}>
           <SliderFilledTrack />
         </SliderTrack>
         <Tooltip

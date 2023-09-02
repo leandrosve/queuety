@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Text } from '@chakra-ui/react';
+import { Button, ButtonProps, Icon, Text } from '@chakra-ui/react';
 import { MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BsSearch } from 'react-icons/bs';
@@ -14,9 +14,19 @@ const SearchLinkButton = ({ onClick, ...buttonProps }: Props) => {
     onClick?.();
   };
   return (
-    <Button display='flex' flexShrink={0} onContextMenu={onContextMenu} justifyContent='start' gap={5} onClick={onClick} {...buttonProps}>
-      <BsSearch />
-      <Text>{t('playerSearch.pasteUrl')}</Text>
+    <Button
+      display='flex'
+      flexShrink={0}
+      onContextMenu={onContextMenu}
+      justifyContent='start'
+      gap={5}
+      onClick={onClick}
+      overflow='hidden'
+      textOverflow='ellipsis'
+      {...buttonProps}
+    >
+      <Icon as={BsSearch} flexShrink={0} />
+      <Text noOfLines={1}>{t('playerSearch.pasteUrl')}</Text>
     </Button>
   );
 };

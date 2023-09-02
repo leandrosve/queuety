@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useCallback, useState } from 'react';
 import Logger from '../../utils/Logger';
-import useQueue from './useQueue';
+import useQueue, { QueueControls } from './useQueue';
 import { QueueAction, QueueActionRequest, QueueActionType } from '../../model/queue/QueueActions';
 import MobilePlayerService from '../../services/api/player/MobilePlayerService';
 import { v4 as uuid } from 'uuid';
+import { QueueData } from './useDesktopQueue';
 
-const useMobileQueue = (playerRoomId: string, userId: string) => {
+const useMobileQueue = (playerRoomId: string, userId: string):{queue:QueueData, controls: QueueControls} => {
   const [lastLocalAction, setLastLocalAction] = useState<QueueActionRequest>();
   const registerLastAction = useCallback(
     (action: QueueAction) => {

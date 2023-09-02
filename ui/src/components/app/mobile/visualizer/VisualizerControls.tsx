@@ -4,7 +4,7 @@ import PlayerState from '../../../../model/player/PlayerState';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { useState } from 'react';
 import { QueueControls } from '../../../../hooks/queue/useQueue';
-import { LuSettings } from 'react-icons/lu';
+import { LuMoreVertical, LuSettings } from 'react-icons/lu';
 import VisualizerControlOptionsModal from './VisualizerControlsOptionsModal';
 import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerStatus';
 import VisualizerSoundMenu from './VisualizerSoundMenu';
@@ -55,7 +55,7 @@ const VisualizerControls = ({ status, controls, queueControls }: Props) => {
       <IconButton
         variant='ghost'
         color='text.300'
-        icon={<Icon as={LuSettings} boxSize={'1rem'} />}
+        icon={<Icon as={LuMoreVertical} boxSize={'1rem'} />}
         aria-label='options'
         onClick={() => setOpenExtraOptions(true)}
       />

@@ -35,14 +35,28 @@
   opacity: 0;
   transition: opacity 3s ease;
   transform: scaleY(-1);
+  filter: saturate(2);
 }
 
 .visualizer-backdrop-img.fade-in {
   opacity: 0.2;
 }
 
+@media (orientation: landscape) {
+  .visualizer-backdrop {
+    width: 100vw;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+  }
+  .visualizer-backdrop-img {
+    transform: none;
+  }
+}
+
 html[data-theme='light'] .visualizer-backdrop-img {
   mix-blend-mode: hard-light;
+  filter: saturate(2) brightness(5);
+
 }
 
 html[data-theme='light'] .visualizer-backdrop-img.fade-in {

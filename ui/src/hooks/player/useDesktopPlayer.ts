@@ -24,7 +24,8 @@ export interface PlayerControls {
 const useDesktopPlayer = (
   playerRoomId: string,
   currentItem: QueueItem,
-  onVideoEnded: () => void
+  onVideoEnded: () => void,
+  onStateChanged?: (state: PlayerState) => void
 ): { status: PlayerStatus; controls: PlayerControls } => {
   //const { status } = usePlayerStatusContext();
   const { controls: innerControls, getCurrentPlayerStatus, status } = useYoutubePlayer('player-container', currentItem, onVideoEnded);
@@ -112,6 +113,10 @@ const useDesktopPlayer = (
 
     return () => clearTimeout(timeout);
   }, [status, fullscreen]);
+
+  useEffect(() => {
+    onStateChanged?.(status.state);
+  }, [status.state]);
 
   useEffect(() => {
     if (!playerRoomId || !DesktopPlayerService.isReady()) return;

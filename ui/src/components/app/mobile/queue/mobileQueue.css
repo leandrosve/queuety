@@ -24,7 +24,7 @@
 }
 
 .mobile-queue-content.expanded {
-  height: 85vh;
+  height: calc(100vh - 7rem);
   bottom: 0;
   top: auto;
 }

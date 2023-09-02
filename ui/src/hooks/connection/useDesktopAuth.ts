@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useDesktopConnectionContext } from '../../context/DesktopConnectionContext';
-import { AuthResponseStatus } from '../../model/auth/AuthResponse';
+import AuthResponse, { AuthResponseStatus } from '../../model/auth/AuthResponse';
 import DesktopAuthService from '../../services/api/auth/DesktopAuthService';
 import Logger from '../../utils/Logger';
 import AuthRequest from '../../model/auth/AuthRequest';
@@ -12,6 +12,7 @@ import AuthService from '../../services/api/auth/AuthService';
 import DesktopPlayerService from '../../services/api/player/DesktopPlayerService';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { useDesktopNotificationsContext } from '../../context/DesktopNotificationsContext';
+import FormatUtils from '../../utils/FormatUtils';
 
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
@@ -51,7 +52,12 @@ const useDesktopAuth = () => {
   const authorizeRequest = async (request: AuthRequest, status: AuthResponseStatus) => {
     Logger.info('Response', request.clientId, status);
     const playerRoomId = status == AuthResponseStatus.AUTHORIZED ? connection.playerRoom.id : null;
-    const response = { status, clientId: request.clientId, playerRoomId };
+    const response: AuthResponse = {
+      status,
+      clientId: request.clientId,
+      playerRoomId,
+      host: { userId: FormatUtils.shortenUserId(connection.userId || ''), nickname: settings.nickname },
+    };
 
     if (status == AuthResponseStatus.AUTHORIZED) {
       // Add to the list of authorized users before sending response
@@ -94,11 +100,11 @@ const useDesktopAuth = () => {
   };
 
   useEffect(() => {
-    if (connection.authRoom?.id && isReady) {
+    if (connection.authRoom?.id && connection.userId && isReady) {
       joinAuthRoom(connection.authRoom.id);
       DesktopAuthService.onAuthRequested(onAuthRequested);
     }
-  }, [isReady, connection.authRoom]);
+  }, [isReady, connection.authRoom, connection.userId]);
 
   useEffect(() => {
     if (connection.playerRoom?.id && connection.userId && settings.nickname && isReady) {

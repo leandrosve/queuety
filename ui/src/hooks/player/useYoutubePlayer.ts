@@ -45,7 +45,6 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   const onReady = (event: YT.PlayerEvent) => {
     const player = event.target;
     playerRef.current = event.target;
-    player.playVideo();
     setStatus((p) => ({
       ...p,
       isReady: true,
@@ -63,7 +62,7 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     (event: YT.OnStateChangeEvent) => {
       const player = event.target;
       let nextStatus: Partial<PlayerInnerStatus> = {
-        state: (player.getPlayerState() as PlayerState) || PlayerState.UNSTARTED,
+        state: (player.getPlayerState() as PlayerState) ?? PlayerState.UNSTARTED,
         videoId: getVideoIdFromURL(player?.getVideoUrl()),
         rate: player.getPlaybackRate(),
         volume: player.isMuted() ? 0 : player.getVolume(),
@@ -94,8 +93,13 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
 
   const onTimeChange = useCallback(
     (time: number) => {
-      playerRef.current?.seekTo(time, true);
-      playerRef.current?.playVideo();
+      const player = playerRef.current;
+      if (!player) return;
+      player.seekTo(time, true);
+      if (time < Math.floor(player.getDuration())) {
+        console.log("PLAY VIDEO", time, player.getDuration());
+        player.playVideo();
+      }
     },
     [playerRef]
   );

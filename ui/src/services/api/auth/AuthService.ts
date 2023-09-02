@@ -26,6 +26,10 @@ export default class AuthService extends APISocketService {
     return this.emit<boolean>('join-auth-room', { authRoomId, host, userId });
   }
 
+  public static leaveAuthRoom(authRoomId: string) {
+    return this.emit<boolean>('leave-auth-room', { authRoomId });
+  }
+
   public static onConnected(callback: (clientId: string) => void) {
     this._socket.on('connection', callback);
   }

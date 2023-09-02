@@ -12,7 +12,8 @@ export type MobileAuthContextProps = {
   playerRoomId: string | null;
   userId: string | null;
   onTrigger: (authRoom: string) => void;
-  host: HostData;
+  host: HostData | null;
+  onCancel: () => void;
 };
 
 const MobileAuthContext = React.createContext<MobileAuthContextProps>({
@@ -24,8 +25,9 @@ const MobileAuthContext = React.createContext<MobileAuthContextProps>({
   authRoomId: null,
   userId: null,
   playerRoomId: null,
+  onCancel: () => {},
   onTrigger: () => {},
-  host: { nickname: 'unknown', userId: '0000' },
+  host: null,
 });
 
 export const MobileAuthProvider = ({ children }: PropsWithChildren) => {

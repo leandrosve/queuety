@@ -1,4 +1,4 @@
-import { Button, Flex, Icon, IconButton, Text, useColorMode } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Image, Text, useColorMode } from '@chakra-ui/react';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { HiMoon, HiSun } from 'react-icons/hi';
@@ -6,6 +6,7 @@ import { LuLanguages, LuSettings } from 'react-icons/lu';
 import { TbDeviceMobilePlus } from 'react-icons/tb';
 import SelectMenu from '../../../common/SelectMenu';
 import languages from '../../../../data/languages';
+import BrandIcon from '../../../../assets/images/BrandIcon';
 
 interface Props {
   onOpenConnectionModal: () => void;
@@ -17,7 +18,8 @@ const NavbarDesktop = ({ onOpenConnectionModal, onOpenSettingsModal }: Props) =>
 
   return (
     <Flex as='header' gap={2} shrink={0} justifyContent='space-between' alignItems='center' padding={2} paddingX={4}>
-      <Text as='span' fontWeight='bold'>
+      <Text as='span' fontWeight='bold' display='flex' gap={1}>
+        <Icon as={BrandIcon} boxSize='1.5rem' />
         Queuety
       </Text>
 

@@ -32,6 +32,8 @@ export default {
       clear: 'Limpiar cola',
       moveNext: 'Reproducir a continuación',
       moveLast: 'Mover al final de la cola',
+      loop: 'Bucle',
+
     },
     player: {
       exitFullscreen: 'Salir de pantalla completa',
@@ -112,6 +114,8 @@ export default {
       desktop_online: 'Escritorio se ha vuelto a conectar!',
       offline: 'Estas desconectado',
       offline_recovered: 'Te has vuelto a conectar!',
+      awaiting_reconnection: 'Esperando reconexión',
+      disconnect_device: 'Desvincular dispositivo',
     },
     tabChecker: {
       error: 'Parece que el sitio se ha abierto desde otra pestaña.<0></0>Deseas continuar reproduciendo en esta pestaña y detener la otra?',

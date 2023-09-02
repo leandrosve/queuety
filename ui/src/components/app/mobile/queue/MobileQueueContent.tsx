@@ -44,14 +44,14 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
             {currentIndex + 1 < queue.length ? (
               <Stack spacing={0}>
                 <Text fontSize='xs'>{t('playerQueue.next')}: </Text>
-                <Text noOfLines={1} title={queue[currentIndex + 1].video.title}>
+                <Text className='m-scroll' noOfLines={1} title={queue[currentIndex + 1].video.title}>
                   {queue[currentIndex + 1].video.title}
                 </Text>
               </Stack>
             ) : currentItem ? (
               <Stack spacing={0} flexShrink={0}>
                 <Text fontSize='xs'>{t('playerQueue.playing')}:</Text>
-                <Text noOfLines={1}>{currentItem.video.title}</Text>
+                <Text  className='m-scroll' noOfLines={1}>{currentItem.video.title}</Text>
               </Stack>
             ) : null}
           </Flex>
@@ -75,7 +75,7 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
         )}
       </Flex>
 
-      <Stack spacing={1} overflowX='hidden' overflowY='auto'>
+      <Stack spacing={1} overflowX='hidden' overflowY='auto' width='100%'>
         <DragAndDropList
           items={queue}
           onReorder={(itemId, index) => onChangeOrder(`${itemId}`, index)}

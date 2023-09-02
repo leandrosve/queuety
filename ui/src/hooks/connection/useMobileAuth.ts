@@ -38,9 +38,10 @@ export enum HostStatus {
   WAITING = 'WAITING',
 }
 
-const getSavedHostData = (): HostData => {
-  const res = StorageUtils.get(StorageKey.HOST) || '{}';
-  return { nickname: 'unknown', userId: '', ...JSON.parse(res) };
+const getSavedHostData = (): HostData | null => {
+  const res = StorageUtils.get(StorageKey.HOST);
+  if (res) return JSON.parse(res);
+  return null;
 };
 const useMobileAuth = () => {
   const { settings } = useSettingsContext();
@@ -49,7 +50,7 @@ const useMobileAuth = () => {
   const [playerRoomId, setPlayerRoomId] = useState<string | null>(StorageUtils.get(StorageKey.PLAYER_ROOM_ID));
   const [userId, setUserId] = useState<string>(StorageUtils.get(StorageKey.USER_ID) || '');
   const [authRoomId, setAuthRoomId] = useState<string | null>();
-  const [host, setHost] = useState<HostData>(getSavedHostData());
+  const [host, setHost] = useState<HostData | null>(getSavedHostData());
   const nicknameRef = useRef(settings.nickname);
 
   const [status, setStatus] = useState<MobileAuthStatus>(MobileAuthStatus.UNSTARTED);
@@ -66,7 +67,9 @@ const useMobileAuth = () => {
   };
   const onTrigger = (authRoom: string) => {
     authRoom = authRoom.trim();
+    console.log(authRoom);
     if (!isSocketReady || !authRoom || !userId) return;
+    updateHost(null);
     setAuthRoomId(authRoom);
     joinAuthRoom(authRoom);
   };
@@ -76,6 +79,17 @@ const useMobileAuth = () => {
     setStatus(MobileAuthStatus.CONNECTING_TO_SOCKET);
     MobileAuthService.connect(onConnected);
     MobilePlayerService.connect();
+  };
+
+  const onCancel = () => {
+    if (authRoomId) {
+      MobileAuthService.leaveAuthRoom(authRoomId);
+    }
+    MobileAuthService.restart();
+    setStatus(MobileAuthStatus.CONNECTED_TO_SOCKET);
+    setAuthRoomId(null);
+    setHost(null);
+    setHostStatus(HostStatus.WAITING);
   };
 
   const onConnected = (connectId: string) => {
@@ -104,6 +118,8 @@ const useMobileAuth = () => {
   };
 
   const onAuthResponse = (response: AuthResponse) => {
+    console.log({ host: response.host });
+    updateHost(response.host);
     if (response.status === AuthResponseStatus.PENDING) {
       setStatus(MobileAuthStatus.AUTH_REQUEST_PENDING);
       return;
@@ -134,21 +150,29 @@ const useMobileAuth = () => {
 
   const onHostDisconnected = () => {
     Logger.warn('Host disconnected');
-    setStatus((prev) => (prev <= MobileAuthStatus.AUTH_REQUEST_PENDING ? MobileAuthStatus.AUTH_REQUEST_STALED : prev));
+    setStatus((prev) => (prev === MobileAuthStatus.AUTH_REQUEST_PENDING ? MobileAuthStatus.AUTH_REQUEST_STALED : prev));
     setHostStatus(HostStatus.DISCONNECTED);
   };
 
+  const updateHost = (hostData: HostData | null) => {
+    setHost(hostData);
+    if (hostData == null) {
+      StorageUtils.remove(StorageKey.HOST);
+      return;
+    }
+    StorageUtils.set(StorageKey.HOST, JSON.stringify(hostData));
+  };
   const onHostReconnected = (hostData: { userId: string; nickname: string }) => {
     Logger.success('Host Re-connected', hostData);
-    setHost({ userId: hostData.userId, nickname: hostData.nickname });
-    StorageUtils.set(StorageKey.HOST, JSON.stringify(hostData)), setHostStatus(HostStatus.CONNECTED);
+    updateHost({ userId: hostData.userId, nickname: hostData.nickname });
+    setHostStatus(HostStatus.CONNECTED);
     MobilePlayerService.notifyUserReconnection(nicknameRef.current);
   };
 
   const onHostConnected = (hostData: { userId: string; nickname: string }) => {
     Logger.success('Host Connected');
-    setHost({ userId: hostData.userId, nickname: hostData.nickname });
-    StorageUtils.set(StorageKey.HOST, JSON.stringify(hostData)), setHostStatus(HostStatus.CONNECTED);
+    updateHost({ userId: hostData.userId, nickname: hostData.nickname });
+    setHostStatus(HostStatus.CONNECTED);
     setHostStatus(HostStatus.CONNECTED);
   };
 
@@ -157,6 +181,7 @@ const useMobileAuth = () => {
     MobileAuthService.restart();
     //MobileAuthService.cleanup();
     setPlayerRoomId(null);
+    updateHost(null);
     StorageUtils.remove(StorageKey.PLAYER_ROOM_ID);
     setAuthRoomId(null);
     setHostStatus(HostStatus.DISCONNECTED);
@@ -205,6 +230,7 @@ const useMobileAuth = () => {
     connectionId,
     authRoomId,
     playerRoomId,
+    onCancel,
     userId,
     onTrigger,
   };

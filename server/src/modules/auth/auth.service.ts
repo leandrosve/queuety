@@ -43,14 +43,18 @@ export class AuthService {
 
   public async joinAuthRoom(client: Socket, dto: JoinAuthRoomRequestDTO) {
     const { host, userId, authRoomId } = dto;
-    this.logger.log('capo por que carajo no te unis');
     this.checkRoomType(authRoomId);
+    this.leaveRooms(client, RoomType.AUTH);
     await client.join(authRoomId);
     this.logger.log(`UserId: ${client.id} (clientId: ${client.id}) connected to auth room ${authRoomId}`);
     client.data = { ...client.data, host, userId };
     return true;
   }
 
+  public async leaveAuthRoom(client: Socket, authRoomId: string) {
+    await client.leave(authRoomId);
+    return true;
+  }
   public async sendAuthRequest(client: Socket, dto: AuthRequestDTO) {
     this.checkRoomType(dto.authRoomId);
     await client.to(dto.authRoomId).emit('receive-auth-request', { ...dto, clientId: client.id });
@@ -72,5 +76,11 @@ export class AuthService {
     this.logger.log(`Host revoked authorization for clientId ${clientId}`);
     client.to(clientId).emit('receive-auth-revocation', clientId);
     return true;
+  }
+
+  public leaveRooms(client: Socket, roomType: RoomType) {
+    client.rooms.forEach((room) => {
+      if (this.isRoomType(room, roomType)) client.leave(room);
+    });
   }
 }

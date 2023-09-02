@@ -73,7 +73,7 @@ const QRView = ({ onClose }: QRViewProps) => {
       <Text>{t('connection.connectDescription')}</Text>
       <Stack padding={4} spacing={5} paddingBottom={0}>
         <Flex gap={5} boxShadow='sm' borderRadius='md'>
-          <Flex boxSize={224} justifyContent='center' alignItems='center'>
+          <Flex padding={3} justifyContent='center' alignItems='center' background={'white'}>
             {disabled ? <Spinner /> : <QRCode size={224} value={authRoomLink} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />}
           </Flex>
           <Flex direction='column' gap={3} alignSelf='stretch'>
