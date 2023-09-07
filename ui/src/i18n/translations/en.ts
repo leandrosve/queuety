@@ -8,6 +8,9 @@ export default {
       views: 'views',
       on: 'on',
       off: 'off',
+      accept: 'Accept',
+      cancel: 'Cancel',
+      live: 'Live',
     },
     time: {
       days_ago: '{{days}} days ago',
@@ -42,6 +45,7 @@ export default {
       moveNext: 'Move to next in queue',
       moveLast: 'Move to last in queue',
       loop: 'Loop',
+      clearQueue: { title: 'Clear Queue', description: 'Are you sure you want to remove all videos from the queue?' },
     },
     player: {
       exitFullscreen: 'Exit Fullscreen',

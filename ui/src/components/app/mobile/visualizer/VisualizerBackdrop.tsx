@@ -1,30 +1,62 @@
 import { Flex } from '@chakra-ui/react';
 import './visualizer.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import classNames from 'classnames';
 import { useSettingsContext } from '../../../../context/SettingsContext';
 
-const VisualizerBackdrop = ({ src }: { src: string }) => {
+const VisualizerBackdrop = ({ src, zIndex }: { src: string; zIndex?: number }) => {
   const { settings } = useSettingsContext();
   if (!settings.appearance.glassMode) return null;
-  return <Backdrop src={src} />;
+  return <Backdrop src={src} zIndex={zIndex} />;
 };
-const Backdrop = ({ src }: { src: string }) => {
-  const [state, setState] = useState<{ sourceA?: string; sourceB?: string; index: number }>({ index: 0 });
+
+interface BackdropState {
+  a: {
+    src?: string;
+    loaded: boolean;
+  };
+  b: {
+    src?: string;
+    loaded: boolean;
+  };
+  index: number;
+}
+
+const Backdrop = ({ src, zIndex }: { src: string; zIndex?: number }) => {
+  const [state, setState] = useState<BackdropState>({ index: 0, a: { loaded: false }, b: { loaded: false } });
+
+  const handleLoaded = useCallback((option: 'a' | 'b') => {
+    console.log('LOADED', option);
+    setState((p) => {
+      if (option === 'a') {
+        return { ...p, a: { ...p.a, loaded: true } };
+      }
+      return { ...p, b: { ...p.b, loaded: true } };
+    });
+  }, []);
 
   useEffect(() => {
     setState((prev) => {
       return {
         index: prev.index + 1,
-        sourceA: prev.index % 2 == 0 ? src : prev.sourceA,
-        sourceB: prev.index % 2 == 1 ? src : prev.sourceB,
+        a: prev.index % 2 == 0 && prev.a.src !== src ? { src, loaded: false } : prev.a,
+        b: prev.index % 2 == 1 && prev.b.src !== src ? { src, loaded: false } : prev.b,
       };
     });
   }, [src]);
+
   return (
-    <Flex className={classNames('visualizer-backdrop')}>
-      <img src={state.sourceA} className={`visualizer-backdrop-img first-image ${state.index % 2 ? 'fade-in' : ''}`} />
-      <img src={state.sourceB} className={`visualizer-backdrop-img second-image ${!(state.index % 2) ? 'fade-in' : ''}`} />
+    <Flex className={classNames('visualizer-backdrop')} zIndex={zIndex}>
+      <img
+        src={state.a.src}
+        onLoad={() => handleLoaded('a')}
+        className={classNames('visualizer-backdrop-img', ' first-image', { 'fade-in': state.index % 2, loaded: state.a.loaded })}
+      />
+      <img
+        src={state.b.src}
+        onLoad={() => handleLoaded('b')}
+        className={classNames('visualizer-backdrop-img', 'second-image', { 'fade-in': !(state.index % 2), loaded: state.b.loaded })}
+      />
     </Flex>
   );
 };

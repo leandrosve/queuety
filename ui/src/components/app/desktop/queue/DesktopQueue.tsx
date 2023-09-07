@@ -10,6 +10,7 @@ import { BsDash } from 'react-icons/bs';
 import QueueItem from '../../../../model/player/QueueItem';
 import GlassContainer from '../../../common/glass/GlassContainer';
 import DragAndDropList from '../../../common/DragAndDropList';
+import ConfirmDialog from '../../../common/ConfirmDialog';
 
 interface Props {
   queue: QueueItem[];
@@ -24,6 +25,8 @@ interface Props {
 }
 const DesktopQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, onPlay, onClear, loop, onToggleLoop }: Props) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const [openClearConfirmation, setOpenClearConfirmation] = useState(false);
+
   const { t } = useTranslation();
 
   return (
@@ -75,7 +78,7 @@ const DesktopQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, on
               {isExpanded && queue.length > 1 && (
                 <>
                   <Icon as={BsDash} aria-hidden transform={'rotate(90)'} />
-                  <Button variant='link' size='sm' onClick={onClear}>
+                  <Button variant='link' size='sm' onClick={() => setOpenClearConfirmation(true)}>
                     {t('playerQueue.clear')}
                   </Button>
                 </>
@@ -110,6 +113,16 @@ const DesktopQueue = ({ currentItem, currentIndex, queue, onUpdate, onRemove, on
           </Box>
         </Collapse>
       </Flex>
+      <ConfirmDialog
+        isOpen={openClearConfirmation}
+        onCancel={() => setOpenClearConfirmation(false)}
+        onConfirm={() => {
+          onClear();
+          setOpenClearConfirmation(false);
+        }}
+        title={t('playerQueue.clearQueue.title')}
+        description={t('playerQueue.clearQueue.description')}
+      />
     </Flex>
   );
 };

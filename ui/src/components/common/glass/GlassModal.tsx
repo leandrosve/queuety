@@ -5,6 +5,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalContentProps,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
@@ -21,9 +22,10 @@ interface Props extends ModalProps {
   maxWidth?: string | ResponsiveValue<number | 'px'>;
   contentProps?: ModalContentProps;
   bodyProps?: ModalBodyProps;
+  footer?: ReactNode;
 }
 
-const GlassModal = ({ children, title, hasCloseButton, minWidth, width, maxWidth, contentProps, bodyProps, ...props }: Props) => {
+const GlassModal = ({ children, title, hasCloseButton, minWidth, width, maxWidth, contentProps, bodyProps, footer, ...props }: Props) => {
   return (
     <Modal allowPinchZoom {...props}>
       <ModalOverlay zIndex={10} />
@@ -31,6 +33,7 @@ const GlassModal = ({ children, title, hasCloseButton, minWidth, width, maxWidth
         {title && <ModalHeader>{title}</ModalHeader>}
         {hasCloseButton && <ModalCloseButton />}
         <ModalBody {...bodyProps}>{children}</ModalBody>
+        {footer && <ModalFooter>{footer}</ModalFooter>}
       </ModalContent>
     </Modal>
   );

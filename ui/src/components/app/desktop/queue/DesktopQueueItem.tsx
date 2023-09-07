@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Box, Flex, Heading, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Spinner, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Spinner, Tag, Text } from '@chakra-ui/react';
 import { BsDot, BsFillPlayFill } from 'react-icons/bs';
 import { LuAlignJustify, LuMoreVertical, LuTrash2 } from 'react-icons/lu';
 import classNames from 'classnames';
@@ -9,6 +9,7 @@ import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { usePlayerStatusContext } from '../../../../context/PlayerStatusContext';
 import PlayerState from '../../../../model/player/PlayerState';
+import LivestreamTag from '../../shared/queue/LivestreamTag';
 
 interface Props {
   video: YoutubeVideoDetail;
@@ -48,9 +49,12 @@ export const DesktopQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRe
         {isPlaying && (
           <Icon as={BsFillPlayFill} borderRadius='full' paddingX={1} position='absolute' bottom='.2rem' left='.2rem' background='bgAlpha.100' />
         )}
-        <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
-          {FormatUtils.formatDuration(video.duration)}
-        </Text>
+        {!!video.duration && (
+          <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
+            {FormatUtils.formatDuration(video.duration)}
+          </Text>
+        )}
+        {video.live && <LivestreamTag />}
         {isCurrent && <QueueItemProgressBar duration={video.duration} />}
         {isCurrent && <StateIndicator />}
       </Box>
@@ -105,7 +109,7 @@ export const DesktopQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRe
             onClick={(e) => e.stopPropagation()}
             icon={<Icon as={LuMoreVertical} />}
           />
-          <MenuList onClick={(e) => e.stopPropagation()}>
+          <MenuList onClick={(e) => e.stopPropagation()} className='glass-container'>
             <MenuItem icon={<Icon as={BsFillPlayFill} boxSize={4} />} onClick={onPlay}>
               {t('playerQueue.playNow')}
             </MenuItem>

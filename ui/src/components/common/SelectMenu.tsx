@@ -1,6 +1,7 @@
 import { Button, ButtonProps, Flex, Menu, MenuButton, MenuItem, MenuList, Portal } from '@chakra-ui/react';
 import { LuCheck, LuChevronDown } from 'react-icons/lu';
 import { RefObject, ReactNode, useMemo } from 'react';
+import GlassContainer from './glass/GlassContainer';
 
 interface Props<T> {
   value: T;
@@ -61,7 +62,7 @@ const SelectMenu = <T,>({
         )}
       </MenuButton>
       <Portal containerRef={containerRef}>
-        <MenuList zIndex={10000} width={menuWidth} fontSize='sm' padding={2} maxHeight={maxHeight} overflow='hidden' overflowY='auto'>
+        <MenuList className='glass-container bg-500' zIndex={10000} width={menuWidth} fontSize='sm' padding={2} maxHeight={maxHeight} overflow='hidden' overflowY='auto'>
           {options.map(([val, lab]) => (
             <MenuItem key={`${val}`} justifyContent='space-between' onClick={() => onChange?.(val)}>
               {renderItem ? (

@@ -12,9 +12,12 @@ export default class AuthService extends APISocketService {
     this._socket.connect();
   }
 
-  public static restart() {
-    this._socket.disconnect();
-    this._socket.connect();
+  public static restart(): Promise<void> {
+    return new Promise((res) => {
+      this._socket.once('connection', res);
+      this._socket.disconnect();
+      this._socket.connect();
+    });
   }
 
   public static cleanup() {

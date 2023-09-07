@@ -7,6 +7,7 @@ import Logger from '../../utils/Logger';
 import StorageUtils, { StorageKey } from '../../utils/StorageUtils';
 import MobilePlayerService from '../../services/api/player/MobilePlayerService';
 import HostData from '../../model/auth/HostData';
+import AuthUtils from '../../utils/AuthUtils';
 
 export enum MobileAuthStatus {
   UNSTARTED = 'UNSTARTED',
@@ -51,6 +52,7 @@ const useMobileAuth = () => {
   const [userId, setUserId] = useState<string>(StorageUtils.get(StorageKey.USER_ID) || '');
   const [authRoomId, setAuthRoomId] = useState<string | null>();
   const [host, setHost] = useState<HostData | null>(getSavedHostData());
+  const [rejectionTimeout, setRejectionTimeout] = useState<number>(0);
   const nicknameRef = useRef(settings.nickname);
 
   const [status, setStatus] = useState<MobileAuthStatus>(MobileAuthStatus.UNSTARTED);
@@ -67,8 +69,18 @@ const useMobileAuth = () => {
   };
   const onTrigger = (authRoom: string) => {
     authRoom = authRoom.trim();
-    console.log(authRoom);
-    if (!isSocketReady || !authRoom || !userId) return;
+    if (!isSocketReady || !authRoom || !userId) {
+      Logger.warn('Connection is not ready yet');
+      return;
+    }
+    const hostRejection = AuthUtils.getMobileRejection(authRoom);
+    if (hostRejection?.remainingSeconds) {
+      Logger.warn(`Auth was recently rejected from authRoom`);
+      setStatus(MobileAuthStatus.AUTH_REQUEST_DENIED);
+      setRejectionTimeout(hostRejection.remainingSeconds);
+      updateHost(hostRejection.host);
+      return;
+    }
     updateHost(null);
     setAuthRoomId(authRoom);
     joinAuthRoom(authRoom);
@@ -81,15 +93,12 @@ const useMobileAuth = () => {
     MobilePlayerService.connect();
   };
 
-  const onCancel = () => {
-    if (authRoomId) {
-      MobileAuthService.leaveAuthRoom(authRoomId);
-    }
-    MobileAuthService.restart();
+  const onCancel = async () => {
     setStatus(MobileAuthStatus.CONNECTED_TO_SOCKET);
     setAuthRoomId(null);
     setHost(null);
     setHostStatus(HostStatus.WAITING);
+    await MobileAuthService.restart();
   };
 
   const onConnected = (connectId: string) => {
@@ -118,7 +127,6 @@ const useMobileAuth = () => {
   };
 
   const onAuthResponse = (response: AuthResponse) => {
-    console.log({ host: response.host });
     updateHost(response.host);
     if (response.status === AuthResponseStatus.PENDING) {
       setStatus(MobileAuthStatus.AUTH_REQUEST_PENDING);
@@ -126,6 +134,7 @@ const useMobileAuth = () => {
     }
     if (response.status === AuthResponseStatus.DENIED) {
       setStatus(MobileAuthStatus.AUTH_REQUEST_DENIED);
+      AuthUtils.setMobileRejection(response.authRoomId, response.host);
       return;
     }
     if (!response.playerRoomId) return;
@@ -170,7 +179,7 @@ const useMobileAuth = () => {
   };
 
   const onHostConnected = (hostData: { userId: string; nickname: string }) => {
-    Logger.success('Host Connected');
+    Logger.success('Host Connected', hostData);
     updateHost({ userId: hostData.userId, nickname: hostData.nickname });
     setHostStatus(HostStatus.CONNECTED);
     setHostStatus(HostStatus.CONNECTED);
@@ -203,12 +212,13 @@ const useMobileAuth = () => {
     MobilePlayerService.onHostDisconnected(onHostDisconnected);
     connect();
     return () => {
-      MobileAuthService.cleanup();
-      MobilePlayerService.cleanup();
+      //MobileAuthService.cleanup();
+      //MobilePlayerService.cleanup();
     };
   }, [userId]);
 
   useEffect(() => {
+    AuthUtils.clearOldMobileRejections();
     if (!userId) {
       retrieveUserId();
       return;
@@ -229,6 +239,7 @@ const useMobileAuth = () => {
     isSocketReady,
     connectionId,
     authRoomId,
+    rejectionTimeout,
     playerRoomId,
     onCancel,
     userId,

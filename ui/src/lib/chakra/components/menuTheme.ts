@@ -8,7 +8,8 @@ const baseStyle = definePartsStyle({
     p: '2',
     borderRadius: 'xl',
     border: 'none',
-    bg: 'bg.500',
+    bg: 'transparent',
+    boxShadow: 'lg',
   },
   item: {
     bg: 'transparent',

@@ -15,6 +15,7 @@ import DesktopConnectionModal from './connection/DesktopConnectionModal';
 import DesktopAppPlayerView from './DesktopAppPlayerView';
 import DesktopNotifications from './notifications.tsx/DesktopNotifications';
 import { DesktopNotificationsProvider } from '../../../context/DesktopNotificationsContext';
+import useLayoutBackdrop from '../../../hooks/layout/useLayoutBackdrop';
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,
@@ -30,6 +31,8 @@ const DesktopApp = () => {
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [settingsSection, setSettingsSection] = useState<SettingsModalSections | null>(SettingsModalSections.GENERAL);
+  useLayoutBackdrop(false);
+
   const onDesktopConnectionModalClosed = (redirectToSettigns?: SettingsModalSections) => {
     setIsConnectionModalOpen(false);
     if (redirectToSettigns) {

@@ -2,7 +2,7 @@ import { useReducer, useCallback } from 'react';
 import QueueItem from '../../model/player/QueueItem';
 import { QueueStatus, Queue } from '../../model/queue/Queue';
 import Logger from '../../utils/Logger';
-import { QueueAction, QueueActionType } from '../../model/queue/QueueActions';
+import { QueueAction, QueueActionRequest, QueueActionType } from '../../model/queue/QueueActions';
 import { YoutubeVideoDetail } from '../../services/api/YoutubeService';
 import { v4 as uuid } from 'uuid';
 
@@ -30,9 +30,9 @@ const emptyQueue: Queue = {
 const useQueue = (
   userId: string,
   initialData: Queue = emptyQueue,
-  callback?: (action: QueueAction) => void
-): { queue: Queue; controls: QueueControls; dispatch: (action: QueueAction, isLocal?: boolean) => void } => {
-  const [queue, dispatch] = useReducer((prev: Queue, action: QueueAction) => {
+  callback?: (action: QueueActionRequest) => void
+): { queue: Queue; controls: QueueControls; dispatch: (action: QueueActionRequest, isLocal?: boolean) => void } => {
+  const [queue, dispatch] = useReducer((prev: Queue, action: QueueActionRequest) => {
     const next = reducer(prev, action);
     callback?.(action);
     return next;
@@ -40,7 +40,7 @@ const useQueue = (
 
   const dispatchAction = useCallback(
     (action: QueueAction, isLocal = true) => {
-      dispatch({ ...action, isLocal });
+      dispatch({ ...action, isLocal, eventId: '' });
     },
     [dispatch]
   );

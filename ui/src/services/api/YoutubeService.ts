@@ -11,6 +11,7 @@ export interface YoutubeVideoDetail {
   viewCount: number;
   duration: number;
   publishedAt: string;
+  live: boolean;
 }
 
 export default class YoutubeService extends APIService {

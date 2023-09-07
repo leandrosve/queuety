@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { QueueAction, QueueActionRequest, QueueActionType } from '../../model/queue/QueueActions';
+import { QueueActionRequest, QueueActionType } from '../../model/queue/QueueActions';
 import useQueue, { QueueControls } from './useQueue';
 import QueueItem from '../../model/player/QueueItem';
 import { v4 as uuid } from 'uuid';
@@ -37,10 +37,11 @@ const useDesktopQueue = (
   const [queueStatus, setQueueStatus] = useState<QueueStatus>(QueueStatus.ENDED);
 
   const registerLastAction = useCallback(
-    (action: QueueAction) => {
+    (action: QueueActionRequest) => {
       setActions((prev) => {
         const previous = prev?.last;
-        const last = { eventId: 'event-' + uuid().substring(0, 5), previousEventId: prev?.last?.eventId, ...action };
+        const eventId = action.eventId ? action.eventId : 'event-' + uuid().substring(0, 5);
+        const last = { previousEventId: prev?.last?.eventId, ...action, eventId };
         return { previous, last };
       });
     },
@@ -67,9 +68,11 @@ const useDesktopQueue = (
     if (!actions?.last || !playerRoomId || !isSocketReady) return;
     if (onlineUsers.data.length) {
       DesktopPlayerService.sendPlayerAction(playerRoomId, actions?.last);
+      console.log('SEND LAST ACTIOn', actions.last);
     }
     if (actions.last) {
       notifications.addQueueAction(actions.last);
+      StorageUtils.setRaw(StorageKey.LAST_QUEUE_EVENT_ID, actions.last.eventId);
     }
   }, [actions]);
 

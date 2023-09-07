@@ -9,6 +9,7 @@ import FormatUtils from '../../../../utils/FormatUtils';
 import QueueItemProgressBar from '../../shared/queue/QueueItemProgressBar';
 import { motion } from 'framer-motion';
 import GlassModal from '../../../common/glass/GlassModal';
+import LivestreamTag from '../../shared/queue/LivestreamTag';
 
 interface Props {
   video: YoutubeVideoDetail;
@@ -50,9 +51,12 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
           {isPlaying && (
             <Icon as={BsFillPlayFill} borderRadius='full' paddingX={1} position='absolute' bottom='.2rem' left='.2rem' background='bgAlpha.100' />
           )}
-          <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
-            {FormatUtils.formatDuration(video.duration)}
-          </Text>
+          {!!video.duration && (
+            <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
+              {FormatUtils.formatDuration(video.duration)}
+            </Text>
+          )}
+          {video.live && <LivestreamTag />}
         </Box>
         <Flex direction='column' gap={1}>
           <Heading display='inline' size='sm' noOfLines={2} title={video.title} wordBreak='break-word'>
@@ -69,6 +73,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
           <IconButton
             variant='link'
             aria-label='drag'
+            visibility={isCurrent ? 'hidden' : 'visible'}
             height='100%'
             onClick={(e) => {
               e.stopPropagation();

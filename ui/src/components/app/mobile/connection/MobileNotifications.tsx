@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
-import { Button, Collapse, Flex, Icon, Spinner, Stack, chakra, shouldForwardProp } from '@chakra-ui/react';
+import { Button, Flex, Icon, Spinner, Stack, chakra, shouldForwardProp } from '@chakra-ui/react';
 import { PiPlugsBold, PiPlugsConnectedBold } from 'react-icons/pi';
 import { useTranslation } from 'react-i18next';
 import { LuLogOut } from 'react-icons/lu';
 import { AnimatePresence, isValidMotionProp, motion } from 'framer-motion';
-import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
+import AuthUtils from '../../../../utils/AuthUtils';
 
 interface ConnectionError {
   code: string | null;
@@ -88,10 +88,7 @@ const MobileNotifications = () => {
 
 const ErrorDisplay = ({ error }: { error: { code: string | null; recovered: boolean } }) => {
   const { t } = useTranslation();
-  const onEndSession = () => {
-    StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS, StorageKey.USER_ID] });
-    location.reload();
-  };
+
   return (
     <>
       <Flex
@@ -124,7 +121,14 @@ const ErrorDisplay = ({ error }: { error: { code: string | null; recovered: bool
       </Flex>
 
       {!error.recovered && (
-        <Button leftIcon={<LuLogOut />} bottom='2rem' variant='solid' backdropFilter='blur(10px)' position='absolute' onClick={onEndSession}>
+        <Button
+          leftIcon={<LuLogOut />}
+          bottom='2rem'
+          variant='solid'
+          backdropFilter='blur(10px)'
+          position='absolute'
+          onClick={() => AuthUtils.endSession()}
+        >
           {t('notifications.disconnect_device')}
         </Button>
       )}

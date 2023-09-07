@@ -1,57 +1,102 @@
-import { Button, Flex, Heading, Icon, IconButton, Input, Spinner, Stack, Text, VisuallyHidden, useColorMode, useTheme } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  Heading,
+  Icon,
+  IconButton,
+  Input,
+  Spinner,
+  Stack,
+  Text,
+  VisuallyHidden,
+  useColorMode,
+} from '@chakra-ui/react';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { useSettingsContext } from '../../../../context/SettingsContext';
 import AutoAvatar from '../../../common/AutoAvatar';
 import FormatUtils from '../../../../utils/FormatUtils';
-import StorageUtils from '../../../../utils/StorageUtils';
 import { LuArrowBigLeft, LuArrowBigRight, LuEdit, LuQrCode } from 'react-icons/lu';
 import VisualizerBackdrop from '../visualizer/VisualizerBackdrop';
 import { MobileAuthStatus } from '../../../../hooks/connection/useMobileAuth';
 import MobileAuthPendingView from './MobileAuthPendingView';
 import AuthUtils from '../../../../utils/AuthUtils';
+import { SettingsModalElements, SettingsModalSections } from '../../shared/settings/SettingsModal';
+import { BsDot } from 'react-icons/bs';
+import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
+import { LayoutBackdropPicture } from '../../../../context/LayoutContext';
 
-const MobileConnectionView = () => {
+interface Props {
+  onOpenSettingsModal: (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
+  onBack: () => void;
+}
+const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isSocketReady, onTrigger, userId, status, hostStatus, host, authRoomId, onCancel } = useMobileAuthContext();
-
+  const { isSocketReady, onTrigger, userId, status, host, onCancel, rejectionTimeout } = useMobileAuthContext();
   const { settings } = useSettingsContext();
-  const { colorMode } = useColorMode();
-
+  const [authInputError, setAuthInputError] = useState<string | null>(null);
   const [showAuthPendingView, setShowAuthPendingView] = useState(false);
+  const [authRoomIdValue, setAuthRoomIdValue] = useState<string>('');
+  const [initialized, setInitialized] = useState(false);
+
+  useLayoutBackdrop(true, LayoutBackdropPicture.MOBILE_CONNECTION);
 
   const triggerAuth = useCallback(
-    (authRoom: string) => {
-      if (!AuthUtils.isValidAuthRoom(authRoom)) return;
+    (authRoom?: string) => {
+      if (!authRoom || !isSocketReady) return;
+      if (!AuthUtils.isValidAuthRoom(authRoom)) {
+        setAuthInputError('invalid_code');
+        return;
+      }
       setShowAuthPendingView(true);
       onTrigger(authRoom);
     },
     [onTrigger]
   );
 
-  const onEndSession = () => {
-    StorageUtils.clear();
-    location.reload();
-  };
-
-  const onCancelAuth = () => {
-    onCancel();
+  const onCancelAuth = async () => {
+    await onCancel();
+    history.replaceState({}, document.title, "/");
     setShowAuthPendingView(false);
   };
 
   useEffect(() => {
-    if (!isSocketReady) return;
+    if (!isSocketReady || initialized) return;
     const searchParams = new URLSearchParams(document.location.search);
     let authParam = searchParams.get('auth');
     if (authParam) {
       if (!authParam.startsWith('auth-')) authParam = 'auth-' + authParam;
       triggerAuth(authParam);
+      setAuthRoomIdValue(authParam);
     }
-  }, [isSocketReady]);
+    setInitialized(true);
+  }, [isSocketReady, initialized]);
+
+  useEffect(() => {
+    if (!authRoomIdValue) {
+      setAuthInputError(null);
+      return;
+    }
+    if (!AuthUtils.isValidAuthRoom(authRoomIdValue)) {
+      setAuthInputError('invalid_code');
+      return;
+    }
+    setAuthInputError(null);
+  }, [authRoomIdValue]);
 
   return (
-    <Flex direction='column' paddingX={4} maxWidth='400px'>
-      <Button variant='link' size='sm' alignSelf='start' marginBottom={2} leftIcon={<Icon as={LuArrowBigLeft} fill='currentcolor' />}>
+    <Flex direction='column' paddingX={4} maxWidth='400px' alignSelf='stretch'>
+      <Button
+        variant='link'
+        onClick={onBack}
+        size='sm'
+        alignSelf='start'
+        marginBottom={2}
+        color='text.500'
+        leftIcon={<Icon as={LuArrowBigLeft} fill='currentcolor' />}
+      >
         Volver al inicio
       </Button>
       <Flex direction='column' gap={3}>
@@ -82,7 +127,13 @@ const MobileConnectionView = () => {
                 </Text>
               </Stack>
             </Flex>
-            <IconButton icon={<LuEdit />} aria-label='edit' rounded='full' marginLeft='auto' />
+            <IconButton
+              icon={<LuEdit />}
+              aria-label='edit'
+              rounded='full'
+              marginLeft='auto'
+              onClick={() => onOpenSettingsModal(SettingsModalSections.GENERAL, SettingsModalElements.NICKNAME)}
+            />
           </Flex>
         </Stack>
         <Heading size='md' textAlign='start'>
@@ -106,36 +157,46 @@ const MobileConnectionView = () => {
         <Text>
           Alternativamente puedes ingresar el <b>código de autorización</b>
         </Text>
-        <Flex alignItems='center' width='100%'>
-          <Input ref={inputRef} borderRightRadius={0} placeholder='Ej: auth-e2c862a53b5b10e8d8f8023eba22942f' />
-          <Button
-            onClick={() => triggerAuth(inputRef.current?.value || '')}
-            borderLeftRadius={0}
-            border='1px'
-            borderLeftWidth={0}
-            borderColor='borders.100'
-            spinner={<Spinner size='sm' speed='2s' />}
-            isLoading={[MobileAuthStatus.JOINING_AUTH_ROOM, MobileAuthStatus.AUTH_REQUEST_PENDING].includes(status)}
-          >
-            <Icon as={LuArrowBigRight} fill='currentcolor' aria-hidden />
-            <VisuallyHidden>Ingresar</VisuallyHidden>
-          </Button>
-        </Flex>
-        {showAuthPendingView && (
-          <MobileAuthPendingView host={host} status={status} onResend={() => triggerAuth(authRoomId || '')} onCancel={onCancelAuth} />
-        )}
-        <Text textAlign='center' paddingTop={5}>
-          {status}
-        </Text>
-        <Heading>{hostStatus}</Heading>
-        <Button onClick={onEndSession}>Desconectar</Button>
-        <VisualizerBackdrop
-          src={
-            colorMode == 'dark'
-              ? 'https://images.pexels.com/photos/6307488/pexels-photo-6307488.jpeg?auto=compress&cs=tinysrgb&w=1600'
-              : 'https://i.ytimg.com/vi/XCaTOtyj37k/sddefault.jpg'
-          }
+        <FormControl isInvalid={!!authInputError}>
+          <Flex alignItems='center' width='100%'>
+            <Input
+              ref={inputRef}
+              value={authRoomIdValue}
+              borderRightRadius={0}
+              placeholder='Ej: auth-e2c862a53b5b10e8d8f8023eba22942f'
+              onChange={(e) => setAuthRoomIdValue(e.target.value)}
+            />
+            <Button
+              onClick={() => triggerAuth(inputRef.current?.value || '')}
+              borderLeftRadius={0}
+              border='1px'
+              borderLeftWidth={0}
+              borderColor='borders.100'
+              spinner={<Spinner size='sm' speed='2s' />}
+              isLoading={[MobileAuthStatus.JOINING_AUTH_ROOM, MobileAuthStatus.AUTH_REQUEST_PENDING].includes(status)}
+            >
+              <Icon as={LuArrowBigRight} fill='currentcolor' aria-hidden />
+              <VisuallyHidden>Ingresar</VisuallyHidden>
+            </Button>
+          </Flex>
+          {authInputError && <FormErrorMessage>{authInputError}</FormErrorMessage>}
+        </FormControl>
+
+        <MobileAuthPendingView
+          host={host}
+          status={status}
+          onResend={() => triggerAuth(inputRef.current?.value)}
+          onCancel={onCancelAuth}
+          isOpen={showAuthPendingView}
+          rejectionTimeout={rejectionTimeout}
         />
+      </Flex>
+      <Flex paddingTop={10} grow={1} alignItems='end' justifyContent='center' alignSelf='stretch' opacity={0.7}>
+        <Text fontSize='xs' color='text.300'>
+          2023
+          <Icon aria-hidden as={BsDot} display='inline' mb='-3px' opacity={0.5} /> Queuety
+          <Icon aria-hidden as={BsDot} display='inline' mb='-3px' opacity={0.5} /> LS
+        </Text>
       </Flex>
     </Flex>
   );

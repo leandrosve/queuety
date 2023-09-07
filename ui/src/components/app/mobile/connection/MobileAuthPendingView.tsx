@@ -10,16 +10,26 @@ import BrandIcon from '../../../../assets/images/BrandIcon';
 interface Props {
   host: HostData | null;
   status: MobileAuthStatus;
+  isOpen: boolean;
   onResend: () => void;
-  onCancel: () => void;
+  onCancel: () => Promise<void>;
+  rejectionTimeout: number;
 }
-const MobileAuthPendingView = ({ host, status, onResend, onCancel }: Props) => {
+
+const MobileAuthPendingView = ({ host, status, onResend, onCancel, isOpen, rejectionTimeout }: Props) => {
   const [resendTimeout, setResendTimeout] = useState(0);
   const [notResponded, setNotResponded] = useState<boolean>(false);
+  const [isRestarting, setIsRestarting] = useState<boolean>(false);
 
   const handleResend = () => {
     setNotResponded(false);
     onResend();
+  };
+
+  const handleCancel = async () => {
+    setIsRestarting(true);
+    await onCancel();
+    setIsRestarting(false);
   };
 
   const showResendButton = useMemo(() => {
@@ -27,9 +37,11 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel }: Props) => {
   }, [notResponded, status]);
 
   useEffect(() => {
+    let timeout: number;
     if (resendTimeout > 0) {
-      setTimeout(() => setResendTimeout((p) => p - 1), 1000);
+      timeout = setTimeout(() => setResendTimeout((p) => p - 1), 1000);
     }
+    return () => clearTimeout(timeout);
   }, [resendTimeout]);
 
   useEffect(() => {
@@ -44,8 +56,15 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel }: Props) => {
       clearTimeout(notRepondedTimeout);
     };
   }, [status]);
+
+  useEffect(() => {
+    if (rejectionTimeout) {
+      setResendTimeout(rejectionTimeout);
+    }
+  }, [rejectionTimeout]);
+
   return (
-    <GlassModal isOpen onClose={() => {}} isCentered width='95vw' maxWidth='480px'>
+    <GlassModal isOpen={isOpen} onClose={() => {}} isCentered width='95vw' maxWidth='480px'>
       <Flex alignItems='center' justifyContent='center' direction='column' gap={1} paddingY={2}>
         {!host && (
           <BrandIcon
@@ -87,7 +106,7 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel }: Props) => {
         )}
         {notResponded && (
           <>
-            Parece que nadie ha recibido tu solicitud...
+            <b>Parece que nadie ha recibido tu solicitud...</b>
             <br /> Verifica que ambos dispositivos tengan acceso a internet, y el código utilizado esté actualizado.
           </>
         )}
@@ -98,7 +117,13 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel }: Props) => {
           </Flex>
         )}
         <Flex justifyContent='space-between' alignSelf='stretch' wrap='wrap' marginTop={3}>
-          <Button _last={{ marginX: 'auto' }} size={showResendButton ? 'md' : 'sm'} marginTop={showResendButton ? 0 : '1rem'} onClick={onCancel}>
+          <Button
+            _last={{ marginX: 'auto' }}
+            size={showResendButton ? 'md' : 'sm'}
+            marginTop={showResendButton ? 0 : '1rem'}
+            onClick={handleCancel}
+            isLoading={isRestarting}
+          >
             Cancelar
           </Button>
           {showResendButton && (

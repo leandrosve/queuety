@@ -1,11 +1,10 @@
-import useMobileQueue from '../../../hooks/queue/useMobileQueue';
 import { Flex } from '@chakra-ui/react';
 import VisualizerControls from './visualizer/VisualizerControls';
 import VisualizerVideo from './visualizer/VisualizerVideo';
 import './visualizer/visualizer.css';
 import SearchModal from '../shared/search/SearchModal';
 import { useState } from 'react';
-import useMobilePlayerStatus, { MobilePlayerControls } from '../../../hooks/player/useMobilePlayerStatus';
+import { MobilePlayerControls } from '../../../hooks/player/useMobilePlayerStatus';
 import PlayerTrack from '../shared/player/PlayerTrack';
 import MobileNotifications from './connection/MobileNotifications';
 import HostData from '../../../model/auth/HostData';

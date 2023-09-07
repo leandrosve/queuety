@@ -10,6 +10,9 @@ html[data-glass="false"] .glass-container {
   background: var(--bg-300)!important;
   backdrop-filter: none!important;
 }
+html[data-glass="false"] .glass-container.bg-500 {
+  background: var(--bg-500)!important;
+}
 
 .glass-container.as-before{
   height: 100%;

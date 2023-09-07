@@ -31,7 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSize, useSettingsContext } from '../../../../context/SettingsContext';
 import AutoAvatar from '../../../common/AutoAvatar';
 import i18next from 'i18next';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 import SelectMenu from '../../../common/SelectMenu';
 import GlassModal from '../../../common/glass/GlassModal';
 import { LuLanguages, LuLogOut } from 'react-icons/lu';
@@ -42,12 +42,18 @@ import AllowedUserList from '../../desktop/connection/AllowedUserList';
 import PlayerService from '../../../../services/api/player/PlayerService';
 import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 import MobilePlayerService from '../../../../services/api/player/MobilePlayerService';
+import Form from '../../../common/Form';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   isMobile?: boolean;
   defaultSection?: SettingsModalSections | null;
+  focusElement?: SettingsModalElements;
+}
+
+export enum SettingsModalElements {
+  NICKNAME = 'nickname-field',
 }
 
 export enum SettingsModalSections {
@@ -56,13 +62,13 @@ export enum SettingsModalSections {
   CONNECTIONS,
 }
 
-const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => {
+const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement }: Props) => {
   const { t } = useTranslation();
   const { colorMode, setColorMode } = useColorMode();
   const { settings, setNickname, setFontSize, setGlassMode, setFontFamily } = useSettingsContext();
   const [nicknameValue, setNicknameValue] = useState(settings.nickname);
   const nicknameError = useMemo(() => !nicknameValue || nicknameValue.length < 3 || nicknameValue.length > 100, [nicknameValue]);
-
+  const nicknameRef = useRef<HTMLInputElement>(null);
   const onSaveNickname = () => {
     if (isMobile && nicknameValue != settings.nickname) {
       MobilePlayerService.notifyUserChanged(nicknameValue);
@@ -78,12 +84,28 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
     setNicknameValue(settings.nickname);
   }, [isOpen]);
 
+  const initialFocusRef = useMemo(() => {
+    if (focusElement == SettingsModalElements.NICKNAME) return nicknameRef;
+  }, [focusElement]);
+
+  useEffect(() => {
+    let timeout: number;
+    if (isOpen && focusElement) {
+      timeout = setTimeout(() => {
+        const element = document.getElementById(focusElement);
+        element?.focus();
+      }, 200);
+    }
+    return () => clearTimeout(timeout);
+  }, [focusElement, isOpen]);
+
   return (
     <GlassModal
       isOpen={isOpen}
       onClose={onClose}
       width='500px'
       maxWidth={'95vw'}
+      initialFocusRef={initialFocusRef}
       title={
         <Heading size='md' display='flex' gap={2} alignItems='center'>
           {t('settings.settings')}
@@ -94,40 +116,43 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection }: Props) => 
       <Box gap={3} paddingTop={0}>
         <Accordion allowToggle defaultIndex={defaultSection ?? 0}>
           <Group title={t('settings.general')} borderTopWidth={0} borderColor='transparent'>
-            <FormControl isInvalid={nicknameError}>
-              <FormLabel mb={0}>{t('settings.displayName.title')}</FormLabel>
-              <Text mb={2} fontSize='sm'>
-                {t('settings.displayName.description')}
-              </Text>
-              <Flex alignItems='center'>
-                <InputGroup>
-                  <InputLeftElement>
-                    <AutoAvatar size='sm' name={settings.nickname} boxSize='30px' />
-                  </InputLeftElement>
-                  <Input
-                    paddingLeft={'2.5rem'}
-                    borderRightRadius={0}
-                    borderLeftRadius='40px'
-                    placeholder={t('settings.displayName.title')}
-                    value={nicknameValue}
-                    onChange={(e) => setNicknameValue(e.target.value)}
-                  />
-                </InputGroup>
-                <Button
-                  isDisabled={nicknameError}
-                  onClick={() => onSaveNickname()}
-                  borderLeftRadius={0}
-                  border='1px'
-                  borderLeftWidth={0}
-                  borderColor='borders.100'
-                >
-                  {t('common.save')}
-                </Button>
-              </Flex>
-              <FormErrorMessage fontSize='xs'>
-                <FormErrorIcon /> {t('settings.displayName.invalid')}
-              </FormErrorMessage>
-            </FormControl>
+            <Form onSubmit={onSaveNickname}>
+              <FormControl isInvalid={nicknameError}>
+                <FormLabel mb={0}>{t('settings.displayName.title')}</FormLabel>
+                <Text mb={2} fontSize='sm'>
+                  {t('settings.displayName.description')}
+                </Text>
+                <Flex alignItems='center'>
+                  <InputGroup>
+                    <InputLeftElement>
+                      <AutoAvatar size='sm' name={settings.nickname} boxSize='30px' />
+                    </InputLeftElement>
+                    <Input
+                      paddingLeft={'2.5rem'}
+                      borderRightRadius={0}
+                      borderLeftRadius='40px'
+                      placeholder={t('settings.displayName.title')}
+                      value={nicknameValue}
+                      id={SettingsModalElements.NICKNAME}
+                      onChange={(e) => setNicknameValue(e.target.value)}
+                    />
+                  </InputGroup>
+                  <Button
+                    isDisabled={nicknameError}
+                    borderLeftRadius={0}
+                    type='submit'
+                    border='1px'
+                    borderLeftWidth={0}
+                    borderColor='borders.100'
+                  >
+                    {t('common.save')}
+                  </Button>
+                </Flex>
+                <FormErrorMessage fontSize='xs'>
+                  <FormErrorIcon /> {t('settings.displayName.invalid')}
+                </FormErrorMessage>
+              </FormControl>
+            </Form>
             <FormControl>
               <FormLabel>{t('settings.language')}</FormLabel>
               <SelectMenu
@@ -231,7 +256,7 @@ interface GroupProps extends BoxProps {
 const Group = ({ title, children, ...props }: GroupProps) => {
   return (
     <AccordionItem {...props}>
-      <AccordionButton paddingLeft={0} paddingRight={2} paddingY={2}>
+      <AccordionButton paddingLeft={0} paddingRight={2} paddingY={2} borderRadius='md'>
         <Box paddingLeft={1} as='span' flex='1' textAlign='left' fontSize='1.08rem' fontWeight='bold'>
           {title}
         </Box>

@@ -65,13 +65,13 @@ interface QRViewProps {
 }
 const QRView = ({ onClose }: QRViewProps) => {
   const { t } = useTranslation();
-  const { connection, regenAuthRoom } = useDesktopConnectionContext();
+  const { connection, regenAuthRoom, toggleAutoAuth } = useDesktopConnectionContext();
   const disabled = useMemo(() => !connection.authRoom.id || connection.authRoom.loading, [connection.authRoom]);
   const authRoomLink = useMemo(() => ConnectionService.getLinkForAuthRoomId(connection.authRoom.id || ''), [connection]);
   return (
     <Flex direction='column' alignItems='center' gap={3} justifyContent='center' paddingBottom={5}>
       <Text>{t('connection.connectDescription')}</Text>
-      <Stack padding={4} spacing={5} paddingBottom={0}>
+      <Stack padding={4} spacing={2} paddingBottom={0}>
         <Flex gap={5} boxShadow='sm' borderRadius='md'>
           <Flex padding={3} justifyContent='center' alignItems='center' background={'white'}>
             {disabled ? <Spinner /> : <QRCode size={224} value={authRoomLink} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />}
@@ -87,6 +87,10 @@ const QRView = ({ onClose }: QRViewProps) => {
               {t('connection.regenCode')}
             </Button>
           </Flex>
+        </Flex>
+        <Flex alignItems='center' justifyContent='center' fontSize='sm' gap={3} marginTop={3}>
+          <Text>{t('connection.automaticAuth')}</Text>{' '}
+          <Switch colorScheme='primary' isChecked={connection.settings.automatic} onChange={(e) => toggleAutoAuth(e.target.checked)} />
         </Flex>
         <Button isDisabled={disabled} leftIcon={<LuSettings />} onClick={() => onClose(SettingsModalSections.CONNECTIONS)}>
           {t('connection.settingsLink')}

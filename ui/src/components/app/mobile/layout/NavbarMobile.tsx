@@ -1,18 +1,19 @@
-import { Flex, Icon, IconButton, Image, Text, useColorMode } from '@chakra-ui/react';
+import { Flex, Icon, IconButton, Text, useColorMode } from '@chakra-ui/react';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { HiMoon, HiSun } from 'react-icons/hi';
 import { LuLanguages, LuSettings } from 'react-icons/lu';
-import { useState } from 'react';
 import SelectMenu from '../../../common/SelectMenu';
 import languages from '../../../../data/languages';
-import SettingsModal from '../../shared/settings/SettingsModal';
 import BrandIcon from '../../../../assets/images/BrandIcon';
 
-const NavbarMobile = () => {
+interface Props {
+  onOpenSettingsModal: () => void;
+}
+
+const NavbarMobile = ({ onOpenSettingsModal }: Props) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { t } = useTranslation();
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   return (
     <Flex as='header' gap={2} shrink={0} justifyContent='space-between' alignItems='center' padding={2} paddingLeft={4}>
@@ -37,15 +38,7 @@ const NavbarMobile = () => {
           aria-label={t('layout.theme.switch')}
           onClick={toggleColorMode}
         />
-        <IconButton
-          rounded='full'
-          color='text.300'
-          variant='ghost'
-          icon={<LuSettings />}
-          aria-label={'settings'}
-          onClick={() => setIsSettingsModalOpen(true)}
-        />
-        <SettingsModal isMobile={true} isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} />
+        <IconButton rounded='full' color='text.300' variant='ghost' icon={<LuSettings />} aria-label={'settings'} onClick={onOpenSettingsModal} />
       </Flex>
     </Flex>
   );

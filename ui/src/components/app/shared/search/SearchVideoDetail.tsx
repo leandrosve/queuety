@@ -1,10 +1,11 @@
-import { Box, Button, Flex, Heading, IconButton, Image, Link, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, IconButton, Image, Link, Tag, Text } from '@chakra-ui/react';
 import { LuPlay, LuListPlus, LuListEnd } from 'react-icons/lu';
 import { BsYoutube } from 'react-icons/bs';
 import { useTranslation } from 'react-i18next';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { useRef, useEffect } from 'react';
+import LivestreamTag from '../queue/LivestreamTag';
 
 interface Props {
   video: YoutubeVideoDetail;
@@ -38,7 +39,7 @@ const SearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: P
   return (
     <Box>
       <Flex gap={3} direction={{ base: 'column', md: 'row' }} alignItems='start'>
-        <Box position='relative' flexShrink={0}>
+        <Box position='relative' flexShrink={0} borderRadius='md' overflow='hidden'>
           <Image width={{ base: '100%', md: '250px' }} objectFit='cover' aspectRatio={'16/9'} src={video.thumbnail} />
           <IconButton
             as='a'
@@ -54,9 +55,12 @@ const SearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: P
             display='inline-flex'
             aria-label='watch in youtube'
           />
-          <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
-            {FormatUtils.formatDuration(video.duration)}
-          </Text>
+          {!!video.duration && (
+            <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
+              {FormatUtils.formatDuration(video.duration)}
+            </Text>
+          )}
+          {video.live && <LivestreamTag />}
         </Box>
         <Flex direction='column' gap={2} minWidth={0} overflow='hidden'>
           <Flex gap={1}>

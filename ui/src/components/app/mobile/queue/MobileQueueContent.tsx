@@ -8,6 +8,7 @@ import { useCallback, useState } from 'react';
 import DragAndDropList from '../../../common/DragAndDropList';
 import { useTranslation } from 'react-i18next';
 import GlassContainer from '../../../common/glass/GlassContainer';
+import ConfirmDialog from '../../../common/ConfirmDialog';
 
 export interface MobileQueueContentProps {
   queue: QueueItem[];
@@ -22,6 +23,7 @@ export interface MobileQueueContentProps {
 
 const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onSkip, onChangeOrder, currentIndex = 0 }: MobileQueueContentProps) => {
   const [selectedItem, setSelectedItem] = useState<QueueItem | null>(null);
+  const [openClearConfirmation, setOpenClearConfirmation] = useState(false);
   const { t } = useTranslation();
 
   const onMoveNext = useCallback(
@@ -51,7 +53,9 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
             ) : currentItem ? (
               <Stack spacing={0} flexShrink={0}>
                 <Text fontSize='xs'>{t('playerQueue.playing')}:</Text>
-                <Text  className='m-scroll' noOfLines={1}>{currentItem.video.title}</Text>
+                <Text className='m-scroll' noOfLines={1}>
+                  {currentItem.video.title}
+                </Text>
               </Stack>
             ) : null}
           </Flex>
@@ -64,7 +68,7 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
                   {currentIndex + 1}/{queue.length}
                 </Text>
               </Text>
-              <Button variant='link' size='sm' onClick={onClear}>
+              <Button variant='link' size='sm' onClick={() => setOpenClearConfirmation(true)}>
                 {t('playerQueue.clear')}
               </Button>
             </Flex>
@@ -99,6 +103,16 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
         onPlay={() => selectedItem && onPlay(selectedItem)}
         onMoveNext={() => selectedItem && onMoveNext(selectedItem.id, currentIndex + 1)}
         onMoveLast={() => selectedItem && onChangeOrder(selectedItem.id, queue.length)}
+      />
+      <ConfirmDialog
+        isOpen={openClearConfirmation}
+        onCancel={() => setOpenClearConfirmation(false)}
+        onConfirm={() => {
+          onClear();
+          setOpenClearConfirmation(false);
+        }}
+        title={t('playerQueue.clearQueue.title')}
+        description={t('playerQueue.clearQueue.description')}
       />
     </>
   );

@@ -7,6 +7,9 @@ export default {
       views: 'visitas',
       on: 'activado',
       off: 'desactivado',
+      accept: 'Aceptar',
+      cancel: 'Cancelar',
+      live: 'Vivo',
     },
     layout: {
       theme: {
@@ -33,7 +36,7 @@ export default {
       moveNext: 'Reproducir a continuación',
       moveLast: 'Mover al final de la cola',
       loop: 'Bucle',
-
+      clearQueue: { title: 'Limpiar cola de reproducción', description: 'Estas seguro que deseas eliminar todos los elementos de la cola?' },
     },
     player: {
       exitFullscreen: 'Salir de pantalla completa',
@@ -111,7 +114,7 @@ export default {
       addToQueue: '{{nickname}} agregó un video a la cola',
       joined: '<0>{{nickname}}</0> se ha unido',
       desktop_offline: 'Escritorio desconectado',
-      desktop_online: 'Escritorio se ha vuelto a conectar!',
+      desktop_offline_recovered: 'Escritorio se ha vuelto a conectar!',
       offline: 'Estas desconectado',
       offline_recovered: 'Te has vuelto a conectar!',
       awaiting_reconnection: 'Esperando reconexión',

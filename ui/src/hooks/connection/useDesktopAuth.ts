@@ -13,6 +13,7 @@ import DesktopPlayerService from '../../services/api/player/DesktopPlayerService
 import { useSettingsContext } from '../../context/SettingsContext';
 import { useDesktopNotificationsContext } from '../../context/DesktopNotificationsContext';
 import FormatUtils from '../../utils/FormatUtils';
+import AuthUtils from '../../utils/AuthUtils';
 
 const useDesktopAuth = () => {
   const { connection } = useDesktopConnectionContext();
@@ -27,6 +28,7 @@ const useDesktopAuth = () => {
   // Need to access these inside the socket callback :(
   const acceptAutomatic = useRef(connection.settings.automatic);
   const allowedUsersRef = useRef(allowedUsers);
+  const nicknameRef = useRef(settings.nickname);
 
   const joinAuthRoom = async (roomId: string) => {
     const res = await DesktopAuthService.joinAuthRoom(roomId);
@@ -41,6 +43,11 @@ const useDesktopAuth = () => {
   };
 
   const onAuthRequested = async (request: AuthRequest) => {
+    if (AuthUtils.getDesktopRejection(request.userId)) {
+      Logger.warn(`Auth was recently rejected for user ${request.userId} - rejecting`);
+      authorizeRequest(request, AuthResponseStatus.DENIED);
+      return;
+    }
     if (acceptAutomatic.current || allowedUsersRef.current.get(request.userId)) {
       authorizeRequest(request, AuthResponseStatus.AUTHORIZED);
       return;
@@ -50,14 +57,19 @@ const useDesktopAuth = () => {
   };
 
   const authorizeRequest = async (request: AuthRequest, status: AuthResponseStatus) => {
-    Logger.info('Response', request.clientId, status);
+    Logger.info(`Auth Response for clientId: ${request.clientId}  status: ${status}`);
     const playerRoomId = status == AuthResponseStatus.AUTHORIZED ? connection.playerRoom.id : null;
     const response: AuthResponse = {
       status,
+      authRoomId: connection.authRoom.id || '',
       clientId: request.clientId,
       playerRoomId,
-      host: { userId: FormatUtils.shortenUserId(connection.userId || ''), nickname: settings.nickname },
+      host: { userId: FormatUtils.shortenUserId(connection.userId || ''), nickname: nicknameRef.current },
     };
+
+    if (status == AuthResponseStatus.DENIED) {
+      AuthUtils.setDesktopRejection(request.userId);
+    }
 
     if (status == AuthResponseStatus.AUTHORIZED) {
       // Add to the list of authorized users before sending response
@@ -81,7 +93,6 @@ const useDesktopAuth = () => {
   };
 
   const onUserConnected = (userId: string, clientId: string, reconnected?: boolean, nickname?: string) => {
-    console.log('USER RECONNECTED', userId, clientId, nickname);
     if (!allowedUsersRef.current.get(userId)) {
       revokeAuthorization(userId, clientId);
       Logger.warn('Unauthorized user tried to connect', { userId });
@@ -90,9 +101,11 @@ const useDesktopAuth = () => {
     allowedUsers.update({ userId, clientId, ...(nickname ? { nickname } : {}) });
     Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}: ${userId}`);
     onlinePrescence.addUnique(userId);
-    Logger.info('SEND NOTIFY HOST CONNECTION');
-    if (!connection.userId) return;
-    DesktopPlayerService.notifyHostConnection(clientId, settings.nickname, connection.userId);
+    if (!connection.userId) {
+      console.log('WTF MAN');
+      return;
+    }
+    DesktopPlayerService.notifyHostConnection(clientId, nicknameRef.current, connection.userId);
   };
 
   const onUserChanged = (userId: string, nickname: string) => {
@@ -113,7 +126,7 @@ const useDesktopAuth = () => {
   }, [isReady, connection.authRoom, connection.userId]);
 
   useEffect(() => {
-    if (isReady) {
+    if (isReady && connection.userId) {
       DesktopPlayerService.onUserConnected((res) => onUserConnected(res.userId, res.clientId, false, res.nickname));
       DesktopPlayerService.onUserReconnected((res) => onUserConnected(res.userId, res.clientId, true, res.nickname));
       DesktopPlayerService.onUserChanged((res) => onUserChanged(res.userId, res.nickname));
@@ -123,7 +136,7 @@ const useDesktopAuth = () => {
         onlinePrescence.remove(res.userId);
       });
     }
-  }, [isReady]);
+  }, [isReady, connection.userId]);
 
   useEffect(() => {
     acceptAutomatic.current = connection.settings.automatic;
@@ -132,6 +145,13 @@ const useDesktopAuth = () => {
   useEffect(() => {
     allowedUsersRef.current = allowedUsers;
   }, [allowedUsers]);
+  useEffect(() => {
+    nicknameRef.current = settings.nickname;
+  }, [settings.nickname]);
+
+  useEffect(() => {
+    AuthUtils.clearOldRejectedUsers();
+  }, []);
 
   return {
     joinedAuthRoom,

@@ -57,7 +57,7 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
         onClick={() => setIsOpen(true)}
       />
       <GlassModal isOpen={isOpen} onClose={() => setIsOpen(false)} isCentered contentProps={{ padding: 0 }} maxWidth='95vw'>
-        <Flex alignItems='center' justifyContent='center' padding={2} gap={3}>
+        <Flex alignItems='center' justifyContent='center' padding={2} paddingLeft={0} gap={3}>
           <IconButton
             variant='ghost'
             icon={<Icon as={getVolumeIcon(value.current)} boxSize={5} />}

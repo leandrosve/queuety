@@ -97,7 +97,6 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
       if (!player) return;
       player.seekTo(time, true);
       if (time < Math.floor(player.getDuration())) {
-        console.log("PLAY VIDEO", time, player.getDuration());
         player.playVideo();
       }
     },
