@@ -9,6 +9,7 @@ import { AuthResponseStatus } from '../../../../model/auth/AuthResponse';
 import { LuCheckCircle } from 'react-icons/lu';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { Trans, useTranslation } from 'react-i18next';
+import SubmitButton from '../../../common/SubmitButton';
 
 interface AuthorizationRequestItemProps {
   request: AuthRequest;
@@ -71,34 +72,13 @@ export const AuthorizationRequestItemContent = ({ request, onAccept, onDeny }: A
           <Button opacity={accepted ? 0 : 1} transition='opacity 200ms' onClick={onDeny}>
             {t('connection.reject')}
           </Button>
-          <Button
-            onClick={handleAccept}
+          <SubmitButton
+            onSubmit={handleAccept}
             variant='solid'
             colorScheme='primary'
-            position='relative'
-            transition='background 500ms'
-            background={accepted ? `primary.500` : undefined}
           >
-            <Text as='span' opacity={accepted ? 0 : 1} transition='opacity 200ms'>
-              {t('connection.accept')}
-            </Text>
-            <Box
-              visibility={accepted ? 'visible' : 'hidden'}
-              opacity={accepted ? 1 : 0}
-              transition='opacity 200ms'
-              position='absolute'
-              display='flex'
-              top={0}
-              left={'0'}
-              height='100%'
-              width='100%'
-              alignItems='center'
-              justifyContent='center'
-              color={'white'}
-            >
-              <Icon as={LuCheckCircle} boxSize={'1.25rem'} transition='transform 500ms' transform={accepted ? 'scale(1.25)' : 'scale(.8)'} />
-            </Box>
-          </Button>
+            {t('connection.accept')}
+          </SubmitButton>
         </Flex>
       </Flex>
     </Flex>

@@ -9,11 +9,13 @@ export enum StorageKey {
   USER_ID = 'userId',
   PLAYER_ROOM_ID = 'playerRoomId',
   AUTH_ROOM_ID = 'authRoomId',
+  MOBILE_AUTH_ROOM_ID = 'mobileAuthRoomId',
   HOST = 'host',
   DEVICE = 'device',
   REJECTIONS = 'rejections',
   REJECTED_USERS = 'rejected_devices',
   LAST_QUEUE_EVENT_ID = 'lastQueueEventId',
+
 }
 
 export default class StorageUtils {

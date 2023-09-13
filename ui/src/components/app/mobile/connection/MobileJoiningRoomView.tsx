@@ -1,4 +1,4 @@
-import { Button, Collapse, Fade, Flex, Icon, Spinner, Stack, Text, useColorMode } from '@chakra-ui/react';
+import { Button, Collapse, Fade, Flex, Icon, Spinner, Stack, Text } from '@chakra-ui/react';
 import HostData from '../../../../model/auth/HostData';
 import { useState, useEffect, useMemo } from 'react';
 import BrandIcon from '../../../../assets/images/BrandIcon';
@@ -6,8 +6,6 @@ import FormatUtils from '../../../../utils/FormatUtils';
 import { LuLogOut } from 'react-icons/lu';
 import { useTranslation } from 'react-i18next';
 import AuthUtils from '../../../../utils/AuthUtils';
-import VisualizerBackdrop from '../visualizer/VisualizerBackdrop';
-import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
 
 interface Props {
   host: HostData;

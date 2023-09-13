@@ -1,4 +1,3 @@
-import Cookies from 'universal-cookie';
 import HostData from '../model/auth/HostData';
 import StorageUtils, { StorageKey } from './StorageUtils';
 
@@ -84,5 +83,18 @@ export default class AuthUtils {
   public static endSession() {
     StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS, StorageKey.USER_ID] });
     location.reload();
+  }
+
+  public static clearUrl() {
+    history.pushState(null, '', location.origin);
+  }
+
+  public static getAuthParam() {
+    const searchParams = new URLSearchParams(document.location.search);
+    let authParam = searchParams.get('auth');
+    if (authParam) {
+      if (!authParam.startsWith('auth-')) authParam = 'auth-' + authParam;
+    }
+    return authParam;
   }
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
-import { Button, Flex, Icon, Spinner, Stack, chakra, shouldForwardProp } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, Spinner, Stack, chakra, shouldForwardProp } from '@chakra-ui/react';
 import { PiPlugsBold, PiPlugsConnectedBold } from 'react-icons/pi';
 import { useTranslation } from 'react-i18next';
 import { LuLogOut } from 'react-icons/lu';
@@ -100,20 +100,16 @@ const ErrorDisplay = ({ error }: { error: { code: string | null; recovered: bool
         width={'80vw'}
       >
         <Stack align='center' width='100%' spacing={0} padding={2}>
-          <Flex
-            fontWeight='bold'
-            alignSelf='stretch'
-            grow={1}
-            justifyContent='center'
-            flex={1}
-            textAlign='center'
-            alignItems='center'
-            textShadow='md'
-            gap={2}
-          >
-            <Icon as={error.recovered ? PiPlugsConnectedBold : PiPlugsBold} filter='drop-shadow(0px 0px 5px #ffffff8f)' />
+          <Box fontWeight='bold' flex={1} textAlign='center' textShadow='md'>
+            <Icon
+              marginRight={2}
+              marginBottom={'-0.2rem'}
+              display='inline-flex'
+              as={error.recovered ? PiPlugsConnectedBold : PiPlugsBold}
+              filter='drop-shadow(0px 0px 5px #ffffff8f)'
+            />
             {error.recovered ? t(`notifications.${error.code}_recovered`) : t(`notifications.${error.code}`)}
-          </Flex>
+          </Box>
           <Flex alignItems='center' gap={2}>
             <Spinner size='xs' speed='1s' /> {t('notifications.awaiting_reconnection')}
           </Flex>

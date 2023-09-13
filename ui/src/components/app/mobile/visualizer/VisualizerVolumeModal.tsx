@@ -15,7 +15,7 @@ const getVolumeIcon = (volume: number) => {
   if (volume >= 100) return LuVolume2;
   return LuVolume1;
 };
-const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
+const VisualizerVolumeModal = ({ volume, onChangeVolume }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hostStatus } = useMobileAuthContext();
   const [loading, setLoading] = useState(false);
@@ -24,6 +24,7 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
 
   const onChangeEnd = (val: number) => {
     setDraggingValue(null);
+    if (val === value.current) return;
     setValue((p) => ({ prev: p.current, current: val }));
     if (hostStatus == HostStatus.DISCONNECTED) return;
     setLoading(true);
@@ -90,4 +91,4 @@ const VisualizerSoundMenu = ({ volume, onChangeVolume }: Props) => {
   );
 };
 
-export default VisualizerSoundMenu;
+export default VisualizerVolumeModal;

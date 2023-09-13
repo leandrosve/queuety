@@ -10,6 +10,8 @@ export default {
       accept: 'Aceptar',
       cancel: 'Cancelar',
       live: 'Vivo',
+      goHome: 'Volver al inicio',
+      example: 'Ej:',
     },
     layout: {
       theme: {
@@ -56,6 +58,15 @@ export default {
       accept: 'Aceptar',
       reject: 'Rechazar',
       automaticAuth: 'Autorizar nuevos dispositivos automaticamente',
+    },
+    connectionView: {
+      deviceName: 'Tu nombre de dispositivo es:',
+      devices: {
+        title: 'Conectarse al escritorio',
+        description: 'Puedes escanear el código QR mostrado en la sección <0>Conectar Dispositivo</0> en el escritorio',
+        scanQR: 'Escanear QR',
+        alternative: 'Alternativamente puedes ingresar el <0>código de autorización</0>',
+      },
     },
     settings: {
       settings: 'Configuración',
@@ -123,6 +134,11 @@ export default {
     tabChecker: {
       error: 'Parece que el sitio se ha abierto desde otra pestaña.<0></0>Deseas continuar reproduciendo en esta pestaña y detener la otra?',
       button: 'Continuar en esta pestaña',
+    },
+    roomSwitch: {
+      description: 'Parece que estas tratando de conectarte a otra sesión. ¿Deseas finalizar la sesión actual y requerir conectarte a esta otra?',
+      accept: 'Finalizar sesión actual',
+      skip: 'Continuar en la misma sesión',
     },
   },
 };

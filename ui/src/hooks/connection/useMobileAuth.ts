@@ -229,6 +229,12 @@ const useMobileAuth = () => {
   }, []);
 
   useEffect(() => {
+    if (authRoomId && status == MobileAuthStatus.JOINED_PLAYER_ROOM) {
+      StorageUtils.set(StorageKey.MOBILE_AUTH_ROOM_ID, authRoomId);
+    }
+  }, [authRoomId, status]);
+
+  useEffect(() => {
     nicknameRef.current = settings.nickname;
   }, [settings.nickname]);
   return {

@@ -11,6 +11,8 @@ export default {
       accept: 'Accept',
       cancel: 'Cancel',
       live: 'Live',
+      example: 'e.g.',
+      goHome: 'Home',
     },
     time: {
       days_ago: '{{days}} days ago',
@@ -31,7 +33,7 @@ export default {
       errors: {
         video_not_found: "Sorry, we couldn't find the request video",
         malformed_url: 'The provided URL does not correspond to a YouTube Video',
-        shorts_url: 'Sorry, unfortunately shorts cannot be watched outside YouTube',
+        shorts_url: 'Sorry, unfortunately shorts cannot be watched outside of YouTube',
         unknown: 'Sorry, something went wrong',
       },
     },
@@ -65,6 +67,15 @@ export default {
       accept: 'Accept',
       reject: 'Reject',
       automaticAuth: 'Automatically authorize new devices',
+    },
+    connectionView: {
+      deviceName: 'Your device name is:',
+      devices: {
+        title: 'Connect to desktop',
+        description: 'In order to connect, scan the QR code shown in the <0>Connect Device</0> section of the desktop device',
+        scanQR: 'Scan QR',
+        alternative: 'Alternatively you can enter the <0>authorization code</0>',
+      },
     },
     settings: {
       settings: 'Settings',
@@ -132,6 +143,11 @@ export default {
     tabChecker: {
       error: 'It appears the page was opened from another tab.<0></0>Do you want to stop the other tab and continue playing from this one?',
       button: 'Continue from this tab',
+    },
+    roomSwitch: {
+      description: 'It appears you are trying to connect to another session, do you want to finish the current session and request connecting to the new one?',
+      accept: 'Finish Session',
+      skip: 'Continue with same session',
     },
   },
 };

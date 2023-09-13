@@ -1,5 +1,5 @@
 import './assets/css/app.css';
-import { Box, ChakraProvider, Flex, Spinner, useColorMode } from '@chakra-ui/react';
+import { Box, ChakraProvider, Flex, Spinner } from '@chakra-ui/react';
 import theme from './lib/chakra/chakraTheme';
 import './i18n/i18n';
 import { SettingsProvider } from './context/SettingsContext';
@@ -8,27 +8,15 @@ import { Suspense, lazy } from 'react';
 import DeviceSelection, { DeviceType } from './components/app/shared/device/DeviceSelection';
 import StorageUtils, { StorageKey } from './utils/StorageUtils';
 import DuplicateTabChecker from './components/app/shared/device/DuplicateTabChecker';
-import LayoutProvider, { useLayoutContext } from './context/LayoutContext';
-import VisualizerBackdrop from './components/app/mobile/visualizer/VisualizerBackdrop';
-import { color } from 'framer-motion';
+import LayoutProvider from './context/LayoutContext';
 import LayoutBackdrop from './components/common/layout/LayoutBackdrop';
+import AuthUtils from './utils/AuthUtils';
+import RoomSwitchWarning from './components/app/shared/auth/RoomSwitchWarning';
 
 const DesktopAppLazy = lazy(() => import('./components/app/desktop/DesktopApp'));
 const MobileAppLazy = lazy(() => import('./components/app/mobile/MobileApp'));
 
-const renderContent = (deviceType: DeviceType, onBack: () => void) => {
-  if (deviceType === DeviceType.DESKTOP) return <DesktopAppLazy />;
-  return <MobileAppLazy onBack={onBack} />;
-};
-
 function App() {
-  // This damn hooks always run twice for some reason
-  const [deviceType, setDeviceType] = useState<DeviceType | null>(StorageUtils.get(StorageKey.DEVICE) as DeviceType);
-
-  const handleBack = useCallback(() => {
-    StorageUtils.clear([StorageKey.DEVICE]);
-    setDeviceType(null);
-  }, []);
   return (
     <ChakraProvider theme={theme}>
       <LayoutProvider>
@@ -36,7 +24,7 @@ function App() {
           <Box className='app' position='relative' zIndex={1}>
             <DuplicateTabChecker>
               <Suspense fallback={<Loader />}>
-                {!deviceType ? <DeviceSelection onSelected={(type) => setDeviceType(type)} /> : renderContent(deviceType, handleBack)}
+                <AppContent />
               </Suspense>
             </DuplicateTabChecker>
             <LayoutBackdrop />
@@ -46,6 +34,43 @@ function App() {
     </ChakraProvider>
   );
 }
+
+const shouldDisplayWarning = () => {
+  const authParam = AuthUtils.getAuthParam();
+  const mobileAuthRoomId = StorageUtils.get(StorageKey.MOBILE_AUTH_ROOM_ID);
+  const playerRoomId = StorageUtils.get(StorageKey.PLAYER_ROOM_ID);
+  console.log(mobileAuthRoomId, authParam)
+  return !!(authParam && playerRoomId && mobileAuthRoomId && (mobileAuthRoomId !== authParam));
+};
+
+const AppContent = () => {
+  const [deviceType, setDeviceType] = useState<DeviceType | null>(StorageUtils.get(StorageKey.DEVICE) as DeviceType);
+  const [showWarning] = useState<boolean>(shouldDisplayWarning());
+
+  const handleBack = useCallback(() => {
+    StorageUtils.clear([StorageKey.DEVICE]);
+    setDeviceType(null);
+  }, []);
+
+  useEffect(() => {
+    const authParam = AuthUtils.getAuthParam();
+    const hostAuthRoomId = StorageUtils.get(StorageKey.AUTH_ROOM_ID);
+    const playerRoomId = StorageUtils.get(StorageKey.PLAYER_ROOM_ID);
+    if (authParam && !playerRoomId && deviceType !== DeviceType.DESKTOP) {
+      setDeviceType(DeviceType.MOBILE);
+      StorageUtils.setRaw(StorageKey.DEVICE, DeviceType.MOBILE);
+    }
+    if (authParam && deviceType == DeviceType.DESKTOP && authParam === hostAuthRoomId) {
+      history.replaceState({}, document.title, '/');
+      return;
+    }
+  }, []);
+
+  if (showWarning) return <RoomSwitchWarning />;
+  if (!deviceType) return <DeviceSelection onSelected={(type) => setDeviceType(type)} />;
+  if (deviceType === DeviceType.DESKTOP) return <DesktopAppLazy />;
+  return <MobileAppLazy onBack={handleBack} />;
+};
 
 const Loader = () => (
   <Flex alignItems='center' justifyContent='center' height='100vh' width='100vw'>

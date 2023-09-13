@@ -29,6 +29,7 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel, isOpen, rejec
   const handleCancel = async () => {
     setIsRestarting(true);
     await onCancel();
+    setNotResponded(false);
     setIsRestarting(false);
   };
 

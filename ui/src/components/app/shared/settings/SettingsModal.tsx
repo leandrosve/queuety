@@ -43,6 +43,7 @@ import PlayerService from '../../../../services/api/player/PlayerService';
 import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 import MobilePlayerService from '../../../../services/api/player/MobilePlayerService';
 import Form from '../../../common/Form';
+import SubmitButton from '../../../common/SubmitButton';
 
 interface Props {
   isOpen: boolean;
@@ -137,16 +138,17 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
                       onChange={(e) => setNicknameValue(e.target.value)}
                     />
                   </InputGroup>
-                  <Button
+                  <SubmitButton
                     isDisabled={nicknameError}
                     borderLeftRadius={0}
-                    type='submit'
                     border='1px'
                     borderLeftWidth={0}
                     borderColor='borders.100'
+                    iconScaling={[.8, 1]}
+                    onSubmit={onSaveNickname}
                   >
                     {t('common.save')}
-                  </Button>
+                  </SubmitButton>
                 </Flex>
                 <FormErrorMessage fontSize='xs'>
                   <FormErrorIcon /> {t('settings.displayName.invalid')}

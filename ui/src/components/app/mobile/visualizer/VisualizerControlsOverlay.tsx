@@ -77,7 +77,14 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
       <Flex width='100%' height='100%' pointerEvents={clicked ? 'all' : 'none'} color='white'>
         <Flex height={'100%'} width='40%' direction='column' alignItems='center' justifyContent='center'>
           <Flex position='relative'>
-            <IconButton rounded='full' color='white' aria-label='rewind' icon={<Icon as={LuRotateCcw} boxSize='2rem' />} onClick={onRewind} />
+            <IconButton
+              rounded='full'
+              variant='ghost'
+              color='white'
+              aria-label='rewind'
+              icon={<Icon as={LuRotateCcw} boxSize='2rem' />}
+              onClick={onRewind}
+            />
             <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={rewindSeconds ? 1 : 0}>
               -{rewindSeconds}s
             </Text>
@@ -90,6 +97,7 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
             <IconButton
               aria-label='toggle play'
               rounded='full'
+              variant='ghost'
               icon={<Icon as={getPlayerStateIcon(status.state)} fill='white' stroke='white' boxSize='3rem' />}
               onClick={status.state == PlayerState.PLAYING ? controls.onPause : controls.onPlay}
             />
@@ -97,7 +105,14 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
         </Flex>
         <Flex height={'100%'} width='40%' direction='column' alignItems='center' justifyContent='center'>
           <Flex position='relative'>
-            <IconButton rounded='full' color='white' aria-label='fast-forward' icon={<Icon as={LuRotateCw} boxSize='2rem' />} onClick={onForward} />
+            <IconButton
+              rounded='full'
+              variant='ghost'
+              color='white'
+              aria-label='fast-forward'
+              icon={<Icon as={LuRotateCw} boxSize='2rem' />}
+              onClick={onForward}
+            />
             <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={forwardSeconds ? 1 : 0}>
               +{forwardSeconds}s
             </Text>

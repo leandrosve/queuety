@@ -11,7 +11,6 @@ import {
   Stack,
   Text,
   VisuallyHidden,
-  useColorMode,
 } from '@chakra-ui/react';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
@@ -19,7 +18,6 @@ import { useSettingsContext } from '../../../../context/SettingsContext';
 import AutoAvatar from '../../../common/AutoAvatar';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { LuArrowBigLeft, LuArrowBigRight, LuEdit, LuQrCode } from 'react-icons/lu';
-import VisualizerBackdrop from '../visualizer/VisualizerBackdrop';
 import { MobileAuthStatus } from '../../../../hooks/connection/useMobileAuth';
 import MobileAuthPendingView from './MobileAuthPendingView';
 import AuthUtils from '../../../../utils/AuthUtils';
@@ -27,6 +25,7 @@ import { SettingsModalElements, SettingsModalSections } from '../../shared/setti
 import { BsDot } from 'react-icons/bs';
 import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
 import { LayoutBackdropPicture } from '../../../../context/LayoutContext';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface Props {
   onOpenSettingsModal: (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
@@ -40,6 +39,8 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
   const [showAuthPendingView, setShowAuthPendingView] = useState(false);
   const [authRoomIdValue, setAuthRoomIdValue] = useState<string>('');
   const [initialized, setInitialized] = useState(false);
+
+  const { t } = useTranslation();
 
   useLayoutBackdrop(true, LayoutBackdropPicture.MOBILE_CONNECTION);
 
@@ -58,7 +59,7 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
 
   const onCancelAuth = async () => {
     await onCancel();
-    history.replaceState({}, document.title, "/");
+    history.replaceState({}, document.title, '/');
     setShowAuthPendingView(false);
   };
 
@@ -97,12 +98,12 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
         color='text.500'
         leftIcon={<Icon as={LuArrowBigLeft} fill='currentcolor' />}
       >
-        Volver al inicio
+        {t('common.goHome')}
       </Button>
       <Flex direction='column' gap={3}>
         <Stack width='100%'>
           <Text color='text.300' size='sm'>
-            Tu nombre de dispositivo es:
+            {t('connectionView.deviceName')}
           </Text>
           <Flex
             alignItems='center'
@@ -137,10 +138,10 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
           </Flex>
         </Stack>
         <Heading size='md' textAlign='start'>
-          Conectarse al escritorio
+          {t('connectionView.devices.title')}
         </Heading>
         <Text>
-          Puedes escanear el código QR mostrado en la sección <b>Conectar Dispositivo</b> en el escritorio
+          <Trans i18nKey={'connectionView.devices.description'} components={[<b />]} />
         </Text>
         <Button
           leftIcon={<Icon as={LuQrCode} boxSize='2rem' />}
@@ -152,10 +153,10 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
           border='1px solid'
           borderColor='borders.100'
         >
-          Escanear QR
+          {t('connectionView.devices.scanQR')}
         </Button>
         <Text>
-          Alternativamente puedes ingresar el <b>código de autorización</b>
+          <Trans i18nKey={'connectionView.devices.alternative'} components={[<b />]} />
         </Text>
         <FormControl isInvalid={!!authInputError}>
           <Flex alignItems='center' width='100%'>
@@ -163,7 +164,7 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
               ref={inputRef}
               value={authRoomIdValue}
               borderRightRadius={0}
-              placeholder='Ej: auth-e2c862a53b5b10e8d8f8023eba22942f'
+              placeholder={t('common.example') + ' auth-e2c862a53b5b10e8d8f8023eba22942f'}
               onChange={(e) => setAuthRoomIdValue(e.target.value)}
             />
             <Button
