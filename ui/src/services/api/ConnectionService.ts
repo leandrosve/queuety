@@ -23,6 +23,6 @@ export default class ConnectionService extends APIService {
   public static getLinkForAuthRoomId(authRoomId: string) {
     const isLocahost = location.hostname === 'localhost';
     const hostname = isLocahost ? 'http://192.168.0.226:5173' : location.origin;
-    return `${hostname}/?auth=${authRoomId}`;
+    return `${hostname}/app?auth=${authRoomId}`;
   }
 }

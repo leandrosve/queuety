@@ -53,7 +53,7 @@ export class YoutubeService {
     const rawItem = res?.items?.[0];
     if (!rawItem) return null;
     const channelThumbnail = await this.retrieveChannelThumbnail(rawItem.snippet.channelId);
-    const videoThumbnails = rawItem.snippet.thumbnails
+    const videoThumbnails = rawItem.snippet.thumbnails;
     return {
       id: rawItem.id,
       title: rawItem.snippet.title,
@@ -65,6 +65,7 @@ export class YoutubeService {
       viewCount: Number(rawItem.statistics.viewCount),
       duration: FormatUtils.iso8601ToSeconds(rawItem.contentDetails.duration),
       publishedAt: rawItem.snippet.publishedAt,
+      live: rawItem.snippet.liveBroadcastContent === 'live',
     };
   }
 

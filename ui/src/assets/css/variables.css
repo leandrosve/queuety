@@ -44,7 +44,7 @@ html[data-theme='dark'] {
   --bg-400: #202027;
   --bg-300: #101013;
   --bg-200: hsl(240, 29%, 6%);
-  --bg-100: rgb(6, 6, 6);
+  --bg-100: rgb(14, 14, 14);
 
   --border-color: rgb(255, 255, 255, 0.16);
   --chakra-colors-chakra-border-color: rgb(255, 255, 255, 0.16) !important;

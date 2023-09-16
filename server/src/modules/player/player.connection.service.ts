@@ -80,6 +80,7 @@ export class PlayerConnectionService {
 
   public async notifyHostConnection(client: Socket, clientId: string, hostNickname: string, hostUserId: string) {
     if (!this.isHost(client)) return;
+    this.logger.log("NOTIFYING HOST CONNECTION TO CLIENT", client)
     await client.to(clientId).emit('host-connected', { nickname: hostNickname, userId: hostUserId });
     return true;
   }

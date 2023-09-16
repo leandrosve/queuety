@@ -5,10 +5,11 @@ export default interface YoutubeVideoDetail {
   channelId: string;
   channelTitle: string;
   channelThumbnail: string;
-  publishedAt: string,
-  viewCount: number,
-  duration: number,
+  publishedAt: string;
+  viewCount: number;
+  duration: number;
   embeddable: boolean;
+  live: boolean;
 }
 
 export type YoutubeVideoDetailCacheItem =

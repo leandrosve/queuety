@@ -4,6 +4,7 @@ export default class FormatUtils {
    * @param isoString example: "PT#H#M#S" or "PT14M33S"
    */
   public static iso8601ToSeconds(isoString: string) {
+    if (isoString === 'P0D') return 0; // Livestream
     let totalSeconds = 0;
     isoString = isoString.split('PT')[1];
     const units = ['H', 'M', 'S'];
