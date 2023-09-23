@@ -3,7 +3,7 @@ import { LayoutBackdropPicture } from '../../../../context/LayoutContext';
 import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
 import BrandIcon from '../../../../assets/images/BrandIcon';
 import { useEffect, useState } from 'react';
-import StatusService from '../../../../services/api/ConnectionService copy';
+import StatusService from '../../../../services/api/StatusService';
 import { useNavigate } from 'react-router-dom';
 
 const MaintenanceView = () => {

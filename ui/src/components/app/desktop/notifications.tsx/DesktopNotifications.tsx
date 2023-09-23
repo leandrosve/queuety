@@ -20,15 +20,15 @@ const DesktopNotifications = ({ hideAuthRequests }: Props) => {
   return (
     <Stack position='fixed' bottom='1rem' left='1rem' maxWidth={'50vw'} zIndex={'var(--z-index-toast)'}>
       <AnimatePresence>
+        {notifications.userJoined && (
+          <AnimationWrapper key={notifications.userJoined.id}>
+            <UserJoinedNotificationToast user={notifications.userJoined.data} />
+          </AnimationWrapper>
+        )}
         {!hideAuthRequests && authRequests.list.map((request) => <AuthorizationRequestItem key={request.userId} request={request} />)}
         {notifications.queue && (
           <AnimationWrapper key={notifications.queue.id}>
             <QueueActionNotification action={notifications.queue.data} />
-          </AnimationWrapper>
-        )}
-        {notifications.userJoined && (
-          <AnimationWrapper key={notifications.userJoined.id}>
-            <UserJoinedNotificationToast user={notifications.userJoined.data} />
           </AnimationWrapper>
         )}
       </AnimatePresence>

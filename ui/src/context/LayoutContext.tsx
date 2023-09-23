@@ -12,8 +12,12 @@ const BACKDROP_PICTURES = {
     light: 'https://images.pexels.com/photos/844297/pexels-photo-844297.jpeg?auto=compress&cs=tinysrgb&w=400',
   },
   mobileConnection: {
-    dark: 'https://images.pexels.com/photos/6307488/pexels-photo-6307488.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    dark: 'https://images.pexels.com/photos/6307488/pexels-photo-6307488.jpeg?auto=compress&cs=tinysrgb&w=400',
     light: 'https://i.ytimg.com/vi/XCaTOtyj37k/sddefault.jpg',
+  },
+  desktopWelcome: {
+    dark: 'https://images.pexels.com/photos/5191926/pexels-photo-5191926.jpeg?auto=compress&cs=tinysrgb&w=400',
+    light: 'https://img.freepik.com/free-photo/vivid-blurred-colorful-background_58702-2655.jpg',
   },
 };
 
@@ -27,6 +31,7 @@ const LayoutContext = React.createContext<LayoutContextProps>({
 export enum LayoutBackdropPicture {
   DEVICE_SELECTION = 'deviceSelection',
   MOBILE_CONNECTION = 'mobileConnection',
+  DESKTOP_WELCOME = 'desktopWelcome',
 }
 
 const LayoutProvider = ({ children }: PropsWithChildren) => {

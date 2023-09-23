@@ -7,7 +7,7 @@ import DeviceSelection, { DeviceType } from './components/app/shared/device/Devi
 import StorageUtils, { StorageKey } from './utils/StorageUtils';
 import AuthUtils from './utils/AuthUtils';
 import RoomSwitchWarning from './components/app/shared/auth/RoomSwitchWarning';
-import StatusService from './services/api/ConnectionService copy';
+import StatusService from './services/api/StatusService';
 import { Navigate } from 'react-router-dom';
 
 const DesktopAppLazy = lazy(() => import('./components/app/desktop/DesktopApp'));
@@ -44,7 +44,7 @@ export const AppContent = () => {
       StorageUtils.setRaw(StorageKey.DEVICE, DeviceType.MOBILE);
     }
     if (authParam && deviceType == DeviceType.DESKTOP && authParam === hostAuthRoomId) {
-      history.replaceState({}, document.title, '/');
+      history.replaceState({}, document.title);
       return;
     }
   }, []);

@@ -76,6 +76,10 @@ export default {
         scanQR: 'Scan QR',
         alternative: 'Alternatively you can enter the <0>authorization code</0>',
       },
+      notifications: {
+        AUTH_REVOKED: 'You have been kicked out from the player session',
+        SESSION_ENDED: 'The player session has ended',
+      },
     },
     settings: {
       settings: 'Settings',
@@ -145,9 +149,20 @@ export default {
       button: 'Continue from this tab',
     },
     roomSwitch: {
-      description: 'It appears you are trying to connect to another session, do you want to finish the current session and request connecting to the new one?',
+      description:
+        'It appears you are trying to connect to another session, do you want to finish the current session and request connecting to the new one?',
       accept: 'Finish Session',
       skip: 'Continue with same session',
+    },
+    maintenance: {
+      title: 'We`re sorry, it seems our servers are not working correctly...',
+      description: 'You can try again in a couple of minutes',
+    },
+    errorView: {
+      title: 'Oops! You should`t be seeing this...',
+      description: 'If you keep encoutering this problem you can try deleting navigation data for this site.',
+      refresh: 'Reload page',
+      erase: 'Delete navigation data',
     },
   },
 };

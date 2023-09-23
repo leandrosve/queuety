@@ -8,7 +8,7 @@ import { AuthRequestsProvider } from '../../../context/AuthRequestsContext';
 import { AllowedUsersProvider } from '../../../context/AllowedUsersContext';
 import { OnlinePrescenceProvider } from '../../../context/OnlinePrescenceContext';
 import NavbarDesktop from './layout/NavbarDesktop';
-import SettingsModal, { SettingsModalSections } from '../shared/settings/SettingsModal';
+import SettingsModal, { SettingsModalElements, SettingsModalSections } from '../shared/settings/SettingsModal';
 import { combineProviders } from '../../../utils/ContextUtils';
 import DesktopConnectionView from './connection/DesktopConnectionView';
 import DesktopConnectionModal from './connection/DesktopConnectionModal';
@@ -27,35 +27,47 @@ const MainProviders = combineProviders([
 
 const PlayerProviders = combineProviders([PlayerScriptProvider, PlayerStatusProvider]);
 
+type ModalOptions = { open: boolean; section?: SettingsModalSections; focusElement?: SettingsModalElements };
+
 const DesktopApp = () => {
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [settingsSection, setSettingsSection] = useState<SettingsModalSections | null>(SettingsModalSections.GENERAL);
+
+  const [settingsModal, setSettingModal] = useState<ModalOptions>({ open: false });
+
+  const openSettingsModal = (section?: SettingsModalSections, focusElement?: SettingsModalElements) => {
+    console.log({ section, focusElement });
+    setSettingModal({ open: true, section, focusElement });
+  };
+
   useLayoutBackdrop(false);
 
-  const onDesktopConnectionModalClosed = (redirectToSettigns?: SettingsModalSections) => {
+  const onDesktopConnectionModalClosed = (section?: SettingsModalSections) => {
     setIsConnectionModalOpen(false);
-    if (redirectToSettigns) {
-      setSettingsSection(redirectToSettigns || null);
-      setIsSettingsModalOpen(true);
+    if (section) {
+      openSettingsModal(section);
     }
   };
+
   const onSettingsModalClosed = () => {
-    setIsSettingsModalOpen(false);
-    setSettingsSection(null);
+    setSettingModal({ open: false, section: SettingsModalSections.GENERAL });
   };
 
   return (
     <MainProviders>
       <Flex className='layout' gap={3} grow={1} zIndex={1}>
-        <NavbarDesktop onOpenConnectionModal={() => setIsConnectionModalOpen(true)} onOpenSettingsModal={() => setIsSettingsModalOpen(true)} />
+        <NavbarDesktop onOpenConnectionModal={() => setIsConnectionModalOpen(true)} onOpenSettingsModal={() => openSettingsModal()} />
         <Flex grow={1} alignItems='start' justifyContent='center'>
           <DesktopConnectionView />
           <DesktopConnectionModal isOpen={isConnectionModalOpen} onClose={onDesktopConnectionModalClosed} />
-          <SettingsModal isOpen={isSettingsModalOpen} onClose={onSettingsModalClosed} defaultSection={settingsSection} />
+          <SettingsModal
+            isOpen={settingsModal.open}
+            onClose={onSettingsModalClosed}
+            focusElement={settingsModal.focusElement}
+            defaultSection={settingsModal.section}
+          />
           <DesktopNotifications hideAuthRequests={isConnectionModalOpen} />
           <PlayerProviders>
-            <Content />
+            <Content openSettingsModal={openSettingsModal} />
           </PlayerProviders>
         </Flex>
       </Flex>
@@ -63,10 +75,13 @@ const DesktopApp = () => {
   );
 };
 
-const Content = () => {
+interface ContentProps {
+  openSettingsModal: (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
+}
+const Content = ({ openSettingsModal }: ContentProps) => {
   const { connection } = useDesktopConnectionContext();
   if (!connection.playerRoom.id || !connection.userId) return null;
-  return <DesktopAppPlayerView playerRoomId={connection.playerRoom.id} userId={connection.userId} />;
+  return <DesktopAppPlayerView onOpenSettingsModal={openSettingsModal} playerRoomId={connection.playerRoom.id} userId={connection.userId} />;
 };
 
 export default DesktopApp;

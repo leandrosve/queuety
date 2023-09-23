@@ -58,4 +58,8 @@ export default class MobilePlayerService extends PlayerService {
     Logger.socket('Sending Player Status Action', action.type);
     return this.emit<boolean>('send-player-status-action', { playerRoomId: this.playerRoomId, action }, { disableLog: true });
   }
+
+  public static onSessionEnded(callback: () => void) {
+    this._socket.on('receive-session-ended', callback);
+  }
 }

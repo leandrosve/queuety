@@ -67,6 +67,10 @@ export default {
         scanQR: 'Escanear QR',
         alternative: 'Alternativamente puedes ingresar el <0>código de autorización</0>',
       },
+      notifications: {
+        AUTH_REVOKED: 'Has sido expulsado de la sesión de reproducción',
+        SESSION_ENDED: 'La sesión de reproducción ha finalizado',
+      },
     },
     settings: {
       settings: 'Configuración',
@@ -139,6 +143,16 @@ export default {
       description: 'Parece que estas tratando de conectarte a otra sesión. ¿Deseas finalizar la sesión actual y requerir conectarte a esta otra?',
       accept: 'Finalizar sesión actual',
       skip: 'Continuar en la misma sesión',
+    },
+    maintenance: {
+      title: 'Lo sentimos, parece que nuestros servidores no estan funcionando correctamente...',
+      description: 'Puedes volver a intentarlo en unos minutos',
+    },
+    errorView: {
+      title: '¡Ups! No deberías estar viendo esto...',
+      description: 'Si te sigues encontrando con este problema, puedes intentar borrar los datos de navegación para este sitio.',
+      refresh: 'Recargar Página',
+      erase: 'Borrar datos de navegación',
     },
   },
 };

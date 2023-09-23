@@ -2,19 +2,21 @@ import { useState } from 'react';
 import Player from './player/Player';
 import { Flex } from '@chakra-ui/react';
 import DesktopQueue from './queue/DesktopQueue';
-import PlayerBackdrop from './player/PlayerBackdrop';
 import useDesktopQueue from '../../../hooks/queue/useDesktopQueue';
 import PlayerControlsBar from '../shared/player/PlayerControlsBar';
 import useDesktopPlayer from '../../../hooks/player/useDesktopPlayer';
 import SearchLinkButton from '../shared/search/SearchLinkButton';
 import SearchModal from '../shared/search/SearchModal';
 import PlayerDescription from './player/PlayerDescription';
-import backgroundImage from '../../../assets/images/background.jpg';
+import DesktopAppWelcome from './DesktopAppWelcome';
+import { SettingsModalElements, SettingsModalSections } from '../shared/settings/SettingsModal';
+
 interface Props {
   playerRoomId: string;
   userId: string;
+  onOpenSettingsModal: (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
 }
-const DesktopAppPlayerView = ({ playerRoomId, userId }: Props) => {
+const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal }: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { queue, controls: queueControls, updatePlayerState } = useDesktopQueue(playerRoomId, userId);
   // We need to ensure the container div is rendered before initializing the player
@@ -60,17 +62,8 @@ const DesktopAppPlayerView = ({ playerRoomId, userId }: Props) => {
           <PlayerControlsBar status={playerStatus} queueControls={queueControls} playerControls={playerControls} />
         </>
       ) : (
-        <DesktopAppWelcome />
+        <DesktopAppWelcome onOpenSettingsModal={onOpenSettingsModal} />
       )}
-    </Flex>
-  );
-};
-
-const DesktopAppWelcome = () => {
-  return (
-    <Flex direction='column' gap={3} alignItems='center' justifyContent='center' height={500} width={{ base: '95vw', md: 750, lg: 900 }}>
-      Welcome!
-      <PlayerBackdrop state={1} image={backgroundImage} />
     </Flex>
   );
 };

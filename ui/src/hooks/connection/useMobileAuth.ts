@@ -31,6 +31,7 @@ export enum AuthError {
   HOST_DISCONNECTED = 'HOST_DISCONNECTED',
   INVALID_AUTH_ROOM = 'INVALID_AUTH_ROOM',
   AUTH_REVOKED = 'AUTH_REVOKED',
+  SESSION_ENDED = 'SESSION_ENDED',
 }
 
 export enum HostStatus {
@@ -185,17 +186,22 @@ const useMobileAuth = () => {
     setHostStatus(HostStatus.CONNECTED);
   };
 
-  const onAuthRevocation = () => {
-    Logger.warn('Auth revoked by host');
-    MobileAuthService.restart();
+  const onSessionEnded = (reason: 'auth-revoked' | 'session-ended') => {
+    Logger.warn(`Session Ended: ${reason}`);
     //MobileAuthService.cleanup();
     setPlayerRoomId(null);
     updateHost(null);
     StorageUtils.remove(StorageKey.PLAYER_ROOM_ID);
     setAuthRoomId(null);
     setHostStatus(HostStatus.DISCONNECTED);
-    setStatus(MobileAuthStatus.AUTH_REQUEST_DENIED);
-    setError(AuthError.AUTH_REVOKED);
+    if (reason == 'auth-revoked') {
+      setStatus(MobileAuthStatus.AUTH_REQUEST_DENIED);
+      setError(AuthError.AUTH_REVOKED);
+    } else {
+      setStatus(MobileAuthStatus.UNSTARTED);
+      setError(AuthError.SESSION_ENDED);
+    }
+    MobileAuthService.restart();
   };
 
   useEffect(() => {
@@ -206,10 +212,12 @@ const useMobileAuth = () => {
     MobileAuthService.onAuthConfirmation(onAuthResponse);
     MobileAuthService.onHostDisconnected(onHostDisconnected);
 
-    MobilePlayerService.onAuthRevocation(onAuthRevocation);
+    MobilePlayerService.onAuthRevocation(() => onSessionEnded('auth-revoked'));
+    MobilePlayerService.onSessionEnded(() => onSessionEnded('session-ended'));
     MobilePlayerService.onHostConnected(onHostConnected);
     MobilePlayerService.onHostReconnected(onHostReconnected);
     MobilePlayerService.onHostDisconnected(onHostDisconnected);
+
     connect();
     return () => {
       //MobileAuthService.cleanup();

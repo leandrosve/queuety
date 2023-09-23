@@ -44,6 +44,7 @@ import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 import MobilePlayerService from '../../../../services/api/player/MobilePlayerService';
 import Form from '../../../common/Form';
 import SubmitButton from '../../../common/SubmitButton';
+import DesktopPlayerService from '../../../../services/api/player/DesktopPlayerService';
 
 interface Props {
   isOpen: boolean;
@@ -79,6 +80,9 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
 
   const onEndSession = () => {
     StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS, StorageKey.USER_ID] });
+    if (!isMobile) {
+      DesktopPlayerService.sendSessionEnded();
+    }
     location.reload();
   };
   useEffect(() => {
@@ -94,8 +98,9 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
     if (isOpen && focusElement) {
       timeout = setTimeout(() => {
         const element = document.getElementById(focusElement);
+        
         element?.focus();
-      }, 200);
+      }, 100);
     }
     return () => clearTimeout(timeout);
   }, [focusElement, isOpen]);
@@ -144,7 +149,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
                     border='1px'
                     borderLeftWidth={0}
                     borderColor='borders.100'
-                    iconScaling={[.8, 1]}
+                    iconScaling={[0.8, 1]}
                     onSubmit={onSaveNickname}
                   >
                     {t('common.save')}

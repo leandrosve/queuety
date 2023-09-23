@@ -47,4 +47,5 @@ export class AuthGateway implements OnGatewayConnection {
   private onSendAuthRevocation(@ConnectedSocket() client: Socket, @MessageBody('clientId') clientId: string) {
     return this.authService.sendAuthRevocation(client, clientId);
   }
+
 }

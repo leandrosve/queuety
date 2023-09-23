@@ -1,5 +1,8 @@
 import {
+  Alert,
+  AlertIcon,
   Button,
+  CloseButton,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -18,7 +21,7 @@ import { useSettingsContext } from '../../../../context/SettingsContext';
 import AutoAvatar from '../../../common/AutoAvatar';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { LuArrowBigLeft, LuArrowBigRight, LuEdit, LuQrCode } from 'react-icons/lu';
-import { MobileAuthStatus } from '../../../../hooks/connection/useMobileAuth';
+import { AuthError, MobileAuthStatus } from '../../../../hooks/connection/useMobileAuth';
 import MobileAuthPendingView from './MobileAuthPendingView';
 import AuthUtils from '../../../../utils/AuthUtils';
 import { SettingsModalElements, SettingsModalSections } from '../../shared/settings/SettingsModal';
@@ -33,12 +36,14 @@ interface Props {
 }
 const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isSocketReady, onTrigger, userId, status, host, onCancel, rejectionTimeout } = useMobileAuthContext();
+  const { isSocketReady, onTrigger, userId, status, host, onCancel, rejectionTimeout, error } = useMobileAuthContext();
   const { settings } = useSettingsContext();
   const [authInputError, setAuthInputError] = useState<string | null>(null);
   const [showAuthPendingView, setShowAuthPendingView] = useState(false);
   const [authRoomIdValue, setAuthRoomIdValue] = useState<string>('');
   const [initialized, setInitialized] = useState(false);
+
+  const [authError, setAuthError] = useState(error);
 
   const { t } = useTranslation();
 
@@ -59,7 +64,7 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
 
   const onCancelAuth = async () => {
     await onCancel();
-    history.replaceState({}, document.title, '/');
+    history.replaceState({}, document.title);
     setShowAuthPendingView(false);
   };
 
@@ -74,6 +79,14 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
     }
     setInitialized(true);
   }, [isSocketReady, initialized]);
+
+  useEffect(() => {
+    if (error && [AuthError.AUTH_REVOKED, AuthError.SESSION_ENDED].includes(error)) {
+      setAuthError(error);
+    } else {
+      setAuthError(null);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (!authRoomIdValue) {
@@ -100,6 +113,13 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
       >
         {t('common.goHome')}
       </Button>
+      {authError && (
+        <Alert fontSize='sm' status='error' borderRadius='lg' border='1px' borderColor='borders.100' my={3}>
+          <AlertIcon />
+          {t(`connectionView.notifications.${authError}`)}
+          <CloseButton size='sm' alignSelf='flex-start' marginLeft='auto' position='relative' right={-1} top={-1} onClick={() => setAuthError(null)} />
+        </Alert>
+      )}
       <Flex direction='column' gap={3}>
         <Stack width='100%'>
           <Text color='text.300' size='sm'>

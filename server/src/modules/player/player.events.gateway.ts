@@ -74,4 +74,10 @@ export class PlayerEventsGateway {
     this.playerEventsService.sendMobilePlayerStatusAction(client, dto.playerRoomId, dto.action);
     return true;
   }
+
+  @SubscribeMessage('send-session-ended')
+  private async onSendSessionEnded(@ConnectedSocket() client: Socket, @MessageBody() dto: { playerRoomId: string }) {
+    this.playerEventsService.sendSessionEnded(client, dto.playerRoomId);
+    return true;
+  }
 }

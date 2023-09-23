@@ -5,6 +5,7 @@ import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
 import { LayoutBackdropPicture } from '../../../../context/LayoutContext';
 import { LuRefreshCcw } from 'react-icons/lu';
 import { PiBroom, PiBroomFill } from 'react-icons/pi';
+import { useTranslation } from 'react-i18next';
 interface Props {
   children: ReactNode;
 }
@@ -37,6 +38,7 @@ class ErrorBoundary extends Component<Props, State> {
 
 export const ErrorView = () => {
   useLayoutBackdrop(true, LayoutBackdropPicture.DEVICE_SELECTION);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const onDeleteData = () => {
     setLoading(true);
@@ -49,14 +51,14 @@ export const ErrorView = () => {
     <Flex alignItems='center' justifyContent='center' grow={1} direction='column' padding={5}>
       <Box>
         <Icon as={BrandIcon} boxSize={8} />
-        <Heading size='md'>¡Ups! No deberias estar viendo esto...</Heading>
-        <Text>Si te sigues encontrando con este problema, puedes intentar borrar los datos de navegación para este sitio.</Text>
+        <Heading size='md'>{t('errorView.title')}</Heading>
+        <Text>{t('errorView.description')}</Text>
         <Flex gap={5} mt={5} alignItems='center' justifyContent='center' wrap='wrap'>
           <Button onClick={() => location.reload()} leftIcon={<LuRefreshCcw />}>
-            Recargar la página
+            {t('errorView.refresh')}
           </Button>
           <Button colorScheme='primary' isLoading={loading} onClick={onDeleteData}>
-            Borrar datos de navegación
+            {t('errorView.erase')}
           </Button>
         </Flex>
       </Box>

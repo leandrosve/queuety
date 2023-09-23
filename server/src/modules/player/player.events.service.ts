@@ -48,4 +48,9 @@ export class PlayerEventsService {
     client.to(playerRoomId).emit('receive-player-status-action', action);
     return true;
   }
+
+  public sendSessionEnded(client: Socket, playerRoomId: string) {
+    client.to(playerRoomId).emit('receive-session-ended');
+    return true;
+  }
 }

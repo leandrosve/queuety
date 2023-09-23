@@ -63,7 +63,7 @@ const DesktopConnectionModal = ({ isOpen, onClose }: Props) => {
 interface QRViewProps {
   onClose: (redirectToSettigns?: SettingsModalSections) => void;
 }
-const QRView = ({ onClose }: QRViewProps) => {
+export const QRView = ({ onClose }: QRViewProps) => {
   const { t } = useTranslation();
   const { connection, regenAuthRoom, toggleAutoAuth } = useDesktopConnectionContext();
   const disabled = useMemo(() => !connection.authRoom.id || connection.authRoom.loading, [connection.authRoom]);

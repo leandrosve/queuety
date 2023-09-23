@@ -55,4 +55,9 @@ export default class DesktopPlayerService extends PlayerService {
   public static onPlayerStatusAction(callback: (res: PlayerStatusAction) => void) {
     this._socket.on('receive-player-status-action', callback);
   }
+
+  public static sendSessionEnded() {
+    if (!this.playerRoomId || !this.isReady) return;
+    return this.emit('send-session-ended', { playerRoomId: this.playerRoomId });
+  }
 }
