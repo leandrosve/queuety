@@ -1,5 +1,5 @@
 import { AvatarBadge, Box, Button, Flex, FormControl, FormLabel, IconButton, Stack, Switch, Text } from '@chakra-ui/react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AutoAvatar from '../../../common/AutoAvatar';
 import { LuTrash2 } from 'react-icons/lu';
 import { useDesktopConnectionContext } from '../../../../context/DesktopConnectionContext';
@@ -9,17 +9,25 @@ import { useAllowedUsersContext } from '../../../../context/AllowedUsersContext'
 import { useOnlinePrescenceContext } from '../../../../context/OnlinePrescenceContext';
 import AllowedUser from '../../../../model/auth/AllowedUser';
 
-const AllowedUserList = () => {
+interface Props {
+  hideDevicesIfEmpty?: boolean;
+}
+
+const AllowedUserList = ({ hideDevicesIfEmpty }: Props) => {
   const { toggleAutoAuth, connection } = useDesktopConnectionContext();
   const allowedUsers = useAllowedUsersContext();
   const onlinePrescence = useOnlinePrescenceContext();
-
+  const [, forceUpdate] = useState(1);
   const { t } = useTranslation(undefined, { keyPrefix: 'settings' });
   const isEmpty = useMemo(() => !allowedUsers.list.length, [allowedUsers]);
 
   const revoke = (user: AllowedUser) => {
     allowedUsers.remove(user.userId);
   };
+
+  useEffect(() => {
+    setInterval(() => forceUpdate((p) => p + 1), 60000);
+  }, []);
 
   return (
     <>
@@ -32,28 +40,35 @@ const AllowedUserList = () => {
           <Switch isChecked={connection.settings.automatic} id='auto-auth' colorScheme='primary' onChange={() => toggleAutoAuth()} />
         </Flex>
       </FormControl>
-      <Box>
-        <Flex alignItems='baseline' justifyContent='space-between'>
-          <FormLabel as='span' mb={0}>
-            {t('authorizedDevices.title')}
-          </FormLabel>
+      {(!isEmpty || !hideDevicesIfEmpty) && (
+        <Box>
+          <Flex alignItems='baseline' justifyContent='space-between'>
+            <FormLabel as='span' mb={0}>
+              {t('authorizedDevices.title')}
+            </FormLabel>
 
-          {!isEmpty && (
-            <Button variant='ghost' size='xs' fontWeight='medium' height='min-content' padding={2} onClick={() => allowedUsers.clear()}>
-              {t('authorizedDevices.revokeAll')}
-            </Button>
+            {!isEmpty && (
+              <Button variant='ghost' size='xs' fontWeight='medium' height='min-content' padding={2} onClick={() => allowedUsers.clear()}>
+                {t('authorizedDevices.revokeAll')}
+              </Button>
+            )}
+          </Flex>
+          {!isEmpty ? (
+            <Stack spacing={0} maxHeight={250} overflow='hidden' overflowY='auto' mt={1}>
+              {allowedUsers.list.map((user) => (
+                <AllowedUserListItem
+                  user={user}
+                  key={user.userId}
+                  isOnline={onlinePrescence.contains(user.userId)}
+                  onRevokeAuth={() => revoke(user)}
+                />
+              ))}
+            </Stack>
+          ) : (
+            <Text fontSize='sm'> {t('authorizedDevices.empty')}</Text>
           )}
-        </Flex>
-        {!isEmpty ? (
-          <Stack spacing={0} maxHeight={250} overflow='hidden' overflowY='auto' mt={1}>
-            {allowedUsers.list.map((user) => (
-              <AllowedUserListItem user={user} key={user.userId} isOnline={onlinePrescence.contains(user.userId)} onRevokeAuth={() => revoke(user)} />
-            ))}
-          </Stack>
-        ) : (
-          <Text fontSize='sm'> {t('authorizedDevices.empty')}</Text>
-        )}
-      </Box>
+        </Box>
+      )}
     </>
   );
 };

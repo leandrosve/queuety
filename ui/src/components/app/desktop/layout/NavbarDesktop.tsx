@@ -1,4 +1,4 @@
-import { Button, Flex, Icon, IconButton, Image, Text, useColorMode } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Image, Text, useColorMode, useMediaQuery } from '@chakra-ui/react';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { HiMoon, HiSun } from 'react-icons/hi';
@@ -14,6 +14,7 @@ interface Props {
 }
 const NavbarDesktop = ({ onOpenConnectionModal, onOpenSettingsModal }: Props) => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const [mobileScreen] = useMediaQuery('(max-width: 700px)');
   const { t } = useTranslation();
 
   return (
@@ -23,10 +24,19 @@ const NavbarDesktop = ({ onOpenConnectionModal, onOpenSettingsModal }: Props) =>
         Queuety
       </Text>
 
-      <Flex gap={3}>
-        <Button onClick={onOpenConnectionModal} leftIcon={<Icon as={TbDeviceMobilePlus} boxSize={5} />}>
-          {t('connection.connectDevice')}
-        </Button>
+      <Flex gap={{ base: 1, md: 3 }}>
+        {mobileScreen ? (
+          <IconButton
+            rounded='full'
+            onClick={onOpenConnectionModal}
+            icon={<Icon as={TbDeviceMobilePlus} boxSize={5} />}
+            aria-label={t('connection.connectDevice')}
+          />
+        ) : (
+          <Button onClick={onOpenConnectionModal} leftIcon={<Icon as={TbDeviceMobilePlus} boxSize={5} />}>
+            {t('connection.connectDevice')}
+          </Button>
+        )}
 
         <SelectMenu
           hideChevron

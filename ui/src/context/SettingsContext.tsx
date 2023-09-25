@@ -22,7 +22,7 @@ export type SettingsContextProps = {
   setFontFamily: (family: string) => void;
 };
 
-const initial: Settings = { nickname: '', appearance: { fontSize: 'md', glassMode: true, fontFamily: 'Work Sans' } };
+const initial: Settings = { nickname: '', appearance: { fontSize: 'md', glassMode: true, fontFamily: 'Nunito' } };
 export const SettingsContext = React.createContext<SettingsContextProps>({
   settings: initial,
   setNickname: () => {},

@@ -14,6 +14,7 @@ import MobileQueuePortrait from './queue/MobileQueuePortrait';
 import { QueueData } from '../../../hooks/queue/useDesktopQueue';
 import { QueueControls } from '../../../hooks/queue/useQueue';
 import PlayerStatus from '../../../model/player/PlayerStatus';
+import MobileAppWelcome from './MobileAppWelcome';
 
 interface Props {
   host: HostData;
@@ -28,28 +29,7 @@ const MobileAppPortraitView = ({ queue, queueControls, playerControls, playerSta
   const { hostStatus } = useMobileAuthContext();
   return (
     <Flex direction='column' alignItems='center' justifyContent='start' paddingTop={2} alignSelf='stretch' gap={0} width={'100vw'}>
-      <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} marginX={4} alignSelf='stretch' />
-      <VisualizerVideo video={queue.currentItem?.video} status={playerStatus} playerControls={playerControls} host={host} />
-      <VisualizerControls status={playerStatus} controls={playerControls} queueControls={queueControls} />
-      <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5} mb={4}>
-        <PlayerTrack
-          status={playerStatus}
-          onTimeChange={playerControls.onTimeChange}
-          currentQueuedVideo={queue.currentItem?.video}
-          hostStatus={hostStatus}
-        />
-      </Flex>
-      <MobileNotifications />
-      <MobileQueuePortrait
-        queue={queue.items}
-        currentItem={queue.currentItem}
-        currentIndex={queue.currentIndex}
-        onClear={queueControls.onClear}
-        onPlay={queueControls.onPlay}
-        onRemove={queueControls.onRemove}
-        onChangeOrder={queueControls.onChangeOrder}
-        onSkip={queueControls.onSkip}
-      />
+    
       <SearchModal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
@@ -57,6 +37,35 @@ const MobileAppPortraitView = ({ queue, queueControls, playerControls, playerSta
         onPlayLast={queueControls.onAddLast}
         onPlayNext={queueControls.onAddNext}
       />
+      <MobileNotifications />
+
+      {queue.length ? (
+        <>
+          <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} marginX={4} alignSelf='stretch' />
+          <VisualizerVideo video={queue.currentItem?.video} status={playerStatus} playerControls={playerControls} host={host} />
+          <VisualizerControls status={playerStatus} controls={playerControls} queueControls={queueControls} />
+          <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5} mb={4}>
+            <PlayerTrack
+              status={playerStatus}
+              onTimeChange={playerControls.onTimeChange}
+              currentQueuedVideo={queue.currentItem?.video}
+              hostStatus={hostStatus}
+            />
+          </Flex>
+          <MobileQueuePortrait
+            queue={queue.items}
+            currentItem={queue.currentItem}
+            currentIndex={queue.currentIndex}
+            onClear={queueControls.onClear}
+            onPlay={queueControls.onPlay}
+            onRemove={queueControls.onRemove}
+            onChangeOrder={queueControls.onChangeOrder}
+            onSkip={queueControls.onSkip}
+          />
+        </>
+      ) : (
+        <MobileAppWelcome host={host} onOpenSearchModal={() => setIsSearchModalOpen(true)} />
+      )}
     </Flex>
   );
 };

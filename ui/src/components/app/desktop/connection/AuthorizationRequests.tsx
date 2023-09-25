@@ -32,7 +32,7 @@ export const AuthorizationRequestItem = ({ request }: AuthorizationRequestItemPr
       animate={{ scaleY: 1, height: 'auto' }}
       exit={{ scaleY: 0, height: 0, transition: { delay: accepted ? 0.8 : 0 } }}
     >
-      <GlassContainer padding={4} borderRadius='lg' boxShadow='md' marginY={2}>
+      <GlassContainer padding={4} borderRadius='lg' boxShadow='md' marginY={2} border='1px' borderColor='borders.50'>
         <AuthorizationRequestItemContent
           onAccept={handleAccept}
           onDeny={() => authorizeRequest(request, AuthResponseStatus.DENIED)}

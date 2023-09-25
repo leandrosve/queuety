@@ -21,6 +21,7 @@ export default class AuthService extends APISocketService {
   }
 
   public static cleanup() {
+    this._socket.disconnect();
     this._socket.off('connection');
     this._socket.off('disconnect');
   }

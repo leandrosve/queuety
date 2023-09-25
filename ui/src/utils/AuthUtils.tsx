@@ -75,7 +75,6 @@ export default class AuthUtils {
     const rejectedUser = rejectedUsers.find((r) => r.userId === userId);
     if (!rejectedUser) return null;
     let remainingSeconds = Math.max(0, rejectedUser.expiresAt - new Date().getTime()) / 1000;
-    console.log(rejectedUser, remainingSeconds);
     if (remainingSeconds <= 0) return null;
     return { remainingSeconds: Math.ceil(remainingSeconds) };
   }

@@ -9,14 +9,17 @@ import SearchLinkButton from '../shared/search/SearchLinkButton';
 import SearchModal from '../shared/search/SearchModal';
 import PlayerDescription from './player/PlayerDescription';
 import DesktopAppWelcome from './DesktopAppWelcome';
-import { SettingsModalElements, SettingsModalSections } from '../shared/settings/SettingsModal';
+import { SettingsModalSetter } from '../shared/settings/SettingsModal';
+import useLayoutBackdrop from '../../../hooks/layout/useLayoutBackdrop';
+import { LayoutBackdropPicture } from '../../../context/LayoutContext';
 
 interface Props {
   playerRoomId: string;
   userId: string;
-  onOpenSettingsModal: (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
+  onOpenSettingsModal: SettingsModalSetter;
+  onGoBack: () => void;
 }
-const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal }: Props) => {
+const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal, onGoBack }: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { queue, controls: queueControls, updatePlayerState } = useDesktopQueue(playerRoomId, userId);
   // We need to ensure the container div is rendered before initializing the player
@@ -26,6 +29,7 @@ const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal }: Pro
     queueControls.onSkip,
     updatePlayerState
   );
+  useLayoutBackdrop(!queue?.length, LayoutBackdropPicture.DESKTOP_WELCOME);
 
   return (
     <Flex direction='column' gap={5} paddingTop={10} width={{ base: '95vw', md: 800, lg: 1000, xl: 1100 }}>
@@ -62,7 +66,7 @@ const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal }: Pro
           <PlayerControlsBar status={playerStatus} queueControls={queueControls} playerControls={playerControls} />
         </>
       ) : (
-        <DesktopAppWelcome onOpenSettingsModal={onOpenSettingsModal} />
+        <DesktopAppWelcome onOpenSettingsModal={onOpenSettingsModal} onGoBack={onGoBack} />
       )}
     </Flex>
   );

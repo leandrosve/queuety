@@ -26,7 +26,6 @@ const Backdrop = ({ src, zIndex }: { src: string; zIndex?: number }) => {
   const [state, setState] = useState<BackdropState>({ index: 0, a: { loaded: false }, b: { loaded: false } });
 
   const handleLoaded = useCallback((option: 'a' | 'b') => {
-    console.log('LOADED', option);
     setState((p) => {
       if (option === 'a') {
         return { ...p, a: { ...p.a, loaded: true } };

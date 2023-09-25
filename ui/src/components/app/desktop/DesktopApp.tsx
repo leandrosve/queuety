@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PlayerScriptProvider from './player/PlayerScriptProvider';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Spinner } from '@chakra-ui/react';
 import { PlayerStatusProvider } from '../../../context/PlayerStatusContext';
 import { DesktopConnectionProvider, useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
 import { DesktopAuthProvider } from '../../../context/DesktopAuthContext';
@@ -16,6 +16,8 @@ import DesktopAppPlayerView from './DesktopAppPlayerView';
 import DesktopNotifications from './notifications.tsx/DesktopNotifications';
 import { DesktopNotificationsProvider } from '../../../context/DesktopNotificationsContext';
 import useLayoutBackdrop from '../../../hooks/layout/useLayoutBackdrop';
+import FullPageSpinner from '../../common/FullPageSpinner';
+
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
   AuthRequestsProvider,
@@ -29,17 +31,18 @@ const PlayerProviders = combineProviders([PlayerScriptProvider, PlayerStatusProv
 
 type ModalOptions = { open: boolean; section?: SettingsModalSections; focusElement?: SettingsModalElements };
 
-const DesktopApp = () => {
+interface Props {
+  onGoBack: () => void;
+}
+
+const DesktopApp = ({ onGoBack }: Props) => {
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
 
   const [settingsModal, setSettingModal] = useState<ModalOptions>({ open: false });
 
   const openSettingsModal = (section?: SettingsModalSections, focusElement?: SettingsModalElements) => {
-    console.log({ section, focusElement });
     setSettingModal({ open: true, section, focusElement });
   };
-
-  useLayoutBackdrop(false);
 
   const onDesktopConnectionModalClosed = (section?: SettingsModalSections) => {
     setIsConnectionModalOpen(false);
@@ -56,7 +59,7 @@ const DesktopApp = () => {
     <MainProviders>
       <Flex className='layout' gap={3} grow={1} zIndex={1}>
         <NavbarDesktop onOpenConnectionModal={() => setIsConnectionModalOpen(true)} onOpenSettingsModal={() => openSettingsModal()} />
-        <Flex grow={1} alignItems='start' justifyContent='center'>
+        <Flex flex={1} grow={1} alignItems='start' justifyContent='center'>
           <DesktopConnectionView />
           <DesktopConnectionModal isOpen={isConnectionModalOpen} onClose={onDesktopConnectionModalClosed} />
           <SettingsModal
@@ -67,7 +70,7 @@ const DesktopApp = () => {
           />
           <DesktopNotifications hideAuthRequests={isConnectionModalOpen} />
           <PlayerProviders>
-            <Content openSettingsModal={openSettingsModal} />
+            <Content onGoBack={onGoBack} openSettingsModal={openSettingsModal} />
           </PlayerProviders>
         </Flex>
       </Flex>
@@ -77,11 +80,19 @@ const DesktopApp = () => {
 
 interface ContentProps {
   openSettingsModal: (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
+  onGoBack: () => void;
 }
-const Content = ({ openSettingsModal }: ContentProps) => {
+const Content = ({ openSettingsModal, onGoBack }: ContentProps) => {
   const { connection } = useDesktopConnectionContext();
-  if (!connection.playerRoom.id || !connection.userId) return null;
-  return <DesktopAppPlayerView onOpenSettingsModal={openSettingsModal} playerRoomId={connection.playerRoom.id} userId={connection.userId} />;
+  if (!connection.playerRoom.id || !connection.userId) return <FullPageSpinner />;
+  return (
+    <DesktopAppPlayerView
+      onOpenSettingsModal={openSettingsModal}
+      onGoBack={onGoBack}
+      playerRoomId={connection.playerRoom.id}
+      userId={connection.userId}
+    />
+  );
 };
 
 export default DesktopApp;

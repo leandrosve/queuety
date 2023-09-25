@@ -93,8 +93,8 @@ export const DesktopConnectionProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   useEffect(() => {
-    StorageUtils.set(StorageKey.PLAYER_ROOM_ID, `${playerRoom.id}`);
-    StorageUtils.set(StorageKey.AUTH_ROOM_ID, `${authRoom.id}`);
+    StorageUtils.setNotEmpty(StorageKey.PLAYER_ROOM_ID, `${playerRoom.id ?? ''}`);
+    StorageUtils.setNotEmpty(StorageKey.AUTH_ROOM_ID, `${authRoom.id ?? ''}`);
     StorageUtils.set(StorageKey.CONNECTION_SETTINGS, JSON.stringify(settings));
   }, [playerRoom, authRoom, settings]);
 

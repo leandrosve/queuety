@@ -64,6 +64,8 @@ export enum SettingsModalSections {
   CONNECTIONS,
 }
 
+export type SettingsModalSetter = (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
+
 const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement }: Props) => {
   const { t } = useTranslation();
   const { colorMode, setColorMode } = useColorMode();
@@ -98,7 +100,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
     if (isOpen && focusElement) {
       timeout = setTimeout(() => {
         const element = document.getElementById(focusElement);
-        
+
         element?.focus();
       }, 100);
     }

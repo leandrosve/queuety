@@ -24,7 +24,9 @@ const useSocketStatus = (socket: Socket, autoConnect?: boolean): SocketConnectio
     setIsReady(true);
     setConnectionId(id);
   };
-  const onDisconnected = () => setIsReady(false);
+  const onDisconnected = () => {
+    setIsReady(false);
+  };
 
   useEffect(() => {
     if (!socket) return;

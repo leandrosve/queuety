@@ -52,7 +52,7 @@ const VisualizerVolumeModal = ({ volume, onChangeVolume }: Props) => {
         variant='ghost'
         className='volume-trigger'
         id='volume-trigger'
-        icon={loading ? <Spinner size='sm' /> : <Icon as={value.current > 0 ? LuVolume1 : LuVolumeX} boxSize={4} />}
+        icon={loading ? <Spinner size='sm' /> : <Icon as={getVolumeIcon(value.current)} boxSize={4} />}
         aria-label='sound'
         color='text.300'
         onClick={() => setIsOpen(true)}

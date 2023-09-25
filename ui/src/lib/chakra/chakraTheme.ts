@@ -63,7 +63,9 @@ const theme = extendTheme({
       300: 'var(--bg-alpha-300)',
     },
     borders: {
-      100: 'var(--border-color)',
+      100: 'var(--borders-100)',
+      50: 'var(--borders-50)',
+
     },
   },
 });

@@ -40,7 +40,7 @@ const DesktopConnectionModal = ({ isOpen, onClose }: Props) => {
           <Icon as={TbDeviceMobilePlus} /> {t('connection.connectDevice')}
         </Heading>
       }
-      contentProps={{ minWidth: 600 }}
+      contentProps={{ minWidth: { base: 300, md: 600 }, maxWidth: { base: '95vw', md: 600 } }}
       hasCloseButton
     >
       <AnimatePresence mode='wait'>
@@ -72,8 +72,8 @@ export const QRView = ({ onClose }: QRViewProps) => {
     <Flex direction='column' alignItems='center' gap={3} justifyContent='center' paddingBottom={5}>
       <Text>{t('connection.connectDescription')}</Text>
       <Stack padding={4} spacing={2} paddingBottom={0}>
-        <Flex gap={5} boxShadow='sm' borderRadius='md'>
-          <Flex padding={3} justifyContent='center' alignItems='center' background={'white'}>
+        <Flex direction={{ base: 'column', md: 'row' }} gap={5} boxShadow='sm' borderRadius='md'>
+          <Flex padding={3} justifyContent='center' alignItems='center' background={'white'} alignSelf='center'>
             {disabled ? <Spinner /> : <QRCode size={224} value={authRoomLink} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />}
           </Flex>
           <Flex direction='column' gap={3} alignSelf='stretch'>
@@ -92,7 +92,7 @@ export const QRView = ({ onClose }: QRViewProps) => {
           <Text>{t('connection.automaticAuth')}</Text>{' '}
           <Switch colorScheme='primary' isChecked={connection.settings.automatic} onChange={(e) => toggleAutoAuth(e.target.checked)} />
         </Flex>
-        <Button isDisabled={disabled} leftIcon={<LuSettings />} onClick={() => onClose(SettingsModalSections.CONNECTIONS)}>
+        <Button isDisabled={disabled} whiteSpace='break-spaces' leftIcon={<LuSettings />} onClick={() => onClose(SettingsModalSections.CONNECTIONS)}>
           {t('connection.settingsLink')}
         </Button>
       </Stack>

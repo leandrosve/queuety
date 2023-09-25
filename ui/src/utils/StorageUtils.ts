@@ -15,7 +15,6 @@ export enum StorageKey {
   REJECTIONS = 'rejections',
   REJECTED_USERS = 'rejected_devices',
   LAST_QUEUE_EVENT_ID = 'lastQueueEventId',
-
 }
 
 export default class StorageUtils {
@@ -64,5 +63,13 @@ export default class StorageUtils {
         localStorage.removeItem(key);
       }
     });
+  }
+
+  public static setNotEmpty(key: StorageKey, data: string) {
+    if (!data) {
+      localStorage.removeItem(key);
+      return;
+    }
+    localStorage.setItem(key, data);
   }
 }

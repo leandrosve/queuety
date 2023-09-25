@@ -68,7 +68,6 @@ const useDesktopQueue = (
     if (!actions?.last || !playerRoomId || !isSocketReady) return;
     if (onlineUsers.data.length) {
       DesktopPlayerService.sendPlayerAction(playerRoomId, actions?.last);
-      console.log('SEND LAST ACTIOn', actions.last);
     }
     if (actions.last) {
       notifications.addQueueAction(actions.last);

@@ -31,9 +31,13 @@ export const AppContent = () => {
   const [showWarning] = useState<boolean>(shouldDisplayWarning());
   const [serverStatus, setServerStatus] = useState<ServerStatus>(ServerStatus.WAITING);
   const handleBack = useCallback(() => {
-    StorageUtils.clear([StorageKey.DEVICE]);
+    if (deviceType == DeviceType.DESKTOP) {
+      StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS, StorageKey.USER_ID, StorageKey.CONNECTION_SETTINGS] });
+    } else {
+      StorageUtils.clear([StorageKey.DEVICE]);
+    }
     setDeviceType(null);
-  }, []);
+  }, [deviceType]);
 
   useEffect(() => {
     const authParam = AuthUtils.getAuthParam();
@@ -67,7 +71,7 @@ export const AppContent = () => {
 
   if (showWarning) return <RoomSwitchWarning />;
   if (!deviceType) return <DeviceSelection onSelected={(type) => setDeviceType(type)} />;
-  if (deviceType === DeviceType.DESKTOP) return <DesktopAppLazy />;
+  if (deviceType === DeviceType.DESKTOP) return <DesktopAppLazy onGoBack={handleBack} />;
   return <MobileAppLazy onBack={handleBack} />;
 };
 

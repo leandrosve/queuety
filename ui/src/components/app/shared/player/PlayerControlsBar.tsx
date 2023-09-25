@@ -1,10 +1,11 @@
-import { ButtonGroup, Icon, IconButton } from '@chakra-ui/react';
+import { ButtonGroup, Icon, IconButton, useMediaQuery } from '@chakra-ui/react';
 import { BsFillPlayFill, BsPauseFill, BsSkipEndFill, BsSkipStartFill } from 'react-icons/bs';
 import { TbRewindBackward10, TbRewindForward10 } from 'react-icons/tb';
 import PlayerState from '../../../../model/player/PlayerState';
 import { QueueControls } from '../../../../hooks/queue/useQueue';
 import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
+import { useMemo } from 'react';
 
 interface Props {
   status: PlayerStatus;
@@ -12,8 +13,10 @@ interface Props {
   playerControls: PlayerControls;
 }
 
-const buttonWidth = '5rem';
 const PlayerControlsBar = ({ queueControls, playerControls, status }: Props) => {
+  const [mobileScreen] = useMediaQuery('(max-width: 500px)');
+
+  const buttonWidth = useMemo(() => (mobileScreen ? '3.5rem' : '5rem'), [mobileScreen]);
   return (
     <ButtonGroup
       isAttached

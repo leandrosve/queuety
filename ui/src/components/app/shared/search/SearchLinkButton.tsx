@@ -5,9 +5,10 @@ import { BsSearch } from 'react-icons/bs';
 
 interface Props extends ButtonProps {
   onClick: () => void;
+  text?: string;
 }
 
-const SearchLinkButton = ({ onClick, ...buttonProps }: Props) => {
+const SearchLinkButton = ({ onClick, text, ...buttonProps }: Props) => {
   const { t } = useTranslation();
   const onContextMenu: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
@@ -26,7 +27,7 @@ const SearchLinkButton = ({ onClick, ...buttonProps }: Props) => {
       {...buttonProps}
     >
       <Icon as={BsSearch} flexShrink={0} />
-      <Text noOfLines={1}>{t('playerSearch.pasteUrl')}</Text>
+      <Text noOfLines={1}> {text ?? t('playerSearch.pasteUrl')}</Text>
     </Button>
   );
 };

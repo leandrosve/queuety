@@ -22,7 +22,7 @@ const PlayerScriptProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(loadIframeAPI, []);
   if (!hasLoaded) return;
-  return <Box>{children}</Box>;
+  return children;
 };
 
 export default PlayerScriptProvider;

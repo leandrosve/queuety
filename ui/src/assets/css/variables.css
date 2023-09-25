@@ -28,7 +28,9 @@ html[data-theme='light'] {
   --bg-alpha-200: rgba(229, 228, 228, 0.68);
   --bg-alpha-300: rgba(209, 209, 209, 0.68);
 
-  --border-color: #c0c0c0;
+  --borders-100: #c0c0c0;
+  --borders-50: #c0c0c094;
+
   --chakra-colors-chakra-border-color: #c0c0c0 !important;
 
   --text-600: #000000;
@@ -46,7 +48,9 @@ html[data-theme='dark'] {
   --bg-200: hsl(240, 29%, 6%);
   --bg-100: rgb(14, 14, 14);
 
-  --border-color: rgb(255, 255, 255, 0.16);
+  --borders-100: rgb(255, 255, 255, 0.16);
+  --borders-50: rgba(255, 255, 255, 0.063);
+
   --chakra-colors-chakra-border-color: rgb(255, 255, 255, 0.16) !important;
 
   --bg-alpha-100: hsla(240, 14.3%, 12.4%, 0.63);

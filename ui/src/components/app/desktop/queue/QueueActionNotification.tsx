@@ -21,7 +21,7 @@ const QueueActionNotification = ({ action }: { action: QueueAction }) => {
   const user = useMemo(() => allowedUsers.get(action.userId), [action]);
   if (!user) return null;
   return (
-    <GlassContainer p={2} display='flex' bg='bg.300' alignItems='center' gap={2} borderRadius='md' boxShadow='md' maxWidth='40vw'>
+    <GlassContainer p={2} display='flex' bg='bg.300' alignItems='center' gap={2} borderRadius='md' boxShadow='md' maxWidth='40vw' border='1px' borderColor='borders.50'>
       <Stack>
         <Flex alignItems='center' gap={2}>
           <AutoAvatar name={user.nickname} size='sm' boxSize='1.5rem' />

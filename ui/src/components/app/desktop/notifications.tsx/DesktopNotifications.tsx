@@ -51,7 +51,18 @@ const AnimationWrapper = ({ children }: PropsWithChildren) => {
 
 const UserJoinedNotificationToast = ({ user }: { user: AllowedUser }) => {
   return (
-    <GlassContainer p={2} display='flex' bg='bg.300' alignItems='center' width='fit-content' gap={2} borderRadius='md' boxShadow='md'>
+    <GlassContainer
+      p={2}
+      display='flex'
+      bg='bg.300'
+      alignItems='center'
+      width='fit-content'
+      gap={2}
+      borderRadius='md'
+      boxShadow='md'
+      border='1px'
+      borderColor='borders.50'
+    >
       <AutoAvatar name={user.nickname} size='sm' boxSize='1.5rem' />
       <Text>
         <Trans i18nKey='notifications.joined' values={{ nickname: user.nickname }} components={[<b />]} />

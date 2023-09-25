@@ -102,7 +102,6 @@ const useDesktopAuth = () => {
     Logger.success(`User ${reconnected ? 'Connected' : 'Reconnected'}: ${userId}`);
     onlinePrescence.addUnique(userId);
     if (!connection.userId) {
-      console.log('WTF MAN');
       return;
     }
     DesktopPlayerService.notifyHostConnection(clientId, nicknameRef.current, connection.userId);
@@ -151,6 +150,10 @@ const useDesktopAuth = () => {
 
   useEffect(() => {
     AuthUtils.clearOldRejectedUsers();
+    return () => {
+      DesktopPlayerService.cleanup();
+      DesktopAuthService.cleanup();
+    }
   }, []);
 
   return {

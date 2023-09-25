@@ -4,6 +4,7 @@ export default {
       test: 'probando!',
       copy: 'Copiar',
       copied: 'Copiado!',
+      save: 'Guardar',
       views: 'visitas',
       on: 'activado',
       off: 'desactivado',
