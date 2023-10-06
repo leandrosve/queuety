@@ -9,6 +9,7 @@ import QueueActionNotification from '../queue/QueueActionNotification';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuthRequestsContext } from '../../../../context/AuthRequestsContext';
 import { AuthorizationRequestItem } from '../connection/AuthorizationRequests';
+import './desktop-notifications.css';
 
 interface Props {
   hideAuthRequests: boolean;
@@ -18,7 +19,7 @@ const DesktopNotifications = ({ hideAuthRequests }: Props) => {
   const authRequests = useAuthRequestsContext();
   useTranslation();
   return (
-    <Stack position='fixed' bottom='1rem' left='1rem' maxWidth={'50vw'} zIndex={'var(--z-index-toast)'}>
+    <Stack className='desktop-notifications' position='fixed' bottom='1rem' left='1rem' maxWidth={'50vw'}>
       <AnimatePresence>
         {notifications.userJoined && (
           <AnimationWrapper key={notifications.userJoined.id}>

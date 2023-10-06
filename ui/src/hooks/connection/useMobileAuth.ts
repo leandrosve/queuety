@@ -90,7 +90,7 @@ const useMobileAuth = () => {
 
   const connect = () => {
     setStatus(MobileAuthStatus.CONNECTING_TO_SOCKET);
-    MobileAuthService.connect(onConnected);
+    MobileAuthService.connect();
     MobilePlayerService.connect();
   };
 

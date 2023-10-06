@@ -85,7 +85,7 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
               icon={<Icon as={LuRotateCcw} boxSize='2rem' />}
               onClick={onRewind}
             />
-            <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={rewindSeconds ? 1 : 0}>
+            <Text position='absolute' left='50%' transform={'translateX(-50%)'} top={'-1rem'} fontSize='xs' opacity={rewindSeconds ? 1 : 0}>
               -{rewindSeconds}s
             </Text>
           </Flex>
@@ -113,7 +113,7 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
               icon={<Icon as={LuRotateCw} boxSize='2rem' />}
               onClick={onForward}
             />
-            <Text position='absolute' left='50%' transform={'translateX(-50%)'} bottom={'-1rem'} fontSize='xs' opacity={forwardSeconds ? 1 : 0}>
+            <Text position='absolute' left='50%' transform={'translateX(-50%)'} top={'-2rem'} fontSize='xs' opacity={forwardSeconds ? 1 : 0}>
               +{forwardSeconds}s
             </Text>
           </Flex>

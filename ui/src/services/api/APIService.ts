@@ -21,7 +21,7 @@ interface Options {
 }
 
 export default class APIService {
-  protected static BASE_URL = 'http://192.168.0.226:3334/api';
+  protected static BASE_URL = 'https://6454-181-166-233-228.ngrok-free.app/api'; //http://192.168.0.226:3334/api
 
   protected static PATH: string;
 
@@ -39,6 +39,7 @@ export default class APIService {
   private static async doFetch<T>(method: string, path: string, params?: string, body?: any, options?: Options): Promise<APIResponse<T>> {
     const headers: HeadersInit = new Headers();
     headers.set('Content-Type', 'application/json');
+    headers.set('ngrok-skip-browser-warning', 'true');
     if (!options?.public && this.token) headers.set('token', this.token);
 
     const url = `${this.BASE_URL}${this.PATH || ''}${path || ''}${params ? '?' + params : ''}`;

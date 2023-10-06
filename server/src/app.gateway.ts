@@ -1,8 +1,9 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { instrument } from '@socket.io/admin-ui';
 import { Server as SocketServer } from 'socket.io';
+import allowedOrigins from './config/allowedOrigins';
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:5173', 'ws://admin.socket.io', 'https://admin.socket.io', 'http://192.168.0.226:5173'] } })
+@WebSocketGateway({ cors: { origin: [...allowedOrigins, 'ws://admin.socket.io', 'https://admin.socket.io'] } })
 export class AppGateway {
   @WebSocketServer()
   private server: SocketServer;

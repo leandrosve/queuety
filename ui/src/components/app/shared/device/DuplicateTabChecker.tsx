@@ -35,7 +35,7 @@ const DuplicateTabChecker = ({ children }: PropsWithChildren) => {
   if (showError)
     return (
       <Flex grow={1} alignItems='stretch' justifyContent='space-between' direction='column' zIndex={1} flex='1 1 0' minHeight={0}>
-        <NavbarMobile />
+        <NavbarMobile onOpenSettingsModal={() => {}}/>
 
         <Flex alignItems='center' justifyContent='center' direction='column' padding={4} marginTop='-5rem'>
           <Flex direction='column' gap={4}>

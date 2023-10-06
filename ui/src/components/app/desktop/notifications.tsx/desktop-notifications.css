@@ -1,0 +1,7 @@
+.desktop-notifications {
+  z-index: var(--z-index-toast);
+}
+
+html[data-fullscreen='on'] .desktop-notifications{
+  z-index: 101; /* so it shows over fake fullscreen video */
+}

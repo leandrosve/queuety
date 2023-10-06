@@ -42,6 +42,7 @@ const useDesktopPlayer = (
 
   const onFullscreenChange = useCallback((value: boolean) => {
     setFullscreen(value);
+    document.documentElement.setAttribute('data-fullscreen', value ? 'on' : 'off');
   }, []);
 
   const controls: PlayerControls = useMemo(() => ({ ...innerControls, onFullscreenChange }), [innerControls, onFullscreenChange]);

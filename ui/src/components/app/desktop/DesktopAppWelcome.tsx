@@ -1,32 +1,33 @@
 import { Box, Divider, Flex, Grid, GridItem, Heading, Icon, IconButton } from '@chakra-ui/react';
-import { Button, Spinner, Stack, Switch, Text } from '@chakra-ui/react';
+import { Button, Spinner, Stack, Text } from '@chakra-ui/react';
 import { useMemo, useState, useCallback } from 'react';
 import QRCode from 'react-qr-code';
 import CopyToClipboard from '../../common/CopyToClipboard';
-import { LuArrowBigLeft, LuEdit, LuLink, LuRefreshCcw, LuSettings } from 'react-icons/lu';
-import { useTranslation } from 'react-i18next';
+import { LuArrowBigLeft, LuLink, LuPencilLine, LuRefreshCcw } from 'react-icons/lu';
+import { useTranslation, Trans } from 'react-i18next';
 import { useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
 import ConnectionService from '../../../services/api/ConnectionService';
 import AutoAvatar from '../../common/AutoAvatar';
 import FormatUtils from '../../../utils/FormatUtils';
 import { useSettingsContext } from '../../../context/SettingsContext';
-import useLayoutBackdrop from '../../../hooks/layout/useLayoutBackdrop';
-import { LayoutBackdropPicture } from '../../../context/LayoutContext';
 import { SettingsModalElements, SettingsModalSections, SettingsModalSetter } from '../shared/settings/SettingsModal';
 import DesktopPlayerService from '../../../services/api/player/DesktopPlayerService';
 import ConfirmDialog from '../../common/ConfirmDialog';
 import { useAllowedUsersContext } from '../../../context/AllowedUsersContext';
 import AllowedUserList from './connection/AllowedUserList';
+import SearchLinkButton from '../shared/search/SearchLinkButton';
 
 interface Props {
   onOpenSettingsModal: SettingsModalSetter;
   onGoBack: () => void;
+  onOpenSearchModal: () => void;
 }
 
-const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack }: Props) => {
+const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack, onOpenSearchModal }: Props) => {
   const { t } = useTranslation();
-  const { connection, regenAuthRoom, toggleAutoAuth } = useDesktopConnectionContext();
+  const { connection, regenAuthRoom } = useDesktopConnectionContext();
   const [backDialog, setBackDialog] = useState(false);
+  const [regenCodeDialog, setRegenCodeDialog] = useState(false);
   const allowedUsers = useAllowedUsersContext();
   const disabled = useMemo(() => !connection.authRoom.id || connection.authRoom.loading, [connection.authRoom]);
   const authRoomLink = useMemo(() => ConnectionService.getLinkForAuthRoomId(connection.authRoom.id || ''), [connection]);
@@ -47,19 +48,21 @@ const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack }: Props) => {
     }
   };
   return (
-    <Flex direction='column'>
+    <Flex direction='column' className='section-fade-in'>
       <Button
         variant='link'
         onClick={handleBack}
         size='sm'
         alignSelf='start'
-        marginBottom={2}
+        marginBottom={4}
         color='text.500'
         leftIcon={<Icon as={LuArrowBigLeft} fill='currentcolor' />}
       >
         {t('common.goHome')}
       </Button>
+      <SearchLinkButton onClick={onOpenSearchModal} />
       <Grid
+        marginTop={5}
         templateAreas={{ base: `"start" "qr" "config"`, md: '"start qr""config qr"' }}
         gridTemplateColumns={{ base: '1fr', md: '2fr 2.5fr' }}
         gap={3}
@@ -68,14 +71,12 @@ const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack }: Props) => {
       >
         <GridItem area='start' flexGrow={0}>
           <Flex direction='column' gap={2}>
-            <Heading size={{ base: 'md', md: 'lg' }}>¡Comencemos!</Heading>
+            <Heading size={{ base: 'md', md: 'lg' }}>{t('receptorWelcome.begin')}</Heading>
             <Text as='span' fontSize={{ base: 'md', md: 'xl' }}>
-              Para conectar un nuevo dispositivo facilmente puedes <b>escanear el código QR</b> desde el dispositivo que quieres conectar.
+              <Trans i18nKey={'receptorWelcome.description1'} components={[<b></b>]} />
             </Text>
             <Divider marginY={2} />
-            <Text fontSize={{ base: 'md', md: 'xl' }}>
-              También puedes comenzar a agregar videos a la cola desde este dispositivo y conectar dispositivos mas tarde. ¡Espero ser de utilidad 😊!
-            </Text>
+            <Text fontSize={{ base: 'md', md: 'xl' }}>{t('receptorWelcome.description2')}</Text>
           </Flex>
         </GridItem>
         <GridItem area='config' display='flex' flexDirection='column' justifyContent='end' gap={5} alignItems='stretch'>
@@ -86,10 +87,31 @@ const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack }: Props) => {
         </GridItem>
         <GridItem area='qr'>
           <Flex gap={5} wrap={{ base: 'wrap', lg: 'nowrap' }} margin='auto' justifyContent='center'>
-            <Flex padding={3} grow={1} justifyContent='center' maxWidth='60vw' alignItems='center' background={'white'} boxShadow='lg'>
-              {disabled ? (
-                <Spinner />
-              ) : (
+            <Flex
+              padding={3}
+              grow={1}
+              justifyContent='center'
+              maxWidth='40vw'
+              position='relative'
+              alignItems='center'
+              background={'#f7f5fe'}
+              boxShadow='lg'
+            >
+              {disabled && (
+                <Flex
+                  alignItems='center'
+                  justifyContent='center'
+                  width='100%'
+                  height='100%'
+                  position='absolute'
+                  top={0}
+                  left={0}
+                  background='#f7f5fe'
+                >
+                  <Spinner color='black' />
+                </Flex>
+              )}
+              {authRoomLink && (
                 <QRCode style={{ width: '100%', height: '100%' }} value={authRoomLink} viewBox={`0 0 256 256`} level='L' bgColor='#f7f5fe' />
               )}
             </Flex>
@@ -100,7 +122,7 @@ const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack }: Props) => {
               <CopyToClipboard isDisabled={disabled} value={connection.authRoom.id || ''}>
                 {t('connection.copyCode')}
               </CopyToClipboard>
-              <Button isDisabled={disabled} leftIcon={<LuRefreshCcw />} onClick={() => regenAuthRoom()}>
+              <Button isDisabled={disabled} leftIcon={<LuRefreshCcw />} onClick={() => setRegenCodeDialog(true)}>
                 {t('connection.regenCode')}
               </Button>
             </Flex>
@@ -111,8 +133,18 @@ const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack }: Props) => {
         isOpen={backDialog}
         onCancel={() => setBackDialog(false)}
         onConfirm={handleBackConfirmation}
-        title='¿Estas seguro/a que deseas volver al inicio?'
-        description='Los dispositivos vinculados se perderan y tendrás que volver a conectarlos.'
+        title={t('receptorWelcome.backConfirmation.title')}
+        description={t('receptorWelcome.backConfirmation.description')}
+      />
+      <ConfirmDialog
+        isOpen={regenCodeDialog}
+        onCancel={() => setRegenCodeDialog(false)}
+        onConfirm={() => {
+          regenAuthRoom();
+          setRegenCodeDialog(false);
+        }}
+        title={t('connection.regenConfirmation.title')}
+        description={t('connection.regenConfirmation.description')}
       />
     </Flex>
   );
@@ -152,7 +184,7 @@ const DeviceName = ({ onOpenSettingsModal }: { onOpenSettingsModal: SettingsModa
             </Stack>
           </Flex>
           <IconButton
-            icon={<LuEdit />}
+            icon={<LuPencilLine />}
             aria-label='edit'
             rounded='full'
             marginLeft='auto'

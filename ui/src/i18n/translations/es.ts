@@ -59,6 +59,10 @@ export default {
       accept: 'Aceptar',
       reject: 'Rechazar',
       automaticAuth: 'Autorizar nuevos dispositivos automaticamente',
+      regenConfirmation: {
+        title: '¿Regenerar codigo de autorización?',
+        description: 'Los dispositivos actuales seguiran conectados, pero los códigos de acceso que hayas compartido ya no serán válidos.',
+      },
     },
     connectionView: {
       deviceName: 'Tu nombre de dispositivo es:',
@@ -126,11 +130,47 @@ export default {
         revokeAll: 'Eliminar todos',
       },
     },
+    deviceSelection: {
+      title: 'Gestiona de la reproducción de videos de YouTube en tu PC a través de tu dispositivo móvil.',
+      description:
+        'No necesitas estar frente a la pantalla de tu PC ni en la misma red Wi-Fi para realizar acciones como <0>pausar, reproducir, ajustar el volumen o cambiar de video 😎</0>.',
+      selectPrompt: 'Selecciona como quieres utilizar este dispositivo:',
+      receptor: {
+        title: 'Receptor',
+        description:
+          'Elige este modo si deseas que este dispositivo actúe como receptor, permitiendo que otros dispositivos envíen contenido para su reproducción aquí.',
+        confirmation: {
+          title: '¿Deseas continuar en modo Receptor?',
+          description:
+            'El modo receptor no esta optimizado para dispositivos móviles. De todas maneras puedes continuar en modo receptor, pero debes saber que <0>la experiencia de usuario puede no ser óptima</0>.',
+        },
+      },
+      emitter: {
+        title: 'Emisor',
+        description:
+          ' Elige este modo si deseas transmitir contenido desde tu dispositivo, como tu teléfono móvil u otra computadora, hacia un receptor. Podrás controlar la reproducción y elegir qué ver en tu PC con facilidad.',
+        confirmation: {
+          title: '¿Deseas continuar en modo Emisor?',
+          description:
+            'El modo emisor esta diseñado principalmente para <0>dispositivos móviles</0>. De todas maneras puedes continuar en modo emisor, pero debes saber que <0>la experiencia de usuario puede no ser óptima</0>.',
+        },
+      },
+    },
+    receptorWelcome: {
+      begin: 'Comencemos!',
+      description1: 'Para conectar un nuevo dispositivo facilmente puedes <0>escanear el código QR</0> desde el dispositivo que quieres conectar.',
+      description2:
+        'También puedes comenzar a agregar videos a la cola desde este dispositivo y conectar dispositivos mas tarde. ¡Espero ser de utilidad 😊!',
+      backConfirm: {
+        title: '¿Estas seguro/a que deseas volver al inicio?',
+        description: 'Los dispositivos vinculados se perderan y tendrás que volver a conectarlos.',
+      },
+    },
     notifications: {
       addToQueue: '{{nickname}} agregó un video a la cola',
       joined: '<0>{{nickname}}</0> se ha unido',
-      desktop_offline: 'Escritorio desconectado',
-      desktop_offline_recovered: 'Escritorio se ha vuelto a conectar!',
+      desktop_offline: '<0>{{nickname}}</0> se ha desconectado',
+      desktop_offline_recovered: '<0>{{nickname}}</0> se ha vuelto a conectar!',
       offline: 'Estas desconectado',
       offline_recovered: 'Te has vuelto a conectar!',
       awaiting_reconnection: 'Esperando reconexión',
@@ -144,6 +184,14 @@ export default {
       description: 'Parece que estas tratando de conectarte a otra sesión. ¿Deseas finalizar la sesión actual y requerir conectarte a esta otra?',
       accept: 'Finalizar sesión actual',
       skip: 'Continuar en la misma sesión',
+    },
+    qrScanner: {
+      title: 'Escanear QR',
+      errors: {
+        camera_missing: 'No se ha podido encontrar una cámara para escanear el QR',
+        default: 'No se ha podido iniciar la cámara',
+        invalid_url: 'El código escaneado no corresponde a una URL válida',
+      },
     },
     maintenance: {
       title: 'Lo sentimos, parece que nuestros servidores no estan funcionando correctamente...',

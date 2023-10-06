@@ -36,6 +36,9 @@ body {
   min-height: 100vh;
 }
 
+html {
+  -webkit-tap-highlight-color: transparent;
+}
 html[data-size='xs'] {
   font-size: 12px;
 }
@@ -50,4 +53,19 @@ html[data-size='lg'] {
 }
 html[data-size='xl'] {
   font-size: 22px;
+}
+
+html[data-glass='true'] .section-fade-in {
+  opacity: 0;
+  animation: sectionFadeIn 0.25s forwards;
+}
+
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

@@ -18,7 +18,7 @@ const RoomSwitchWarning = () => {
   };
 
   return (
-    <Flex flex={1}>
+    <Flex flex={1} margin='auto'>
       <Flex flex={1} direction='column' justifyContent='center' alignItems='center' maxWidth={700} padding={4}>
         <Icon as={BrandIcon} boxSize={8} marginBottom={5} alignSelf='start' />
         <Text>{t('roomSwitch.description')}</Text>

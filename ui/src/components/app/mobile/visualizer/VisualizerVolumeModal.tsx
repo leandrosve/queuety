@@ -55,6 +55,7 @@ const VisualizerVolumeModal = ({ volume, onChangeVolume }: Props) => {
         icon={loading ? <Spinner size='sm' /> : <Icon as={getVolumeIcon(value.current)} boxSize={4} />}
         aria-label='sound'
         color='text.300'
+        userSelect='none'
         onClick={() => setIsOpen(true)}
       />
       <GlassModal isOpen={isOpen} onClose={() => setIsOpen(false)} isCentered contentProps={{ padding: 0 }} maxWidth='95vw'>

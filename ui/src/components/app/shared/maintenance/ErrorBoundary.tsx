@@ -48,7 +48,7 @@ export const ErrorView = () => {
     setTimeout(() => location.replace('/'), 2000);
   };
   return (
-    <Flex alignItems='center' justifyContent='center' grow={1} direction='column' padding={5}>
+    <Flex alignItems='center' justifyContent='center' grow={1} direction='column' padding={5} className='section-fade-in'>
       <Box>
         <Icon as={BrandIcon} boxSize={8} />
         <Heading size='md'>{t('errorView.title')}</Heading>

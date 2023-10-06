@@ -20,7 +20,7 @@ import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { useSettingsContext } from '../../../../context/SettingsContext';
 import AutoAvatar from '../../../common/AutoAvatar';
 import FormatUtils from '../../../../utils/FormatUtils';
-import { LuArrowBigLeft, LuArrowBigRight, LuEdit, LuQrCode } from 'react-icons/lu';
+import { LuArrowBigLeft, LuArrowBigRight, LuPencilLine, LuQrCode } from 'react-icons/lu';
 import { AuthError, MobileAuthStatus } from '../../../../hooks/connection/useMobileAuth';
 import MobileAuthPendingView from './MobileAuthPendingView';
 import AuthUtils from '../../../../utils/AuthUtils';
@@ -29,6 +29,7 @@ import { BsDot } from 'react-icons/bs';
 import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
 import { LayoutBackdropPicture } from '../../../../context/LayoutContext';
 import { Trans, useTranslation } from 'react-i18next';
+import MobileQRScanner from './MobileQRScanner';
 
 interface Props {
   onOpenSettingsModal: (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
@@ -42,6 +43,7 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
   const [showAuthPendingView, setShowAuthPendingView] = useState(false);
   const [authRoomIdValue, setAuthRoomIdValue] = useState<string>('');
   const [initialized, setInitialized] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   const [authError, setAuthError] = useState(error);
 
@@ -51,6 +53,9 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
 
   const triggerAuth = useCallback(
     (authRoom?: string) => {
+      if (!isSocketReady) {
+        alert('socket not ready');
+      }
       if (!authRoom || !isSocketReady) return;
       if (!AuthUtils.isValidAuthRoom(authRoom)) {
         setAuthInputError('invalid_code');
@@ -66,6 +71,12 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
     await onCancel();
     history.replaceState({}, document.title);
     setShowAuthPendingView(false);
+  };
+
+  const onQRScanned = (authCode: string) => {
+    triggerAuth(authCode);
+    setAuthRoomIdValue(authCode);
+    setShowScanner(false);
   };
 
   useEffect(() => {
@@ -101,7 +112,7 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
   }, [authRoomIdValue]);
 
   return (
-    <Flex direction='column' paddingX={4} maxWidth='400px' alignSelf='stretch'>
+    <Flex direction='column' paddingX={4} maxWidth='400px' alignSelf='stretch' className='section-fade-in'>
       <Button
         variant='link'
         onClick={onBack}
@@ -117,7 +128,15 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
         <Alert fontSize='sm' status='error' borderRadius='lg' border='1px' borderColor='borders.100' my={3}>
           <AlertIcon />
           {t(`connectionView.notifications.${authError}`)}
-          <CloseButton size='sm' alignSelf='flex-start' marginLeft='auto' position='relative' right={-1} top={-1} onClick={() => setAuthError(null)} />
+          <CloseButton
+            size='sm'
+            alignSelf='flex-start'
+            marginLeft='auto'
+            position='relative'
+            right={-1}
+            top={-1}
+            onClick={() => setAuthError(null)}
+          />
         </Alert>
       )}
       <Flex direction='column' gap={3}>
@@ -149,7 +168,7 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
               </Stack>
             </Flex>
             <IconButton
-              icon={<LuEdit />}
+              icon={<LuPencilLine />}
               aria-label='edit'
               rounded='full'
               marginLeft='auto'
@@ -172,9 +191,12 @@ const MobileConnectionView = ({ onOpenSettingsModal, onBack }: Props) => {
           height='auto'
           border='1px solid'
           borderColor='borders.100'
+          onClick={() => setShowScanner(true)}
         >
           {t('connectionView.devices.scanQR')}
         </Button>
+        <MobileQRScanner isOpen={showScanner} onClose={() => setShowScanner(false)} onDecode={onQRScanned} />
+
         <Text>
           <Trans i18nKey={'connectionView.devices.alternative'} components={[<b />]} />
         </Text>

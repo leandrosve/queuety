@@ -33,7 +33,6 @@ const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal, onGoB
 
   return (
     <Flex direction='column' gap={5} paddingTop={10} width={{ base: '95vw', md: 800, lg: 1000, xl: 1100 }}>
-      <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} />
       <SearchModal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
@@ -42,17 +41,20 @@ const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal, onGoB
         onPlayNext={queueControls.onAddNext}
       />
       {!!queue.length && (
-        <DesktopQueue
-          currentItem={queue.currentItem}
-          currentIndex={queue.currentIndex}
-          queue={queue.items}
-          onClear={queueControls.onClear}
-          onUpdate={queueControls.onChangeOrder}
-          onRemove={queueControls.onRemove}
-          onPlay={queueControls.onPlay}
-          loop={queue.loop}
-          onToggleLoop={queueControls.onToggleLoop}
-        />
+        <>
+          <SearchLinkButton onClick={() => setIsSearchModalOpen(true)} />
+          <DesktopQueue
+            currentItem={queue.currentItem}
+            currentIndex={queue.currentIndex}
+            queue={queue.items}
+            onClear={queueControls.onClear}
+            onUpdate={queueControls.onChangeOrder}
+            onRemove={queueControls.onRemove}
+            onPlay={queueControls.onPlay}
+            loop={queue.loop}
+            onToggleLoop={queueControls.onToggleLoop}
+          />
+        </>
       )}
       {queue.currentItem ? (
         <>
@@ -66,7 +68,7 @@ const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal, onGoB
           <PlayerControlsBar status={playerStatus} queueControls={queueControls} playerControls={playerControls} />
         </>
       ) : (
-        <DesktopAppWelcome onOpenSettingsModal={onOpenSettingsModal} onGoBack={onGoBack} />
+        <DesktopAppWelcome onOpenSettingsModal={onOpenSettingsModal} onGoBack={onGoBack} onOpenSearchModal={() => setIsSearchModalOpen(true)} />
       )}
     </Flex>
   );

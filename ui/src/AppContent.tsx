@@ -21,9 +21,14 @@ enum ServerStatus {
 
 const shouldDisplayWarning = () => {
   const authParam = AuthUtils.getAuthParam();
+  const deviceType = StorageUtils.get(StorageKey.DEVICE);
+  const hostAuthRoomId = StorageUtils.get(StorageKey.AUTH_ROOM_ID);
   const mobileAuthRoomId = StorageUtils.get(StorageKey.MOBILE_AUTH_ROOM_ID);
   const playerRoomId = StorageUtils.get(StorageKey.PLAYER_ROOM_ID);
-  return !!(authParam && playerRoomId && mobileAuthRoomId && mobileAuthRoomId !== authParam);
+  if (!authParam || !playerRoomId) return false;
+  if (mobileAuthRoomId && mobileAuthRoomId !== authParam) return true;
+  if (deviceType == DeviceType.DESKTOP && authParam !== hostAuthRoomId) return true;
+  return false;
 };
 
 export const AppContent = () => {
@@ -47,9 +52,11 @@ export const AppContent = () => {
       setDeviceType(DeviceType.MOBILE);
       StorageUtils.setRaw(StorageKey.DEVICE, DeviceType.MOBILE);
     }
-    if (authParam && deviceType == DeviceType.DESKTOP && authParam === hostAuthRoomId) {
-      history.replaceState({}, document.title);
-      return;
+    if (authParam && deviceType == DeviceType.DESKTOP) {
+      if (authParam === hostAuthRoomId) {
+        history.replaceState({}, document.title, '/app');
+        return;
+      }
     }
   }, []);
 

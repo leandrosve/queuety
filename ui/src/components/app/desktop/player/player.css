@@ -6,10 +6,6 @@
   height: 100%;
 }
 
-.player-container:hover {
-  z-index: 20;
-}
-
 .player-wrapper.fullscreen {
   position: fixed;
   top: 0;

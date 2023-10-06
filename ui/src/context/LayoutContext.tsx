@@ -8,8 +8,8 @@ interface LayoutContextProps {
 }
 const BACKDROP_PICTURES = {
   deviceSelection: {
-    dark: 'https://images.pexels.com/photos/110854/pexels-photo-110854.jpeg?auto=compress&cs=tinysrgb&w=400',
-    light: 'https://images.pexels.com/photos/844297/pexels-photo-844297.jpeg?auto=compress&cs=tinysrgb&w=400',
+    dark: 'https://images.pexels.com/photos/826108/pexels-photo-826108.jpeg?auto=compress&cs=tinysrgb&w=400',
+    light: 'https://images.pexels.com/photos/339119/pexels-photo-339119.jpeg?auto=compress&cs=tinysrgb&w=400',
   },
   mobileConnection: {
     dark: 'https://images.pexels.com/photos/2179483/pexels-photo-2179483.jpeg?auto=compress&cs=tinysrgb&w=600',

@@ -3,10 +3,11 @@ import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
 import { Box, Button, Flex, Icon, Spinner, Stack, chakra, shouldForwardProp } from '@chakra-ui/react';
 import { PiPlugsBold, PiPlugsConnectedBold } from 'react-icons/pi';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { LuLogOut } from 'react-icons/lu';
 import { AnimatePresence, isValidMotionProp, motion } from 'framer-motion';
 import AuthUtils from '../../../../utils/AuthUtils';
+import HostData from '../../../../model/auth/HostData';
 
 interface ConnectionError {
   code: string | null;
@@ -18,7 +19,7 @@ const ChakraBox = chakra(motion.div, {
 });
 
 const MobileNotifications = () => {
-  const { hostStatus, isSocketReady } = useMobileAuthContext();
+  const { hostStatus, host, isSocketReady } = useMobileAuthContext();
   const [error, setError] = useState<ConnectionError>({ code: null, recovered: false });
   const [errorDisplay, setErrorDisplay] = useState<ConnectionError>({ code: null, recovered: false });
 
@@ -79,15 +80,20 @@ const MobileNotifications = () => {
           bgGradient='linear-gradient(to-t,blackAlpha.700 95%, transparent)'
           _light={{ bgGradient: 'linear-gradient(to-t, blackAlpha.600 95%, transparent)' }}
         >
-          <ErrorDisplay key='error-display' error={errorDisplay} />
+          <ErrorDisplay key='error-display' error={errorDisplay} host={host} />
         </ChakraBox>
       )}
     </AnimatePresence>
   );
 };
 
-const ErrorDisplay = ({ error }: { error: { code: string | null; recovered: boolean } }) => {
+const ErrorDisplay = ({ error, host }: { error: { code: string | null; recovered: boolean }; host: HostData | null }) => {
   const { t } = useTranslation();
+
+  const getErrorCode = () => {
+    if (error.recovered) return `notifications.${error.code}_recovered`;
+    return `notifications.${error.code}`;
+  };
 
   return (
     <>
@@ -108,10 +114,11 @@ const ErrorDisplay = ({ error }: { error: { code: string | null; recovered: bool
               as={error.recovered ? PiPlugsConnectedBold : PiPlugsBold}
               filter='drop-shadow(0px 0px 5px #ffffff8f)'
             />
-            {error.recovered ? t(`notifications.${error.code}_recovered`) : t(`notifications.${error.code}`)}
+            {<Trans i18nKey={getErrorCode()} components={[<b></b>]} values={{ nickname: host?.nickname ?? "" }} />}
           </Box>
           <Flex alignItems='center' gap={2}>
-            <Spinner size='xs' speed='1s' /> {t('notifications.awaiting_reconnection')}
+            <Spinner size='xs' speed='1s' />
+            {t('notifications.awaiting_reconnection')}
           </Flex>
         </Stack>
       </Flex>
@@ -119,7 +126,7 @@ const ErrorDisplay = ({ error }: { error: { code: string | null; recovered: bool
       {!error.recovered && (
         <Button
           leftIcon={<LuLogOut />}
-          bottom='2rem'
+          bottom='5rem'
           variant='solid'
           backdropFilter='blur(10px)'
           position='absolute'

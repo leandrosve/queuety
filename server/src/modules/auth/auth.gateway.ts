@@ -6,10 +6,11 @@ import { AuthRequestDTO } from './dto/AuthRequestDTO';
 import { AuthService } from './auth.service';
 import { BadRequestExceptionFilter } from 'src/common/filters/BadRequestExceptionFilter';
 import { JoinAuthRoomRequestDTO } from './dto/JoinAuthRoomRequestDTO';
+import allowedOrigins from 'src/config/allowedOrigins';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseFilters(BadRequestExceptionFilter)
-@WebSocketGateway({ namespace: '/auth', cors: { origin: ['http://localhost:5173', 'ws://admin.socket.io', 'http://192.168.0.226:5173'] } })
+@WebSocketGateway({ namespace: '/auth', cors: { origin: [...allowedOrigins, 'ws://admin.socket.io'] } })
 export class AuthGateway implements OnGatewayConnection {
   private readonly logger = new Logger(AuthGateway.name);
 
@@ -18,6 +19,7 @@ export class AuthGateway implements OnGatewayConnection {
   }
 
   public handleConnection(client: Socket) {
+    this.logger.log('Client connected: ' + client.id);
     this.authService.onConnect(client);
   }
 
@@ -29,7 +31,7 @@ export class AuthGateway implements OnGatewayConnection {
   @SubscribeMessage('leave-auth-room')
   private async leaveAuthRoom(@ConnectedSocket() client: Socket, @MessageBody('authRoomId') authRoomId: string) {
     return this.authService.leaveAuthRoom(client, authRoomId);
-  } 
+  }
 
   @SubscribeMessage('send-auth-request')
   private async onSendAuthRequest(@ConnectedSocket() client: Socket, @MessageBody() dto: AuthRequestDTO) {
@@ -47,5 +49,4 @@ export class AuthGateway implements OnGatewayConnection {
   private onSendAuthRevocation(@ConnectedSocket() client: Socket, @MessageBody('clientId') clientId: string) {
     return this.authService.sendAuthRevocation(client, clientId);
   }
-
 }
