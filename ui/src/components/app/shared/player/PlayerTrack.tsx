@@ -1,4 +1,4 @@
-import { Flex, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, Tooltip } from '@chakra-ui/react';
+import { Flex, FlexProps, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, Tooltip } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 import PlayerState from '../../../../model/player/PlayerState';
 import FormatUtils from '../../../../utils/FormatUtils';
@@ -6,15 +6,21 @@ import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
 
-interface Props {
+interface Props extends FlexProps {
   onTimeChange: (time: number) => void;
   status: PlayerStatus;
   hostStatus?: HostStatus;
   currentQueuedVideo?: YoutubeVideoDetail;
+  timeTimestamp: number;
 }
-const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus }: Props) => {
+const getInitialTime = (time: number, timestamp: number, rate: number) => {
+  console.log({ time, timestamp, rate });
+  return time + ((new Date().getTime() - timestamp )/ 1000) * rate;
+};
+const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus, timeTimestamp, ...props }: Props) => {
   const { currentTime, duration, rate, state } = useMemo(() => {
     if (currentQueuedVideo && currentQueuedVideo?.id !== status.videoId) {
+      console.log('AAAA');
       return {
         currentTime: 0,
         duration: currentQueuedVideo.duration,
@@ -24,8 +30,11 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus }: P
       };
     }
 
-    return status;
-  }, [status, currentQueuedVideo]);
+    return {
+      ...status,
+      currentTime: getInitialTime(status.currentTime, timeTimestamp, status.rate),
+    };
+  }, [status, currentQueuedVideo, timeTimestamp]);
 
   const [time, setTime] = useState(currentTime || 0);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -61,7 +70,7 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus }: P
   }, [state, rate, hostStatus]);
 
   return (
-    <Flex direction='column' alignItems='center' gap={1} width='100%' mt={2}>
+    <Flex direction='column' alignItems='center' gap={1} width='100%' mt={2} {...props}>
       <Slider
         aria-label='slider-ex-4'
         defaultValue={30}

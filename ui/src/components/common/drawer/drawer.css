@@ -1,0 +1,58 @@
+.drawer {
+  z-index: 100;
+}
+
+.drawer-overlay {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -1;
+  background: rgba(7, 7, 7, 0.397);
+  display: none;
+}
+
+.drawer.open .drawer-overlay {
+  display: block;
+}
+
+.drawer-content {
+  position: fixed;
+  overflow: hidden;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 101;
+  border-left-width: 1px;
+  border-left-width: 1px;
+  border-left-color: var(--borders-100);
+}
+
+.drawer.open .drawer-content {
+  animation: drawerOpen 0.5s forwards;
+}
+
+.drawer.close .drawer-content {
+  animation: drawerClose 0.5s forwards;
+}
+
+@keyframes drawerOpen {
+  from {
+    margin-right: -100%;
+  }
+
+  to {
+    margin-right: 0%;
+  }
+}
+
+@keyframes drawerClose {
+  from {
+    margin-right: 0%;
+  }
+
+  to {
+    margin-right: -100%;
+  }
+}

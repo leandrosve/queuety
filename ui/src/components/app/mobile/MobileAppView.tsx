@@ -21,7 +21,7 @@ const MobileAppView = (props: Props) => {
   const [portrait, setPortrait] = useState(isPortrait());
   const { hostStatus } = useMobileAuthContext();
   const { queue, controls: queueControls } = useMobileQueue(props.playerRoomId, props.userId, props.joinedRoom, hostStatus);
-  const { status: playerStatus, controls: playerControls } = useMobilePlayerStatus();
+  const { status: playerStatus, controls: playerControls, timeTimestamp } = useMobilePlayerStatus();
   const [showJoiningView, setShowJoiningView] = useState(true);
   useLayoutBackdrop(false);
 
@@ -49,6 +49,7 @@ const MobileAppView = (props: Props) => {
         playerStatus={playerStatus}
         playerControls={playerControls}
         host={props.host}
+        timeTimestamp={timeTimestamp}
       />
     );
   return (
@@ -58,6 +59,7 @@ const MobileAppView = (props: Props) => {
       playerStatus={playerStatus}
       playerControls={playerControls}
       host={props.host}
+      timeTimestamp={timeTimestamp}
     />
   );
 };

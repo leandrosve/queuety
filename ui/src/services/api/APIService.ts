@@ -21,7 +21,7 @@ interface Options {
 }
 
 export default class APIService {
-  protected static BASE_URL = 'https://6454-181-166-233-228.ngrok-free.app/api'; //http://192.168.0.226:3334/api
+  protected static BASE_URL = `${import.meta.env.VITE_QUEUETY_API_URL}/api`; //http://192.168.0.226:3334/api
 
   protected static PATH: string;
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import MobilePlayerService from '../../services/api/player/MobilePlayerService';
 import PlayerStatus from '../../model/player/PlayerStatus';
 import PlayerState from '../../model/player/PlayerState';
@@ -23,9 +23,10 @@ export interface MobilePlayerControls extends PlayerControls {
   onFullscreenChange: (value: boolean) => void;
 }
 
-const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayerControls } => {
+const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayerControls; timeTimestamp: number } => {
   const [status, setStatus] = useState<PlayerStatus>(initialStatus);
   const { hostStatus } = useMobileAuthContext();
+  const timeTimestamp = useMemo(() => new Date().getTime(), [status.currentTime]);
 
   const sendPlayerStatusAction = useCallback(
     (action: PlayerStatusAction) => {
@@ -105,8 +106,11 @@ const useMobilePlayerStatus = (): { status: PlayerStatus; controls: MobilePlayer
       });
     });
   }, []);
+
+  useEffect(() => {});
   return {
     status,
+    timeTimestamp,
     controls: {
       onPause,
       onPlay,

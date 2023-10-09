@@ -35,6 +35,7 @@ const MaintenanceView = () => {
     <Flex alignItems='center' justifyContent='center' grow={1} direction='column' padding={5} className='section-fade-in'>
       <Box>
         <Icon as={BrandIcon} boxSize={8} />
+        <Text>asdas {import.meta.env.VITE_QUEUETY_API_URL}</Text>
         <Heading size='md'>Lo sentimos, parece que nuestros servidores no estan funcionando correctamente...</Heading>
         <Text>Puedes volver a intentarlo en unos minutos</Text>
       </Box>

@@ -60,6 +60,10 @@ html[data-glass='true'] .section-fade-in {
   animation: sectionFadeIn 0.25s forwards;
 }
 
+html[data-drawer-open='true'] body{
+  overflow: hidden;
+}
+
 @keyframes sectionFadeIn {
   from {
     opacity: 0;

@@ -39,7 +39,6 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
 
   return (
     <>
-      <GlassContainer asBefore />
       <Flex padding={3} paddingTop={0} gap={2} justifyContent='space-between' width='100%'>
         <Stack spacing={2} minWidth={0} overflow='hidden'>
           <Flex gap={2}>
@@ -79,7 +78,7 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
         )}
       </Flex>
 
-      <Stack spacing={1} overflowX='hidden' overflowY='auto' width='100%'>
+      <Stack spacing={1} overflowX='hidden' overflowY='auto' width='100%' paddingBottom='3rem'>
         <DragAndDropList
           items={queue}
           onReorder={(itemId, index) => onChangeOrder(`${itemId}`, index)}

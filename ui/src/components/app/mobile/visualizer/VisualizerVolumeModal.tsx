@@ -8,6 +8,7 @@ import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
 interface Props {
   volume: number;
   onChangeVolume: (value: number) => void;
+  color?: string;
 }
 
 const getVolumeIcon = (volume: number) => {
@@ -15,7 +16,7 @@ const getVolumeIcon = (volume: number) => {
   if (volume >= 100) return LuVolume2;
   return LuVolume1;
 };
-const VisualizerVolumeModal = ({ volume, onChangeVolume }: Props) => {
+const VisualizerVolumeModal = ({ volume, onChangeVolume, color }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hostStatus } = useMobileAuthContext();
   const [loading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ const VisualizerVolumeModal = ({ volume, onChangeVolume }: Props) => {
         id='volume-trigger'
         icon={loading ? <Spinner size='sm' /> : <Icon as={getVolumeIcon(value.current)} boxSize={4} />}
         aria-label='sound'
-        color='text.300'
+        color={color ?? 'text.300'}
         userSelect='none'
         onClick={() => setIsOpen(true)}
       />

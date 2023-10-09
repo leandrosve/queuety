@@ -23,7 +23,7 @@ const MobileApp = ({ onBack }: { onBack: () => void }) => {
         focusElement={settingsModal.focusElement}
       />
       <MobileAuthProvider>
-        <Flex grow={1} alignItems='start' justifyContent='center' flex='1 1 0' minHeight={0} position='relative'>
+        <Flex grow={1} alignItems='start' justifyContent='center' flex='1 1 0' position='relative'>
           <Content onOpenSettingsModal={openSettingsModal} onBack={onBack} />
         </Flex>
       </MobileAuthProvider>

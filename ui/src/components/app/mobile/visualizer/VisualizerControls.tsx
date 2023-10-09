@@ -4,7 +4,7 @@ import PlayerState from '../../../../model/player/PlayerState';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { useState } from 'react';
 import { QueueControls } from '../../../../hooks/queue/useQueue';
-import { LuMoreVertical, LuSettings } from 'react-icons/lu';
+import { LuMoreVertical } from 'react-icons/lu';
 import VisualizerControlOptionsModal from './VisualizerControlsOptionsModal';
 import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerStatus';
 import VisualizerVolumeModal from './VisualizerVolumeModal';

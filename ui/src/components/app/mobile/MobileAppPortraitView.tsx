@@ -22,14 +22,14 @@ interface Props {
   queueControls: QueueControls;
   playerStatus: PlayerStatus;
   playerControls: MobilePlayerControls;
+  timeTimestamp: number;
 }
 
-const MobileAppPortraitView = ({ queue, queueControls, playerControls, playerStatus, host }: Props) => {
+const MobileAppPortraitView = ({ queue, queueControls, playerControls, playerStatus, host, timeTimestamp }: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { hostStatus } = useMobileAuthContext();
   return (
     <Flex direction='column' alignItems='center' justifyContent='start' paddingTop={2} alignSelf='stretch' gap={0} width={'100vw'}>
-    
       <SearchModal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
@@ -50,6 +50,7 @@ const MobileAppPortraitView = ({ queue, queueControls, playerControls, playerSta
               onTimeChange={playerControls.onTimeChange}
               currentQueuedVideo={queue.currentItem?.video}
               hostStatus={hostStatus}
+              timeTimestamp={timeTimestamp}
             />
           </Flex>
           <MobileQueuePortrait

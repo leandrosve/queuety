@@ -10,6 +10,7 @@ import { LuRotateCcw, LuRotateCw } from 'react-icons/lu';
 interface Props {
   status: PlayerStatus;
   controls: PlayerControls;
+  backgroundType?: 'gradient' | 'fill';
 }
 
 const getPlayerStateIcon = (state: PlayerState) => {
@@ -17,7 +18,7 @@ const getPlayerStateIcon = (state: PlayerState) => {
   return BsPlayFill;
 };
 
-const VisualizerControlsOverlay = ({ status, controls }: Props) => {
+const VisualizerControlsOverlay = ({ status, controls, backgroundType = 'fill' }: Props) => {
   const [clicked, setClicked] = useState(0);
   const [rewindSeconds, setRewindSeconds] = useState(0);
   const [forwardSeconds, setForwardSeconds] = useState(0);
@@ -71,7 +72,8 @@ const VisualizerControlsOverlay = ({ status, controls }: Props) => {
       zIndex={2}
       width='100%'
       opacity={clicked ? 1 : 0}
-      background='blackAlpha.500'
+      background={backgroundType == 'fill' ? 'blackAlpha.500' : 'transparent'}
+      bgGradient={backgroundType == 'gradient' ? 'linear(0deg, transparent ,blackAlpha.300, transparent)' : 'none'}
       transition='opacity 400ms'
     >
       <Flex width='100%' height='100%' pointerEvents={clicked ? 'all' : 'none'} color='white'>
