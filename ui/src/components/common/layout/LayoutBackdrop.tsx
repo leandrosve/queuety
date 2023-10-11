@@ -15,6 +15,6 @@ const LayoutBackdrop = () => {
   }, []);
 
   if (!initialized || !backdrop || !pictures) return null;
-  return <VisualizerBackdrop src={colorMode == 'dark' ? pictures.dark : pictures.light} />;
+  return <VisualizerBackdrop src={colorMode == 'dark' ? pictures.dark : pictures.light} variant='welcome' />;
 };
 export default LayoutBackdrop;

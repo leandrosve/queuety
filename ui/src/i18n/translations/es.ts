@@ -86,6 +86,7 @@ export default {
         invalid: 'Debe tener entre 3 y 100 carácteres',
       },
       language: 'Idioma',
+      feedbackTooltip: 'Enviar feedback/Reportar errores',
       session: {
         title: 'Finalizar Sesión',
         description: 'Desconectar Dispositivo',
@@ -176,6 +177,28 @@ export default {
       awaiting_reconnection: 'Esperando reconexión',
       disconnect_device: 'Desvincular dispositivo',
     },
+    contact: {
+      title: 'Contacto',
+      description: 'Puedes enviarnos cualquier tipo de feedback, o reportar errores o inconsistencias con las que te hayas encontrado.',
+      email: {
+        label: 'Email',
+        placeholder: 'Email',
+      },
+      message: {
+        label: 'Mensaje / Informe de errores',
+        placeholder: 'Deja aqui tu mensaje, puedes indicarnos cosas a mejorar, o cualquier inconveniente con el que te hayas encontrado.',
+      },
+      send: 'Enviar',
+      errors: {
+        empty_message: 'Por favor introduzca un mensaje',
+        invalid_email: 'Por favor introduzca un email válido',
+        message_too_long: 'El mensaje es demasiado largo',
+        not_sent: 'Lo sentimos, no se ha podido enviar el mensaje 😢. Puedes intentarlo mas tarde.',
+      },
+      messageSent: 'Se ha enviado el mensaje',
+      feedbackThanks: '¡Gracias por el feedback!',
+      close: 'Cerrar',
+    },
     tabChecker: {
       error: 'Parece que el sitio se ha abierto desde otra pestaña.<0></0>Deseas continuar reproduciendo en esta pestaña y detener la otra?',
       button: 'Continuar en esta pestaña',
@@ -202,6 +225,7 @@ export default {
       description: 'Si te sigues encontrando con este problema, puedes intentar borrar los datos de navegación para este sitio.',
       refresh: 'Recargar Página',
       erase: 'Borrar datos de navegación',
+      notify: 'Notificar problema',
     },
   },
 };

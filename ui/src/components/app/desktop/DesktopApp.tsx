@@ -17,6 +17,8 @@ import DesktopNotifications from './notifications.tsx/DesktopNotifications';
 import { DesktopNotificationsProvider } from '../../../context/DesktopNotificationsContext';
 import useLayoutBackdrop from '../../../hooks/layout/useLayoutBackdrop';
 import FullPageSpinner from '../../common/FullPageSpinner';
+import { DeviceType } from '../shared/device/DeviceSelection';
+import ContactModal from '../shared/contact/ContactModal';
 
 const MainProviders = combineProviders([
   DesktopConnectionProvider,
@@ -37,6 +39,7 @@ interface Props {
 
 const DesktopApp = ({ onGoBack }: Props) => {
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
+  const [isContactModalOpen, setContactModalOpen] = useState(false);
 
   const [settingsModal, setSettingModal] = useState<ModalOptions>({ open: false });
 
@@ -63,11 +66,14 @@ const DesktopApp = ({ onGoBack }: Props) => {
           <DesktopConnectionView />
           <DesktopConnectionModal isOpen={isConnectionModalOpen} onClose={onDesktopConnectionModalClosed} />
           <SettingsModal
+            onOpenContact={() => setContactModalOpen(true)}
+            deviceType={DeviceType.DESKTOP}
             isOpen={settingsModal.open}
             onClose={onSettingsModalClosed}
             focusElement={settingsModal.focusElement}
             defaultSection={settingsModal.section}
           />
+          <ContactModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
           <DesktopNotifications hideAuthRequests={isConnectionModalOpen} />
           <PlayerProviders>
             <Content onGoBack={onGoBack} openSettingsModal={openSettingsModal} />

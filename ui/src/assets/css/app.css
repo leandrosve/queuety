@@ -64,6 +64,10 @@ html[data-drawer-open='true'] body{
   overflow: hidden;
 }
 
+textarea::placeholder {
+  color: var(--text-300); /* Firefox */
+}
+
 @keyframes sectionFadeIn {
   from {
     opacity: 0;

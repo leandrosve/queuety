@@ -53,13 +53,17 @@
   }
 }
 
-html[data-theme='light'] .visualizer-backdrop-img, html[data-theme='light'] .visualizer-landscape {
+html[data-theme='light'] .visualizer-backdrop-img,
+html[data-theme='light'] .visualizer-landscape {
   mix-blend-mode: hard-light;
   filter: saturate(2) brightness(5);
+}
+
+html[data-theme='light'] .visualizer-backdrop.welcome .visualizer-backdrop-img {
+  mix-blend-mode: darken;
+  filter: saturate(1.5);
 }
 
 html[data-theme='light'] .visualizer-backdrop-img.loaded.fade-in {
   opacity: 0.2;
 }
-
-

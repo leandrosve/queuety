@@ -94,6 +94,7 @@ export default {
         invalid: 'Must be between 3 and 100 characters long',
       },
       language: 'Language',
+      feedbackTooltip: 'Send feedback/Report errors',
       session: {
         title: 'End Session',
         description: 'Disconnect device',
@@ -186,6 +187,28 @@ export default {
       error: 'It appears the page was opened from another tab.<0></0>Do you want to stop the other tab and continue playing from this one?',
       button: 'Continue from this tab',
     },
+    contact: {
+      title: 'Contact',
+      description: 'You can send us any type of feedback or report any errors or inconsistencies you have encountered.',
+      email: {
+        label: 'Email',
+        placeholder: 'Email',
+      },
+      message: {
+        label: 'Message / Error Report',
+        placeholder: "Leave your message here. You can let us know things to improve or any issues you've encountered.",
+      },
+      send: 'Send',
+      errors: {
+        empty_message: 'Please enter a message',
+        invalid_email: 'Please enter a valid email',
+        message_too_long: 'The message is too long',
+        not_sent: "We're sorry, the message couldn't be sent 😢. You can try again later.",
+      },
+      messageSent: 'The message has been sent',
+      feedbackThanks: 'Thanks for the feedback!',
+      close: 'Close',
+    },
     roomSwitch: {
       description:
         'It appears you are trying to connect to another session, do you want to finish the current session and request connecting to the new one?',
@@ -209,6 +232,8 @@ export default {
       description: 'If you keep encoutering this problem you can try deleting navigation data for this site.',
       refresh: 'Reload page',
       erase: 'Delete navigation data',
+      notify: 'Report issue',
+
     },
   },
 };

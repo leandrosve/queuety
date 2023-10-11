@@ -1,5 +1,5 @@
 import { LayoutBackdropPicture, useLayoutContext } from '../../context/LayoutContext';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 const useLayoutBackdrop = (show: boolean, picture?: LayoutBackdropPicture) => {
   const { toggleBackdrop, updatePictures } = useLayoutContext();

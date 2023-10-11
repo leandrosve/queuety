@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { HiMoon, HiSun } from 'react-icons/hi';
 import { LuLanguages, LuSettings } from 'react-icons/lu';
 import SelectMenu from '../../../common/SelectMenu';
-import languages from '../../../../data/languages';
+import languages from '../../../../static/languages';
 import BrandIcon from '../../../../assets/images/BrandIcon';
 
 interface Props {

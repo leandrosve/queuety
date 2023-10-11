@@ -182,6 +182,28 @@ export default {
       awaiting_reconnection: '再接続を待っています',
       disconnect_device: 'このデバイスを切断する',
     },
+    contact: {
+      title: 'お問い合わせ',
+      description: 'どんな種類のフィードバックやエラーや矛盾を報告することができます。',
+      email: {
+        label: 'メールアドレス',
+        placeholder: 'メールアドレス',
+      },
+      message: {
+        label: 'メッセージ / エラーレポート',
+        placeholder: 'こちらにメッセージを残してください。改善点や遭遇した問題などを教えていただけます。',
+      },
+      send: '送信',
+      errors: {
+        empty_message: 'メッセージを入力してください',
+        invalid_email: '有効なメールアドレスを入力してください',
+        message_too_long: 'メッセージが長すぎます',
+        not_sent: '申し訳ありません、メッセージを送信できませんでした 😢。後で再試行してみてください。',
+      },
+      messageSent: 'メッセージが送信されました',
+      feedbackThanks: 'フィードバックありがとうございます！',
+      close: '閉じる',
+    },
     tabChecker: {
       error: '別のタブからページが開かれたようです。<0></0>他のタブを停止して、このタブから再生を続行しますか？',
       button: 'このタブから続行',
@@ -208,6 +230,7 @@ export default {
       description: 'この問題が続く場合、このサイトのナビゲーションデータを削除してみてください。',
       refresh: 'ページをリロード',
       erase: 'ナビゲーションデータを削除',
+      notify: '問題を通報',
     },
   },
 };

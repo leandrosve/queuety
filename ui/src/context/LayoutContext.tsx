@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useState, useCallback, useContext } from 'react';
+import backdrops from '../static/backdrops';
 
 interface LayoutContextProps {
   backdrop: boolean;
@@ -6,25 +7,11 @@ interface LayoutContextProps {
   pictures?: { dark: string; light: string };
   updatePictures: (picture: LayoutBackdropPicture) => void;
 }
-const BACKDROP_PICTURES = {
-  deviceSelection: {
-    dark: 'https://images.pexels.com/photos/826108/pexels-photo-826108.jpeg?auto=compress&cs=tinysrgb&w=400',
-    light: 'https://images.pexels.com/photos/339119/pexels-photo-339119.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  mobileConnection: {
-    dark: 'https://images.pexels.com/photos/2179483/pexels-photo-2179483.jpeg?auto=compress&cs=tinysrgb&w=600',
-    light: 'https://i.ytimg.com/vi/XCaTOtyj37k/sddefault.jpg',
-  },
-  desktopWelcome: {
-    dark: 'https://images.pexels.com/photos/5191926/pexels-photo-5191926.jpeg?auto=compress&cs=tinysrgb&w=400',
-    light: 'https://img.freepik.com/free-photo/vivid-blurred-colorful-background_58702-2655.jpg',
-  },
-};
 
 const LayoutContext = React.createContext<LayoutContextProps>({
   backdrop: false,
   toggleBackdrop: () => {},
-  pictures: BACKDROP_PICTURES.deviceSelection,
+  pictures: backdrops.deviceSelection,
   updatePictures: () => {},
 });
 
@@ -43,7 +30,7 @@ const LayoutProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const updatePictures = useCallback((picture: LayoutBackdropPicture) => {
-    setPictures(BACKDROP_PICTURES[picture]);
+    setPictures(backdrops[picture]);
   }, []);
 
   return <LayoutContext.Provider value={{ backdrop, pictures, toggleBackdrop, updatePictures }}>{children}</LayoutContext.Provider>;

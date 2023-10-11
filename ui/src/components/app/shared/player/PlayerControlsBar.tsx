@@ -6,6 +6,7 @@ import { QueueControls } from '../../../../hooks/queue/useQueue';
 import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import { useMemo } from 'react';
+import { LuMaximize } from 'react-icons/lu';
 
 interface Props {
   status: PlayerStatus;
@@ -57,6 +58,12 @@ const PlayerControlsBar = ({ queueControls, playerControls, status }: Props) => 
         onClick={() => playerControls.onForward(10)}
       />
       <IconButton width={buttonWidth} icon={<Icon as={BsSkipEndFill} boxSize={5} />} aria-label='skip forward' onClick={queueControls.onSkip} />
+      <IconButton
+        width={buttonWidth}
+        icon={<Icon as={LuMaximize} boxSize={5} />}
+        aria-label='maximize'
+        onClick={() => playerControls.onFullscreenChange(true)}
+      />
     </ButtonGroup>
   );
 };

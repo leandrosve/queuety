@@ -52,7 +52,7 @@ const MobileAppUnifiedView = ({ queue, queueControls, playerControls, playerStat
             />
           )}
           <VisualizerControls status={playerStatus} controls={playerControls} queueControls={queueControls} />
-          <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5} mb={4}>
+          <Flex justifyContent='stretch' alignSelf='stretch' paddingX={5} mb={portrait ? 4 : 1}>
             <PlayerTrack
               status={playerStatus}
               onTimeChange={playerControls.onTimeChange}

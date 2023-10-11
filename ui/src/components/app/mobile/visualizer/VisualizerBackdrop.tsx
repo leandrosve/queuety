@@ -4,10 +4,15 @@ import { useState, useEffect, useCallback } from 'react';
 import classNames from 'classnames';
 import { useSettingsContext } from '../../../../context/SettingsContext';
 
-const VisualizerBackdrop = ({ src, zIndex }: { src: string; zIndex?: number }) => {
+interface Props {
+  variant?: 'normal' | 'welcome';
+  src: string;
+  zIndex?: number;
+}
+const VisualizerBackdrop = (props: Props) => {
   const { settings } = useSettingsContext();
   if (!settings.appearance.glassMode) return null;
-  return <Backdrop src={src} zIndex={zIndex} />;
+  return <Backdrop {...props} />;
 };
 
 interface BackdropState {
@@ -22,7 +27,7 @@ interface BackdropState {
   index: number;
 }
 
-const Backdrop = ({ src, zIndex }: { src: string; zIndex?: number }) => {
+const Backdrop = ({ src, zIndex, variant = 'normal' }: Props) => {
   const [state, setState] = useState<BackdropState>({ index: 0, a: { loaded: false }, b: { loaded: false } });
 
   const handleLoaded = useCallback((option: 'a' | 'b') => {
@@ -45,7 +50,7 @@ const Backdrop = ({ src, zIndex }: { src: string; zIndex?: number }) => {
   }, [src]);
 
   return (
-    <Flex className={classNames('visualizer-backdrop')} zIndex={zIndex}>
+    <Flex className={classNames('visualizer-backdrop', variant)} zIndex={zIndex}>
       <img
         src={state.a.src}
         onLoad={() => handleLoaded('a')}

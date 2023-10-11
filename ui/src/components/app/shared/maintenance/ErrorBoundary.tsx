@@ -6,6 +6,8 @@ import { LayoutBackdropPicture } from '../../../../context/LayoutContext';
 import { LuRefreshCcw } from 'react-icons/lu';
 import { PiBroom, PiBroomFill } from 'react-icons/pi';
 import { useTranslation } from 'react-i18next';
+import ContactModal from '../contact/ContactModal';
+import { BiMessageRoundedError } from 'react-icons/bi';
 interface Props {
   children: ReactNode;
 }
@@ -39,6 +41,8 @@ class ErrorBoundary extends Component<Props, State> {
 export const ErrorView = () => {
   useLayoutBackdrop(true, LayoutBackdropPicture.DEVICE_SELECTION);
   const { t } = useTranslation();
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const onDeleteData = () => {
     setLoading(true);
@@ -49,6 +53,7 @@ export const ErrorView = () => {
   };
   return (
     <Flex alignItems='center' justifyContent='center' grow={1} direction='column' padding={5} className='section-fade-in'>
+      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
       <Box>
         <Icon as={BrandIcon} boxSize={8} />
         <Heading size='md'>{t('errorView.title')}</Heading>
@@ -59,6 +64,10 @@ export const ErrorView = () => {
           </Button>
           <Button colorScheme='primary' isLoading={loading} onClick={onDeleteData}>
             {t('errorView.erase')}
+          </Button>
+
+          <Button onClick={() => setIsContactModalOpen(true)} leftIcon={<BiMessageRoundedError />}>
+            {t('errorView.notify')}
           </Button>
         </Flex>
       </Box>

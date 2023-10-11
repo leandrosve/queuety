@@ -1,6 +1,6 @@
 .glass-container {
   background: var(--bg-alpha-100)!important;
-  backdrop-filter: blur(10px)!important;
+  backdrop-filter: blur(20px)!important;
 }
 
 html[data-theme="light"][data-glass="true"] .glass-container {

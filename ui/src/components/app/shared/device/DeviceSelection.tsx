@@ -10,6 +10,7 @@ import { LuMonitorPlay, LuSmartphoneNfc } from 'react-icons/lu';
 import { isMobile as isMobileBrowser } from 'react-device-detect';
 import ConfirmDialog from '../../../common/ConfirmDialog';
 import { Trans, useTranslation } from 'react-i18next';
+import ContactModal from '../contact/ContactModal';
 export enum DeviceType {
   MOBILE = 'MOBILE',
   DESKTOP = 'DESKTOP',
@@ -21,6 +22,8 @@ interface Props {
 
 const DeviceSelection = ({ onSelected }: Props) => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isContactModalOpen, setContactModalOpen] = useState(false);
+
   const [confirmDialog, setConfirmDialog] = useState<DeviceType | null>(null);
   const { t } = useTranslation(undefined, { keyPrefix: 'deviceSelection' });
   useLayoutBackdrop(true, LayoutBackdropPicture.DEVICE_SELECTION);
@@ -41,7 +44,13 @@ const DeviceSelection = ({ onSelected }: Props) => {
   return (
     <>
       <NavbarMobile onOpenSettingsModal={() => setIsSettingsModalOpen(true)} />
-      <SettingsModal isMobile={true} isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} />
+      <SettingsModal
+        onOpenContact={() => setContactModalOpen(true)}
+        deviceType={null}
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+      />
+      <ContactModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
       <Flex padding={{ base: 5, md: '5rem' }} gap={3} justifyContent='center'>
         <Flex
           className='section-fade-in'

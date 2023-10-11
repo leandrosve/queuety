@@ -6,22 +6,27 @@ import { Flex } from '@chakra-ui/react';
 import NavbarMobile from './layout/NavbarMobile';
 import SettingsModal, { SettingsModalElements, SettingsModalSections } from '../shared/settings/SettingsModal';
 import { useState } from 'react';
+import { DeviceType } from '../shared/device/DeviceSelection';
+import ContactModal from '../shared/contact/ContactModal';
 
 type ModalOptions = { open: boolean; section?: SettingsModalSections; focusElement?: SettingsModalElements };
 const MobileApp = ({ onBack }: { onBack: () => void }) => {
   const [settingsModal, setSettingModal] = useState<ModalOptions>({ open: false });
+  const [isContactModalOpen, setContactModalOpen] = useState(false);
   const openSettingsModal = (section?: SettingsModalSections, focusElement?: SettingsModalElements) =>
     setSettingModal({ open: true, section, focusElement });
   return (
     <Flex className='layout' grow={1} zIndex={1}>
       <NavbarMobile onOpenSettingsModal={() => setSettingModal({ open: true })} />
       <SettingsModal
-        isMobile={true}
+        deviceType={DeviceType.MOBILE}
         isOpen={settingsModal.open}
         onClose={() => setSettingModal({ open: false })}
         defaultSection={settingsModal.section}
         focusElement={settingsModal.focusElement}
+        onOpenContact={() => setContactModalOpen(true)}
       />
+       <ContactModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
       <MobileAuthProvider>
         <Flex grow={1} alignItems='start' justifyContent='center' flex='1 1 0' position='relative'>
           <Content onOpenSettingsModal={openSettingsModal} onBack={onBack} />

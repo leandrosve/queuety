@@ -7,12 +7,15 @@ import {
   Box,
   BoxProps,
   Button,
+  CloseButton,
   Flex,
   FormControl,
   FormErrorIcon,
   FormErrorMessage,
   FormLabel,
   Heading,
+  Icon,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
@@ -25,6 +28,7 @@ import {
   Stack,
   Switch,
   Text,
+  Tooltip,
   useColorMode,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
@@ -34,24 +38,25 @@ import i18next from 'i18next';
 import { useMemo, useEffect, useState, useRef } from 'react';
 import SelectMenu from '../../../common/SelectMenu';
 import GlassModal from '../../../common/glass/GlassModal';
-import { LuLanguages, LuLogOut } from 'react-icons/lu';
-import { BiText } from 'react-icons/bi';
-import fonts from '../../../../data/fonts';
-import languages from '../../../../data/languages';
+import { LuLanguages, LuLogOut, LuSend, LuSendHorizonal } from 'react-icons/lu';
+import { BiMessageAltError, BiMessageRoundedError, BiText } from 'react-icons/bi';
+import fonts from '../../../../static/fonts';
+import languages from '../../../../static/languages';
 import AllowedUserList from '../../desktop/connection/AllowedUserList';
-import PlayerService from '../../../../services/api/player/PlayerService';
 import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 import MobilePlayerService from '../../../../services/api/player/MobilePlayerService';
 import Form from '../../../common/Form';
 import SubmitButton from '../../../common/SubmitButton';
 import DesktopPlayerService from '../../../../services/api/player/DesktopPlayerService';
+import { DeviceType } from '../device/DeviceSelection';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  isMobile?: boolean;
   defaultSection?: SettingsModalSections | null;
   focusElement?: SettingsModalElements;
+  deviceType: DeviceType | null;
+  onOpenContact: () => void;
 }
 
 export enum SettingsModalElements {
@@ -66,7 +71,7 @@ export enum SettingsModalSections {
 
 export type SettingsModalSetter = (section?: SettingsModalSections, focusElement?: SettingsModalElements) => void;
 
-const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement }: Props) => {
+const SettingsModal = ({ isOpen, onClose, defaultSection, deviceType, focusElement, onOpenContact }: Props) => {
   const { t } = useTranslation();
   const { colorMode, setColorMode } = useColorMode();
   const { settings, setNickname, setFontSize, setGlassMode, setFontFamily } = useSettingsContext();
@@ -74,7 +79,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
   const nicknameError = useMemo(() => !nicknameValue || nicknameValue.length < 3 || nicknameValue.length > 100, [nicknameValue]);
   const nicknameRef = useRef<HTMLInputElement>(null);
   const onSaveNickname = () => {
-    if (isMobile && nicknameValue != settings.nickname) {
+    if (deviceType == DeviceType.MOBILE && nicknameValue != settings.nickname) {
       MobilePlayerService.notifyUserChanged(nicknameValue);
     }
     setNickname(nicknameValue);
@@ -82,10 +87,15 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
 
   const onEndSession = () => {
     StorageUtils.clearAll({ exceptions: [StorageKey.SETTINGS, StorageKey.USER_ID] });
-    if (!isMobile) {
+    if (deviceType == DeviceType.DESKTOP) {
       DesktopPlayerService.sendSessionEnded();
     }
     location.reload();
+  };
+
+  const handleOpenContact = () => {
+    onClose();
+    onOpenContact();
   };
   useEffect(() => {
     setNicknameValue(settings.nickname);
@@ -115,11 +125,25 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
       maxWidth={'95vw'}
       initialFocusRef={initialFocusRef}
       title={
-        <Heading size='md' display='flex' gap={2} alignItems='center'>
-          {t('settings.settings')}
-        </Heading>
+        <Flex justifyContent='space-between'>
+          <Heading size='md' display='flex' gap={2} alignItems='center'>
+            {t('settings.settings')}
+          </Heading>
+          <Flex gap={3} flexDirection='row-reverse'>
+            <CloseButton onClick={onClose} />
+            <Tooltip hasArrow bg='bg.400' color='text.500' placement='top' label={t('settings.feedbackTooltip')}>
+              <IconButton
+                color='text.300'
+                icon={<Icon as={BiMessageRoundedError} boxSize='1.25rem' />}
+                aria-label='feedback'
+                variant='ghost'
+                size='sm'
+                onClick={handleOpenContact}
+              />
+            </Tooltip>
+          </Flex>
+        </Flex>
       }
-      hasCloseButton
     >
       <Box gap={3} paddingTop={0}>
         <Accordion allowToggle defaultIndex={defaultSection ?? 0}>
@@ -172,17 +196,21 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
                 options={languages}
               />
             </FormControl>
-            <FormControl>
-              <Flex justifyContent='space-between' alignItems='end' gap={2}>
-                <Flex direction='column'>
-                  <FormLabel mb={0}>{isMobile ? t('settings.session.title') : t('settings.hostSession.title')}</FormLabel>
-                  <Text fontSize='sm'>{isMobile ? t('settings.session.description') : t('settings.hostSession.description')}</Text>
+            {deviceType && (
+              <FormControl>
+                <Flex justifyContent='space-between' alignItems='end' gap={2}>
+                  <Flex direction='column'>
+                    <FormLabel mb={0}>{deviceType == DeviceType.MOBILE ? t('settings.session.title') : t('settings.hostSession.title')}</FormLabel>
+                    <Text fontSize='sm'>
+                      {deviceType == DeviceType.MOBILE ? t('settings.session.description') : t('settings.hostSession.description')}
+                    </Text>
+                  </Flex>
+                  <Button leftIcon={<LuLogOut />} flexShrink={0} size='sm' onClick={onEndSession}>
+                    {deviceType == DeviceType.MOBILE ? t('settings.session.button') : t('settings.hostSession.button')}
+                  </Button>
                 </Flex>
-                <Button leftIcon={<LuLogOut />} flexShrink={0} size='sm' onClick={onEndSession}>
-                  {isMobile ? t('settings.session.button') : t('settings.hostSession.button')}
-                </Button>
-              </Flex>
-            </FormControl>
+              </FormControl>
+            )}
           </Group>
           <Group title={t('settings.appearance')} _last={{ borderBottom: 'none' }}>
             <FormControl>
@@ -247,7 +275,7 @@ const SettingsModal = ({ isOpen, isMobile, onClose, defaultSection, focusElement
               </RadioGroup>
             </FormControl>
           </Group>
-          {!isMobile && (
+          {deviceType == DeviceType.DESKTOP && (
             <Group title={t('settings.connections')} borderBottomColor='transparent'>
               <AllowedUserList />
             </Group>
