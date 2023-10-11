@@ -4,7 +4,6 @@ import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import PlayerStatus from '../../../../model/player/PlayerStatus';
 import VisualizerControlsOverlay from './VisualizerControlsOverlay';
 import { PlayerControls } from '../../../../hooks/player/useDesktopPlayer';
-import VisualizerBackdrop from './VisualizerBackdrop';
 import HostData from '../../../../model/auth/HostData';
 import { useMemo } from 'react';
 import FormatUtils from '../../../../utils/FormatUtils';
@@ -70,7 +69,6 @@ const VisualizerVideo = ({ video, status, playerControls, host, disableOverlayCo
           </Flex>
         </Box>
       </Flex>
-      <VisualizerBackdrop src={video.thumbnail} />
     </Stack>
   );
 };

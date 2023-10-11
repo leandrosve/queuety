@@ -1,12 +1,10 @@
-import { Box, Button, Flex, Heading, Icon, Text } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
+import { Button, Flex, Icon, Text } from '@chakra-ui/react';
+import { useMemo } from 'react';
 import { PiScreencastFill } from 'react-icons/pi';
 import HostData from '../../../model/auth/HostData';
 import FormatUtils from '../../../utils/FormatUtils';
 import useLayoutBackdrop from '../../../hooks/layout/useLayoutBackdrop';
 import { LayoutBackdropPicture } from '../../../context/LayoutContext';
-import SearchLinkButton from '../shared/search/SearchLinkButton';
-import { BsSearch } from 'react-icons/bs';
 import BrandIcon from '../../../assets/images/BrandIcon';
 import { LuPlus } from 'react-icons/lu';
 
@@ -37,16 +35,13 @@ const MobileAppWelcome = ({ host, onOpenSearchModal }: Props) => {
           <Text noOfLines={1}>Agregar videos</Text>
         </Button>
       </Flex>
-      <Box marginTop='auto' textAlign='center' paddingBottom={10}>
-        <Text>Conectado a </Text>
-        <Flex alignItems='center' position='relative' color='white' zIndex={1}>
-          <Box height='100%' width='100%' opacity='.7' position='absolute' backgroundColor={`${hostColor}.500`} borderRadius='md' zIndex={-1} />
-          <Flex alignItems='center' paddingX={2} gap={1}>
-            <PiScreencastFill />
-            <Text as='span'>{host.nickname}</Text>
-          </Flex>
+      <Flex justifyContent='center' alignItems='center' wrap='wrap' gap={2} rowGap={1} marginTop='auto' textAlign='center' paddingBottom={10}>
+        <Text fontWeight='light'>Conectado a </Text>
+        <Flex alignItems='center' position='relative' color='white' borderRadius='lg' backgroundColor={`${hostColor}.500`} paddingX={2} gap={1}>
+          <PiScreencastFill />
+          <Text as='span'>{host.nickname}</Text>
         </Flex>
-      </Box>
+      </Flex>
     </Flex>
   );
 };

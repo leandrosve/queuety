@@ -4,6 +4,7 @@ import { Flex, Icon, IconButton } from '@chakra-ui/react';
 import classNames from 'classnames';
 import { LuChevronUp } from 'react-icons/lu';
 import MobileQueueContent, { MobileQueueContentProps } from './MobileQueueContent';
+import GlassContainer from '../../../common/glass/GlassContainer';
 
 const MobileQueuePortrait = (contentProps: MobileQueueContentProps) => {
   const [expanded, setExpanded] = useState(false);
@@ -29,6 +30,7 @@ const MobileQueuePortrait = (contentProps: MobileQueueContentProps) => {
           marginBottom='-1rem'
           icon={<Icon transition='all 500ms' boxSize='1.25rem' as={LuChevronUp} transform={`scaleY(${expanded ? '-100%' : 1})`} />}
         />
+        <GlassContainer asBefore/>
         <MobileQueueContent {...contentProps} />
       </Flex>
     </Flex>

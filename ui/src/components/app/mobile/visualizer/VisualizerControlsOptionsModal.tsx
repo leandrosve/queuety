@@ -1,4 +1,4 @@
-import { Button, Flex, Icon, Spinner, Text } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, Icon, Spinner, Stack, Text } from '@chakra-ui/react';
 import GlassModal from '../../../common/glass/GlassModal';
 import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import { LuMaximize, LuSlidersHorizontal } from 'react-icons/lu';
@@ -57,14 +57,31 @@ const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Pr
           )}
         </Flex>
       </Option>
-      <Menu
-        options={playbackRateOptions}
-        onChange={onChangeRate}
-        label={t('player.playbackRate')}
-        icon={RiSpeedUpFill}
-        value={status.rate}
-        isLoading={loading.rate}
-      />
+
+      <Stack padding={3} spacing={2} align='start'>
+        <Flex alignItems='center' gap={4}>
+          <Icon as={RiSpeedUpFill} boxSize={5} />
+          <Text>{t('player.playbackRate')}</Text>
+        </Flex>
+
+        <Box position='relative'>
+          <ButtonGroup isAttached borderRadius='md' size='sm' flexWrap='wrap' justifyContent='center'>
+            {playbackRateOptions.map((rate) => (
+              <Button
+                key={rate[0]}
+                minWidth='4rem'
+                variant={status.rate == rate[0] ? 'solid' : 'solid'}
+                colorScheme={status.rate == rate[0] ? 'primary' : 'gray'}
+                onClick={() => onChangeRate(rate[0])}
+                isDisabled={loading.rate}
+              >
+                {rate[0] == 1 ? 'Normal' : `${rate[1]}x`}
+              </Button>
+            ))}
+          </ButtonGroup>
+          {loading.rate && <Spinner position='absolute' top={0} left={0} right={0} bottom={0} margin='auto' />}
+        </Box>
+      </Stack>
     </GlassModal>
   );
 };

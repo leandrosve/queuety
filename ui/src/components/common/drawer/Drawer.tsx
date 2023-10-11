@@ -1,5 +1,5 @@
 import { Box, BoxProps, Fade } from '@chakra-ui/react';
-import React, { Children, PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import './drawer.css';
 import classNames from 'classnames';
 interface Props extends PropsWithChildren {
@@ -15,6 +15,7 @@ const Drawer = ({ isOpen, onClose, contentProps, children }: Props) => {
     }
     document.documentElement.removeAttribute('data-drawer-open');
   }, [isOpen]);
+
   return (
     <Box className={classNames('drawer', { open: isOpen, close: !isOpen })}>
       <Fade in={isOpen}>

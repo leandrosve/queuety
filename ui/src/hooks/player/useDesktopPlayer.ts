@@ -106,7 +106,7 @@ const useDesktopPlayer = (
     const current = { ...status, fullscreen };
     updateStatusContext(current);
     // So it doesn't make too many unnecesary requests
-    const debounceTime = isBuffering ? 600 : 200;
+    const debounceTime = isBuffering ? 300 : 200;
     const timeout = setTimeout(() => {
       // Need to do this in separate effects so it doesn't generate any loops
       setStatusHistory((prev) => ({ prev: prev.current, current }));

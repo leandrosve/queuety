@@ -11,16 +11,11 @@ interface Props extends FlexProps {
   status: PlayerStatus;
   hostStatus?: HostStatus;
   currentQueuedVideo?: YoutubeVideoDetail;
-  timeTimestamp: number;
 }
-const getInitialTime = (time: number, timestamp: number, rate: number) => {
-  console.log({ time, timestamp, rate });
-  return time + ((new Date().getTime() - timestamp )/ 1000) * rate;
-};
-const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus, timeTimestamp, ...props }: Props) => {
+
+const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus, ...props }: Props) => {
   const { currentTime, duration, rate, state } = useMemo(() => {
     if (currentQueuedVideo && currentQueuedVideo?.id !== status.videoId) {
-      console.log('AAAA');
       return {
         currentTime: 0,
         duration: currentQueuedVideo.duration,
@@ -30,11 +25,8 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus, tim
       };
     }
 
-    return {
-      ...status,
-      currentTime: getInitialTime(status.currentTime, timeTimestamp, status.rate),
-    };
-  }, [status, currentQueuedVideo, timeTimestamp]);
+    return status;
+  }, [status, currentQueuedVideo]);
 
   const [time, setTime] = useState(currentTime || 0);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -47,7 +39,9 @@ const PlayerTrack = ({ onTimeChange, status, currentQueuedVideo, hostStatus, tim
     onTimeChange(value);
     setShowTooltip(false);
   };
-  useEffect(() => setTime(currentTime || 0), [currentTime]);
+  useEffect(() => {
+    setTime(currentTime || 0);
+  }, [currentTime]);
 
   useEffect(() => {
     let interval: number;

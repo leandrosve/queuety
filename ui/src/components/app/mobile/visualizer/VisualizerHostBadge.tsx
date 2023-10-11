@@ -1,5 +1,5 @@
-import { Box, Flex, FlexProps, Text } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
+import { Flex, FlexProps, Text } from '@chakra-ui/react';
+import { useMemo } from 'react';
 import { PiScreencastFill } from 'react-icons/pi';
 import HostData from '../../../../model/auth/HostData';
 import FormatUtils from '../../../../utils/FormatUtils';
@@ -31,12 +31,9 @@ const VisualizerHostBadge = ({ host, color, hasShadow, ...props }: Props) => {
       <Flex alignItems='center' gap={2}>
         <Text>{t('player.playingInDesktop')}</Text>
       </Flex>
-      <Flex alignItems='center' position='relative' color='white' zIndex={1}>
-        <Box height='100%' width='100%' opacity='.7' position='absolute' backgroundColor={`${hostColor}.500`} borderRadius='md' zIndex={-1} />
-        <Flex alignItems='center' paddingX={2} gap={1}>
-          <PiScreencastFill />
-          <Text as='span'>{host.nickname}</Text>
-        </Flex>
+      <Flex alignItems='center' color='white' backgroundColor={`${hostColor}.500`} borderRadius='md' paddingX={2} gap={1}>
+        <PiScreencastFill />
+        <Text as='span'>{host.nickname}</Text>
       </Flex>
     </Flex>
   );
