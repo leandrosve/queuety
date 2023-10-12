@@ -1,4 +1,4 @@
-import APIService, { APIResponse } from './APIService';
+import APIService from './APIService';
 
 export interface YoutubeVideoDetail {
   id: string;

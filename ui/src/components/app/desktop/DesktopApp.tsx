@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PlayerScriptProvider from './player/PlayerScriptProvider';
-import { Flex, Spinner } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import { PlayerStatusProvider } from '../../../context/PlayerStatusContext';
 import { DesktopConnectionProvider, useDesktopConnectionContext } from '../../../context/DesktopConnectionContext';
 import { DesktopAuthProvider } from '../../../context/DesktopAuthContext';
@@ -15,7 +15,6 @@ import DesktopConnectionModal from './connection/DesktopConnectionModal';
 import DesktopAppPlayerView from './DesktopAppPlayerView';
 import DesktopNotifications from './notifications.tsx/DesktopNotifications';
 import { DesktopNotificationsProvider } from '../../../context/DesktopNotificationsContext';
-import useLayoutBackdrop from '../../../hooks/layout/useLayoutBackdrop';
 import FullPageSpinner from '../../common/FullPageSpinner';
 import { DeviceType } from '../shared/device/DeviceSelection';
 import ContactModal from '../shared/contact/ContactModal';

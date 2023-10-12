@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Button, Collapse, Flex, Icon, IconButton, Stack, Switch, Text } from '@chakra-ui/react';
-import { LuChevronDown, LuChevronUp, LuInfinity } from 'react-icons/lu';
+import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 import { ImLoop } from 'react-icons/im';
 
 import './desktopQueue.css';

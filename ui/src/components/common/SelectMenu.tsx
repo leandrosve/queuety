@@ -1,7 +1,6 @@
 import { Button, ButtonProps, Flex, Menu, MenuButton, MenuItem, MenuList, Portal } from '@chakra-ui/react';
 import { LuCheck, LuChevronDown } from 'react-icons/lu';
 import { RefObject, ReactNode, useMemo } from 'react';
-import GlassContainer from './glass/GlassContainer';
 
 interface Props<T> {
   value: T;

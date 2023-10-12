@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import AuthRequest from '../../../../model/auth/AuthRequest';
 import AutoAvatar from '../../../common/AutoAvatar';
@@ -6,7 +6,6 @@ import GlassContainer from '../../../common/glass/GlassContainer';
 import { motion } from 'framer-motion';
 import { useDesktopAuthContext } from '../../../../context/DesktopAuthContext';
 import { AuthResponseStatus } from '../../../../model/auth/AuthResponse';
-import { LuCheckCircle } from 'react-icons/lu';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { Trans, useTranslation } from 'react-i18next';
 import SubmitButton from '../../../common/SubmitButton';

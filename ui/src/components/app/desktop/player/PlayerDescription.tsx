@@ -4,7 +4,7 @@ import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
-import { BsCircleFill, BsDash, BsRecordFill } from 'react-icons/bs';
+import { BsRecordFill } from 'react-icons/bs';
 
 interface Props {
   video: YoutubeVideoDetail;

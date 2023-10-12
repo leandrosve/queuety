@@ -15,7 +15,7 @@ interface Props {
   onMoveNext: () => void;
   onMoveLast: () => void;
 }
-const MobileQueueItemModal = ({ isOpen, onClose, onPlay, onRemove, onMoveLast, onMoveNext, item }: Props) => {
+const MobileQueueItemModal = ({ isOpen, onClose, onPlay, onRemove, onMoveLast, onMoveNext }: Props) => {
   const { t } = useTranslation();
   const handleAction = (action: 'play' | 'remove' | 'moveLast' | 'moveNext') => {
     const actions = {

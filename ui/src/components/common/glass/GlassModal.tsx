@@ -11,7 +11,7 @@ import {
   ModalProps,
   ResponsiveValue,
 } from '@chakra-ui/react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import './glass.css';
 
 interface Props extends ModalProps {

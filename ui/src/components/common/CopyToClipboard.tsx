@@ -1,13 +1,15 @@
-import { Button, ButtonProps, Flex, IconButton, Tooltip } from '@chakra-ui/react';
+import { Button, ButtonProps, Flex, Tooltip } from '@chakra-ui/react';
 import { TbClipboard, TbClipboardCheck } from 'react-icons/tb';
-import React, { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+
 interface Props extends ButtonProps {
   value: string;
   tooltip?: string;
   copiedTooltip?: string;
   icon?: ReactNode;
 }
+
 const CopyToClipboard = ({ value, tooltip, copiedTooltip, icon, children, ...props }: Props) => {
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
   const { t } = useTranslation();

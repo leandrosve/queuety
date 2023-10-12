@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, IconButton, Image, Link, Tag, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, IconButton, Image, Link, Text } from '@chakra-ui/react';
 import { LuPlay, LuListPlus, LuListEnd } from 'react-icons/lu';
 import { BsYoutube } from 'react-icons/bs';
 import { useTranslation } from 'react-i18next';

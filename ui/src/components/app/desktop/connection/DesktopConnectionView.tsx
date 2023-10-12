@@ -4,7 +4,7 @@ import { useDesktopAuthContext } from '../../../../context/DesktopAuthContext';
 import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 
 const DesktopConnectionView = () => {
-  const { connectionId, authRoom, playerRoom, isSocketReady, authorizeRequest } = useDesktopAuthContext();
+  const { connectionId, authRoom, playerRoom, isSocketReady } = useDesktopAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = (open?: boolean) => {
     setIsOpen((p) => {

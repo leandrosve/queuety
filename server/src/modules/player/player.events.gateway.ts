@@ -4,14 +4,13 @@ import { Socket } from 'socket.io';
 import { BadRequestExceptionFilter } from 'src/common/filters/BadRequestExceptionFilter';
 import { InitializeEvent, PlayerEventRequest } from './model/PlayerEvents';
 import { PlayerEventsService } from './player.events.service';
-import { Queue } from './model/Queue';
 import PlayerStatus from './model/PlayerStatus';
 import { PlayerStatusAction } from './model/PlayerStatusAction';
-import allowedOrigins from 'src/config/allowedOrigins';
+import getAllowedOrigins from 'src/config/allowedOrigins';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseFilters(BadRequestExceptionFilter)
-@WebSocketGateway({ namespace: '/player', cors: { origin: [...allowedOrigins, 'ws://admin.socket.io'] } } )
+@WebSocketGateway({ namespace: '/player', cors: { origin: [...getAllowedOrigins(), 'ws://admin.socket.io'] } } )
 export class PlayerEventsGateway {
   private readonly logger = new Logger(PlayerEventsGateway.name);
 

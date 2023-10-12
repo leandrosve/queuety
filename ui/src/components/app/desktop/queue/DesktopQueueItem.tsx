@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Box, Flex, Heading, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Spinner, Tag, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Icon, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Spinner, Text } from '@chakra-ui/react';
 import { BsDot, BsFillPlayFill } from 'react-icons/bs';
 import { LuAlignJustify, LuMoreVertical, LuTrash2 } from 'react-icons/lu';
 import classNames from 'classnames';

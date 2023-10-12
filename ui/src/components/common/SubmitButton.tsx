@@ -1,5 +1,5 @@
 import { Box, Button, ButtonProps, Icon, Text } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LuCheckCircle } from 'react-icons/lu';
 
 interface Props extends ButtonProps {

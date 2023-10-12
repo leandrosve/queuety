@@ -1,10 +1,9 @@
 import { Component, ErrorInfo, ReactNode, useState } from 'react';
-import { Box, Button, Flex, Heading, Icon, Image, Text, Wrap, WrapItem } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Icon, Text } from '@chakra-ui/react';
 import BrandIcon from '../../../../assets/images/BrandIcon';
 import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
 import { LayoutBackdropPicture } from '../../../../context/LayoutContext';
 import { LuRefreshCcw } from 'react-icons/lu';
-import { PiBroom, PiBroomFill } from 'react-icons/pi';
 import { useTranslation } from 'react-i18next';
 import ContactModal from '../contact/ContactModal';
 import { BiMessageRoundedError } from 'react-icons/bi';

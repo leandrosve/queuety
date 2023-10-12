@@ -7,7 +7,6 @@ import MobileQueueItemModal from './MobileQueueItemModal';
 import { useCallback, useState } from 'react';
 import DragAndDropList from '../../../common/DragAndDropList';
 import { useTranslation } from 'react-i18next';
-import GlassContainer from '../../../common/glass/GlassContainer';
 import ConfirmDialog from '../../../common/ConfirmDialog';
 
 export interface MobileQueueContentProps {

@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Grid, GridItem, Heading, Icon, IconButton } from '@chakra-ui/react';
+import { Divider, Flex, Grid, GridItem, Heading, Icon, IconButton } from '@chakra-ui/react';
 import { Button, Spinner, Stack, Text } from '@chakra-ui/react';
 import { useMemo, useState, useCallback } from 'react';
 import QRCode from 'react-qr-code';

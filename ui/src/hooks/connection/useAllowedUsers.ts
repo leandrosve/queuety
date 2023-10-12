@@ -15,7 +15,7 @@ const getSavedUsers = (): AllowedUser[] => {
 const useAllowedUsers = () => {
   const [initialized, setInitialized] = useState(false);
   const [list, setList] = useState<AllowedUser[]>(getSavedUsers());
-  const [lastAllowed, setLastAllowed] = useState<AllowedUser | null>();
+  const [lastAllowed, setLastAllowed] = useState<AllowedUser | null>(null);
 
   const add = (user: AllowedUser) => {
     setList((prev) => {

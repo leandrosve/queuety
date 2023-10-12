@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Heading, Icon, Image, Text } from '@chakra-ui/react';
+import { Button, Divider, Flex, Heading, Icon, Text } from '@chakra-ui/react';
 import StorageUtils, { StorageKey } from '../../../../utils/StorageUtils';
 import useLayoutBackdrop from '../../../../hooks/layout/useLayoutBackdrop';
 import NavbarMobile from '../../mobile/layout/NavbarMobile';

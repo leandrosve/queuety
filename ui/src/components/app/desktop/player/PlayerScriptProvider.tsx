@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import Logger from '../../../../utils/Logger';
 

@@ -6,11 +6,11 @@ import { AuthRequestDTO } from './dto/AuthRequestDTO';
 import { AuthService } from './auth.service';
 import { BadRequestExceptionFilter } from 'src/common/filters/BadRequestExceptionFilter';
 import { JoinAuthRoomRequestDTO } from './dto/JoinAuthRoomRequestDTO';
-import allowedOrigins from 'src/config/allowedOrigins';
+import getAllowedOrigins from 'src/config/allowedOrigins';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseFilters(BadRequestExceptionFilter)
-@WebSocketGateway({ namespace: '/auth', cors: { origin: [...allowedOrigins, 'ws://admin.socket.io'] } })
+@WebSocketGateway({ namespace: '/auth', cors: { origin: [...getAllowedOrigins(), 'ws://admin.socket.io'] } })
 export class AuthGateway implements OnGatewayConnection {
   private readonly logger = new Logger(AuthGateway.name);
 

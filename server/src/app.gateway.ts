@@ -1,8 +1,8 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { instrument } from '@socket.io/admin-ui';
 import { Server as SocketServer } from 'socket.io';
-import allowedOrigins from './config/allowedOrigins';
 import { Logger } from '@nestjs/common';
+import getAllowedOrigins from './config/allowedOrigins';
 
 interface BasicAuthentication {
   type: 'basic';
@@ -10,7 +10,7 @@ interface BasicAuthentication {
   password: string;
 }
 
-@WebSocketGateway({ cors: { origin: [...allowedOrigins, 'ws://admin.socket.io', 'https://admin.socket.io'] } })
+@WebSocketGateway({ cors: { origin: [...getAllowedOrigins(), 'ws://admin.socket.io', 'https://admin.socket.io'] } })
 export class AppGateway {
   @WebSocketServer()
   private server: SocketServer;

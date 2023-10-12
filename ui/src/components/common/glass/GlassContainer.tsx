@@ -1,4 +1,4 @@
-import { Box, BoxProps, Flex, FlexProps } from '@chakra-ui/react';
+import { Box, BoxProps } from '@chakra-ui/react';
 import classNames from 'classnames';
 import './glass.css';
 

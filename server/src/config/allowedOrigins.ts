@@ -1,1 +1,7 @@
-export default ['https://localhost:5173', 'http://localhost:5173', 'http://192.168.0.226:5173', 'https://192.168.0.226:5173'];
+const getAllowedOrigins = () => {
+  const allowedOrigins = process.env.ALLOWED_URLS ?? '';
+  const origins = allowedOrigins.split(',');
+  return origins;
+};
+
+export default getAllowedOrigins;

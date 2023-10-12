@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { Box, Flex, Heading, Icon, IconButton, Image, ModalProps, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Icon, IconButton, Image, Text } from '@chakra-ui/react';
 import { BsFillPlayFill } from 'react-icons/bs';
 import { LuAlignJustify, LuMoreHorizontal } from 'react-icons/lu';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../utils/FormatUtils';
-import QueueItemProgressBar from '../../shared/queue/QueueItemProgressBar';
 import { motion } from 'framer-motion';
-import GlassModal from '../../../common/glass/GlassModal';
 import LivestreamTag from '../../shared/queue/LivestreamTag';
 
 interface Props {

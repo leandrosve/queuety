@@ -1,4 +1,4 @@
-import { Button, Flex, Icon, IconButton, Image, Text, useColorMode, useMediaQuery } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, useColorMode, useMediaQuery } from '@chakra-ui/react';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { HiMoon, HiSun } from 'react-icons/hi';
