@@ -94,6 +94,7 @@ export default {
         invalid: '3文字から100文字の間で指定してください',
       },
       language: '言語',
+      feedbackTooltip: 'フィードバックを送信する/エラーを報告する',
       session: {
         title: 'セッションの終了',
         description: 'デバイスの切断',
