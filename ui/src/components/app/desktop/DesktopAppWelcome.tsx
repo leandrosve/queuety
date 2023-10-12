@@ -133,8 +133,8 @@ const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack, onOpenSearchModal }:
         isOpen={backDialog}
         onCancel={() => setBackDialog(false)}
         onConfirm={handleBackConfirmation}
-        title={t('receptorWelcome.backConfirmation.title')}
-        description={t('receptorWelcome.backConfirmation.description')}
+        title={t('receptorWelcome.backConfirm.title')}
+        description={t('receptorWelcome.backConfirm.description')}
       />
       <ConfirmDialog
         isOpen={regenCodeDialog}
