@@ -2,13 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import allowedOrigins from './config/allowedOrigins';
+import getAllowedOrigins from './config/allowedOrigins';
 
 async function bootstrap() {
   const config = new DocumentBuilder().setTitle('Queuety API Docs').setVersion('1.0').addTag('queuety').build();
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({ origin: allowedOrigins });
+  app.enableCors({ origin: getAllowedOrigins() });
   app.setGlobalPrefix('/api');
 
   app.useGlobalPipes(
