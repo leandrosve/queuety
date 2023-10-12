@@ -75,7 +75,8 @@ export class YoutubeService {
         .get(`https://youtube.googleapis.com/youtube/v3/${path}?${params}&key=${this.YOUTUBE_DATA_API_KEY}`)
         .pipe(map((res) => res.data))
         .pipe(
-          catchError(() => {
+          catchError((e) => {
+            this.logger.error('Youtube API error: ' + JSON.stringify(e));
             throw new BadRequestException({ error: 'youtube_api_error' });
           })
         )
