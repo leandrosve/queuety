@@ -14,11 +14,6 @@ export default {
       example: 'e.g.',
       goHome: 'Home',
     },
-    time: {
-      days_ago: '{{days}} days ago',
-      months_ago: '{{days}} months ago',
-      years_ago: '{{days}} years ago',
-    },
     layout: {
       theme: {
         switch: 'Switch between dark and light theme',
@@ -233,7 +228,6 @@ export default {
       refresh: 'Reload page',
       erase: 'Delete navigation data',
       notify: 'Report issue',
-
     },
   },
 };
