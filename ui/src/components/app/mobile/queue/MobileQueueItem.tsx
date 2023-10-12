@@ -1,9 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Box, Flex, Heading, Icon, IconButton, Image, Text } from '@chakra-ui/react';
 import { BsFillPlayFill } from 'react-icons/bs';
 import { LuAlignJustify, LuMoreHorizontal } from 'react-icons/lu';
 import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import FormatUtils from '../../../../utils/FormatUtils';
 import { motion } from 'framer-motion';
@@ -14,15 +13,11 @@ interface Props {
   isPlaying?: boolean;
   isDragging?: boolean;
   isCurrent?: boolean;
-  onRemove: () => void;
   onPlay: () => void;
   onOpenOptions?: () => void;
 }
-export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRemove, onPlay, onOpenOptions }: Props) => {
-  const [isTapping, setIsTapping] = useState(false);
-
+export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onPlay, onOpenOptions }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation();
   useEffect(() => {
     if (isCurrent) {
       ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -30,7 +25,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
   }, [isCurrent]);
 
   return (
-    <motion.div onTouchStart={() => setIsTapping(true)} onTouchEnd={() => setIsTapping(false)}>
+    <motion.div>
       <Flex
         className={classNames({ 'is-dragging': isDragging })}
         cursor='pointer'
@@ -45,7 +40,7 @@ export const MobileQueueItem = ({ video, isPlaying, isCurrent, isDragging, onRem
         height={'4.2rem' /* Must be hardcoded so the d&d placeholder does not mess up*/}
       >
         <Box position='relative' flexShrink={0} paddingX={2} height='4.2rem' padding='3px'>
-          <Image objectFit='cover' height='100%' borderRadius='md' aspectRatio={'16/9'} src={video.thumbnail} boxShadow='sm'/>
+          <Image objectFit='cover' height='100%' borderRadius='md' aspectRatio={'16/9'} src={video.thumbnail} boxShadow='sm' />
           {isPlaying && (
             <Icon as={BsFillPlayFill} borderRadius='full' paddingX={1} position='absolute' bottom='.2rem' left='.2rem' background='bgAlpha.100' />
           )}

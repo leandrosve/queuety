@@ -87,7 +87,6 @@ const MobileQueueContent = ({ queue, currentItem, onClear, onPlay, onRemove, onS
               video={q.video}
               isCurrent={q.id == currentItem?.id}
               onPlay={() => onPlay(q)}
-              onRemove={() => onRemove(q.id)}
               onOpenOptions={() => setSelectedItem(q)}
             />
           )}
