@@ -16,6 +16,10 @@ const Drawer = ({ isOpen, onClose, contentProps, children }: Props) => {
     document.documentElement.removeAttribute('data-drawer-open');
   }, [isOpen]);
 
+  useEffect(() => {
+    return () => document.documentElement.removeAttribute('data-drawer-open');
+  }, []);
+
   return (
     <Box className={classNames('drawer', { open: isOpen, close: !isOpen })}>
       <Fade in={isOpen}>
