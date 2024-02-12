@@ -25,6 +25,7 @@ export default {
       playNow: 'Reproduzir agora',
       playNext: 'Adicionar como próximo na fila',
       playLast: 'Adicionar à fila',
+      added: 'Item adicionado à fila!',
       errors: {
         video_not_found: 'Desculpe, não foi possível encontrar o vídeo solicitado',
         malformed_url: 'A URL fornecida não corresponde a um vídeo do YouTube',

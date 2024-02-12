@@ -30,6 +30,7 @@ export default {
       playNow: '今すぐ再生',
       playNext: 'キューに次に追加',
       playLast: 'キューに追加',
+      added: 'キューにアイテムが追加されました！',
       errors: {
         video_not_found: '申し訳ありません、リクエストされたビデオが見つかりませんでした',
         malformed_url: '提供されたURLはYouTubeビデオに対応していません',

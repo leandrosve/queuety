@@ -25,6 +25,7 @@ export default {
       playNow: 'Play now',
       playNext: 'Add as next in queue',
       playLast: 'Add to queue',
+      added: 'Item added to queue!',
       errors: {
         video_not_found: "Sorry, we couldn't find the request video",
         malformed_url: 'The provided URL does not correspond to a YouTube Video',
@@ -211,12 +212,12 @@ export default {
       skip: 'Continue with same session',
     },
     qrScanner: {
-      title: 'Escanear QR',
+      title: "Scan QR",
       errors: {
-        camera_missing: 'No se ha podido encontrar una cámara para escanear el QR',
-        default: 'No se ha podido iniciar la cámara',
-        invalid_url: 'El código escaneado no corresponde a una URL válida',
-      },
+        camera_missing: "Could not find a camera to scan the QR code",
+        default: "Failed to initialize the camera",
+        invalid_url: "The scanned code does not correspond to a valid URL"
+      }
     },
     maintenance: {
       title: 'We`re sorry, it seems our servers are not working correctly...',

@@ -2,6 +2,8 @@ import {
   Box,
   Collapse,
   Flex,
+  FormControl,
+  FormLabel,
   Icon,
   IconButton,
   Input,
@@ -10,14 +12,17 @@ import {
   InputRightElement,
   ScaleFade,
   Spinner,
+  Switch,
   Text,
+  useToast,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BsSearch, BsX } from 'react-icons/bs';
 import SearchVideoDetail from './SearchVideoDetail';
 import { useTranslation } from 'react-i18next';
 import YoutubeService, { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import GlassModal from '../../../common/glass/GlassModal';
+import { useSettingsContext } from '../../../../context/SettingsContext';
 
 const getErrorCode = (errorCode: string) => {
   if (['video_not_found', 'malformed_url', 'shorts_url'].includes(errorCode)) return errorCode;
@@ -38,39 +43,65 @@ const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props)
   const [inputFocus, setInputFocus] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
-  const handleInputChange = async (url: string) => {
-    url = url.trim();
-    setInputValue(url);
-    if (!url) {
-      setError('');
-      return;
-    }
-    var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = url.match(regExp);
+  const toast = useToast();
 
-    if (!match || match[2].length !== 11) {
-      if (url.includes('/shorts/')) {
-        setError('shorts_url');
+  const {
+    toggleDefaultAddToQueue,
+    settings: {
+      controls: { defaultAddToQueue },
+    },
+  } = useSettingsContext();
+
+  const handleInputChange = useCallback(
+    async (url: string) => {
+      url = url.trim();
+      setInputValue(url);
+      if (!url) {
+        setError('');
         return;
       }
-      setError('malformed_url');
-      return;
-    }
-    const id = match[2];
-    setLoadingDetails(true);
-    const res = await YoutubeService.getVideoDetails(id);
-    setLoadingDetails(false);
-    if (res.hasError) {
-      setVideoDetails(null);
-      setError(res.error);
-      return;
-    }
-    setError('');
-    setVideoDetails(res.data);
-  };
+      var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      var match = url.match(regExp);
 
-  const { t } = useTranslation();
+      if (!match || match[2].length !== 11) {
+        if (url.includes('/shorts/')) {
+          setError('shorts_url');
+          return;
+        }
+        setError('malformed_url');
+        return;
+      }
+      const id = match[2];
+      setLoadingDetails(true);
+      const res = await YoutubeService.getVideoDetails(id);
+      setLoadingDetails(false);
+      if (res.hasError) {
+        setVideoDetails(null);
+        setError(res.error);
+        return;
+      }
+      setError('');
+      const details = res.data;
+      setVideoDetails(details);
+      if (details && defaultAddToQueue) {
+        onPlayLast(details);
+        onClose();
+        toast({
+          title: t('playerSearch.added'),
+          status: 'success',
+          duration: 2000,
+          position: 'top',
+          isClosable: true,
+        });
+        return;
+      }
+      
+    },
+    [defaultAddToQueue, onPlayLast, onClose]
+  );
+
 
   return (
     <GlassModal contentProps={{ width: 700, maxWidth: '95vw' }} bodyProps={{ padding: 4 }} isOpen={isOpen} onClose={onClose}>
@@ -103,7 +134,7 @@ const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props)
             </InputRightElement>
           )}
         </InputGroup>
-        <Flex marginTop={1} paddingLeft={1}>
+        <Flex marginTop={1} paddingLeft={1} flexWrap='wrap'>
           <Text fontWeight='normal' fontSize='sm' opacity={0} width={0} pointerEvents='none' aria-hidden>
             -
           </Text>
@@ -119,6 +150,13 @@ const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props)
               </Text>
             )}
           </Collapse>
+
+          <FormControl display='inline-flex' alignItems='center' w='auto' marginLeft='auto'>
+            <FormLabel htmlFor='playLast' mb='0' fontSize='sm' fontWeight='light'>
+              {t('playerSearch.playLast')}
+            </FormLabel>
+            <Switch id='playLast' size='sm' colorScheme='primary' isChecked={defaultAddToQueue} onChange={() => toggleDefaultAddToQueue()} />
+          </FormControl>
         </Flex>
       </Box>
 

@@ -22,6 +22,10 @@ export default {
     playerSearch: {
       pasteUrl: 'Pega aquí la URL del video',
       example: 'Por ej:',
+      playNow: 'Reproducir ahora',
+      playNext: 'Agregar como siguiente',
+      playLast: 'Agregar a la cola',
+      added: '¡Agregado a la cola!',
       errors: {
         video_not_found: 'Lo sentimos, no pudimos encontrar el video',
         malformed_url: 'La URL no corresponde a un video de YouTube',

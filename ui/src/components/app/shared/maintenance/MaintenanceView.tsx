@@ -14,7 +14,7 @@ const MaintenanceView = () => {
   const checkStatus = async () => {
     const res = await StatusService.getStatus();
     if (!res.hasError) {
-      navigate('/app');
+      navigate('/app', { replace: true });
     }
     setLoading(false);
   };

@@ -35,6 +35,7 @@ const DesktopAppWelcome = ({ onOpenSettingsModal, onGoBack, onOpenSearchModal }:
   const handleBack = useCallback(async () => {
     if (!allowedUsers.list?.length) {
       handleBackConfirmation();
+      return;
     }
     setBackDialog(true);
   }, [allowedUsers]);

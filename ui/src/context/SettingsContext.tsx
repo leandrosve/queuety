@@ -10,6 +10,9 @@ export interface Settings {
     glassMode: boolean;
     fontFamily: string;
   };
+  controls: {
+    defaultAddToQueue: boolean;
+  };
 }
 
 export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -20,15 +23,24 @@ export type SettingsContextProps = {
   setFontSize: (size: FontSize) => void;
   setGlassMode: (enabled: boolean) => void;
   setFontFamily: (family: string) => void;
+  toggleDefaultAddToQueue: () => void;
 };
 
-const initial: Settings = { nickname: '', appearance: { fontSize: 'md', glassMode: true, fontFamily: 'Nunito' } };
+const initial: Settings = {
+  nickname: '',
+  appearance: { fontSize: 'md', glassMode: true, fontFamily: 'Nunito' },
+  controls: {
+    defaultAddToQueue: false,
+  },
+};
+
 export const SettingsContext = React.createContext<SettingsContextProps>({
   settings: initial,
   setNickname: () => {},
   setFontSize: () => {},
   setGlassMode: () => {},
   setFontFamily: () => {},
+  toggleDefaultAddToQueue: () => {},
 });
 
 const getInitialSettings = (): Settings => {
@@ -75,6 +87,10 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
     setSettings((p) => ({ ...p, appearance: { ...p.appearance, fontFamily: family } }));
   };
 
+  const toggleDefaultAddToQueue = () => {
+    setSettings((p) => ({ ...p, controls: { defaultAddToQueue: !p.controls.defaultAddToQueue } }));
+  };
+
   useEffect(() => {
     StorageUtils.set(StorageKey.SETTINGS, JSON.stringify(settings));
   }, [settings]);
@@ -90,7 +106,11 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
     document.documentElement.setAttribute('data-glass', `${appearance.glassMode ?? true}`);
   }, [settings.appearance]);
 
-  return <SettingsContext.Provider value={{ settings, setNickname, setFontSize, setGlassMode, setFontFamily }}>{children}</SettingsContext.Provider>;
+  return (
+    <SettingsContext.Provider value={{ settings, setNickname, setFontSize, setGlassMode, setFontFamily, toggleDefaultAddToQueue }}>
+      {children}
+    </SettingsContext.Provider>
+  );
 };
 
 export const useSettingsContext = () => {

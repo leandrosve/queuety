@@ -85,7 +85,7 @@ export default class AuthUtils {
   }
 
   public static clearUrl() {
-    history.pushState(null, '', location.origin);
+    history.replaceState(null, '', location.origin);
   }
 
   public static getAuthParam() {
