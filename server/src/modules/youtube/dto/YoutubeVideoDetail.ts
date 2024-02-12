@@ -10,6 +10,9 @@ export default interface YoutubeVideoDetail {
   duration: number;
   embeddable: boolean;
   live: boolean;
+  isPlaylist?: boolean;
+  itemCount?: number;
+  items?: YoutubeVideoDetail[];
 }
 
 export type YoutubeVideoDetailCacheItem =
