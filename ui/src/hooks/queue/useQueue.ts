@@ -3,7 +3,7 @@ import QueueItem from '../../model/player/QueueItem';
 import { QueueStatus, Queue } from '../../model/queue/Queue';
 import Logger from '../../utils/Logger';
 import { QueueAction, QueueActionRequest, QueueActionType } from '../../model/queue/QueueActions';
-import { YoutubeVideoDetail } from '../../services/api/YoutubeService';
+import { YoutubePlaylistItem, YoutubeVideoDetail } from '../../services/api/YoutubeService';
 import { v4 as uuid } from 'uuid';
 
 export interface QueueControls {
@@ -18,11 +18,13 @@ export interface QueueControls {
   onSkipBack: () => void;
   onChangeStatus: (status: QueueStatus) => void;
   onToggleLoop: (loop: boolean) => void;
+  onPlayPlaylistItem: (item: YoutubePlaylistItem) => void;
 }
 
 const emptyQueue: Queue = {
   items: [],
   currentId: null,
+  currentPlaylistItem: null,
   status: QueueStatus.UNSTARTED,
   loop: false,
 };
@@ -88,7 +90,12 @@ const useQueue = (
     (loop: boolean) => dispatchAction({ type: QueueActionType.TOGGLE_LOOP, ...basicAction(), payload: { loop } }),
     [dispatchAction]
   );
-
+  const onPlayPlaylistItem = useCallback(
+    (playlistItem: YoutubePlaylistItem) => {
+      dispatchAction({ type: QueueActionType.PLAY_PLAYLIST_ITEM, ...basicAction(), payload: { playlistItem } });
+    },
+    [dispatchAction]
+  );
   return {
     queue,
     dispatch: dispatchAction,
@@ -104,6 +111,7 @@ const useQueue = (
       onSkipBack,
       onChangeStatus,
       onToggleLoop,
+      onPlayPlaylistItem,
     },
   };
 };
@@ -147,6 +155,10 @@ const reducer = (queue: Queue, { type, payload }: QueueAction): Queue => {
     case QueueActionType.TOGGLE_LOOP: {
       return toggleLoop(queue, payload.loop);
     }
+    case QueueActionType.PLAY_PLAYLIST_ITEM: {
+      console.log('HOLISSS', payload.playlistItem);
+      return playPlaylistItem(queue, payload.playlistItem);
+    }
     default:
       return queue;
   }
@@ -163,7 +175,7 @@ const addNow = (queue: Queue, item: QueueItem): Queue => {
   const index = queue.items.findIndex((i) => i.id === queue.currentId);
   const nextItems = [...queue.items];
   nextItems.splice(index + 1, 0, item);
-  return { items: nextItems, currentId: item.id, status: QueueStatus.ACTIVE, loop: queue.loop };
+  return { items: nextItems, currentId: item.id, status: QueueStatus.ACTIVE, loop: queue.loop, currentPlaylistItem: queue.currentPlaylistItem };
 };
 
 const addNext = (queue: Queue, item: QueueItem): Queue => {
@@ -172,7 +184,7 @@ const addNext = (queue: Queue, item: QueueItem): Queue => {
   const nextItems = [...queue.items];
   nextItems.splice(index + 1, 0, item);
   const nextCurrent = queue.status === QueueStatus.ENDED || queue.items.length === 0 ? item.id : queue.currentId;
-  return { items: nextItems, currentId: nextCurrent, status: QueueStatus.ACTIVE, loop: queue.loop };
+  return { items: nextItems, currentId: nextCurrent, status: QueueStatus.ACTIVE, loop: queue.loop, currentPlaylistItem: queue.currentPlaylistItem };
 };
 
 const remove = (queue: Queue, itemId: string): Queue => {
@@ -222,6 +234,14 @@ const toggleLoop = (queue: Queue, loop: boolean): Queue => {
   const hasFinished = queue.status == QueueStatus.ENDED;
   const currentId = hasFinished ? queue.items[0].id : queue.currentId;
   return { ...queue, loop, currentId };
+};
+
+const playPlaylistItem = (queue: Queue, playlistItem: YoutubePlaylistItem): Queue => {
+  const currentPlaylist = queue.items.find((i) => i.id === queue.currentId);
+  if (playlistItem.playlistId !== currentPlaylist?.video.id) {
+    return queue;
+  }
+  return { ...queue, currentPlaylistItem: playlistItem };
 };
 
 export default useQueue;

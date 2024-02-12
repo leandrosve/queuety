@@ -1,8 +1,10 @@
+import { YoutubePlaylistItem } from '../../services/api/YoutubeService';
 import QueueItem from '../player/QueueItem';
 
 export interface Queue {
   items: QueueItem[];
   currentId: string | null;
+  currentPlaylistItem: YoutubePlaylistItem | null;
   status: QueueStatus;
   loop: boolean;
 }

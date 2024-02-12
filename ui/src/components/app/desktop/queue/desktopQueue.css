@@ -23,6 +23,20 @@
   background: var(--bg-alpha-200);
 }
 
+.queue-item-play-icon {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 50%; /* position the top  edge of the element at the middle of the parent */
+  left: 50%; /* position the left edge of the element at the middle of the parent */
+  transition: opacity 800ms ease;
+  transform: translate(-50%, -50%);
+}
+.desktop-queue-item:hover .queue-item-play-icon {
+  opacity: 1;
+  visibility: visible;
+}
+
 .desktop-queue-backdrop {
   content: '""';
   position: 'absolute';

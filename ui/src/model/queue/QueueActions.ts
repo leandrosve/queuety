@@ -1,3 +1,4 @@
+import { YoutubePlaylistItem } from '../../services/api/YoutubeService';
 import QueueItem from '../player/QueueItem';
 import { Queue, QueueStatus } from './Queue';
 
@@ -14,6 +15,7 @@ export enum QueueActionType {
   INITIALIZE = 'INITIALIZE',
   CHANGE_STATUS = 'CHANGE_STATUS',
   TOGGLE_LOOP = 'TOGGLE_LOOP',
+  PLAY_PLAYLIST_ITEM = 'PLAY_PLAYLIST_ITEM',
 }
 
 type BasicActionData = { isLocal?: boolean; timestamp: number; userId: string };
@@ -28,7 +30,8 @@ export type QueueAction =
   | ClearAction
   | InitializeAction
   | ChangeStatusAction
-  | ToggleLoopAction;
+  | ToggleLoopAction
+  | PlayPlaylistItemAction;
 
 export type QueueActionRequest = QueueAction & { eventId: string; previousEventId?: string };
 export type AddItemAction = BasicActionData & {
@@ -87,5 +90,12 @@ export type ToggleLoopAction = BasicActionData & {
   type: QueueActionType.TOGGLE_LOOP;
   payload: {
     loop: boolean;
+  };
+};
+
+export type PlayPlaylistItemAction = BasicActionData & {
+  type: QueueActionType.PLAY_PLAYLIST_ITEM;
+  payload: {
+    playlistItem: YoutubePlaylistItem;
   };
 };

@@ -1,5 +1,5 @@
-import { Box, Button, Flex, Heading, IconButton, Image, Link, Text } from '@chakra-ui/react';
-import { LuPlay, LuListPlus, LuListEnd } from 'react-icons/lu';
+import { Box, Button, Flex, Heading, Icon, IconButton, Image, Link, Tag, Text } from '@chakra-ui/react';
+import { LuPlay, LuListPlus, LuListEnd, LuListVideo } from 'react-icons/lu';
 import { BsYoutube } from 'react-icons/bs';
 import { useTranslation } from 'react-i18next';
 import { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
@@ -55,6 +55,22 @@ const SearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: P
             display='inline-flex'
             aria-label='watch in youtube'
           />
+          {video.isPlaylist && (
+            <Tag
+              as='span'
+              position='absolute'
+              bottom='.2rem'
+              right='.2rem'
+              size='md'
+              colorScheme='subtle'
+              fontWeight='bold'
+              variant='solid'
+              display='inline-flex'
+            >
+              <Icon as={LuListVideo} marginRight={1} />
+              {video.itemCount} {t('common.videos')}
+            </Tag>
+          )}
           {!!video.duration && (
             <Text as='span' fontSize='sm' paddingX={1} position='absolute' borderRadius='md' bottom='.2rem' right='.2rem' background='bgAlpha.100'>
               {FormatUtils.formatDuration(video.duration)}
@@ -77,10 +93,14 @@ const SearchVideoDetail = ({ video, onPlay, onPlayLast, onPlayNext, onClose }: P
             </Text>
           </Flex>
           <Flex alignItems='center' gap={3} wrap='wrap' fontSize='sm' color='text.300'>
-            <Text as='span' flexShrink={0}>
-              {FormatUtils.shortenNumber(video.viewCount)} views
-            </Text>
-            <Text as='span'>{FormatUtils.timeAgo(new Date(video.publishedAt))}</Text>
+            {!video.isPlaylist && (
+              <>
+                <Text as='span' flexShrink={0}>
+                  {FormatUtils.shortenNumber(video.viewCount)} views
+                </Text>
+                <Text as='span'>{FormatUtils.timeAgo(new Date(video.publishedAt))}</Text>
+              </>
+            )}
           </Flex>
         </Flex>
       </Flex>

@@ -10,9 +10,10 @@ import DesktopPlayerService from '../../services/api/player/DesktopPlayerService
 import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
 import { useDesktopNotificationsContext } from '../../context/DesktopNotificationsContext';
 import PlayerState from '../../model/player/PlayerState';
+import { YoutubePlaylistItem } from '../../services/api/YoutubeService';
 
 const getInitialQueueInfo = (): Queue => {
-  const emptyQueue: Queue = { items: [], currentId: null, status: QueueStatus.UNSTARTED, loop: false };
+  const emptyQueue: Queue = { items: [], currentId: null, status: QueueStatus.UNSTARTED, loop: false, currentPlaylistItem: null };
   const q = StorageUtils.get(StorageKey.QUEUE);
   if (q) return { ...emptyQueue, ...JSON.parse(q) };
   return emptyQueue;
@@ -23,6 +24,7 @@ export interface QueueData {
   currentIndex: number;
   length: number;
   currentItem: QueueItem;
+  currentPlaylistItem: YoutubePlaylistItem | null;
   loop: boolean;
 }
 
@@ -49,9 +51,9 @@ const useDesktopQueue = (
   );
   const { queue, controls, dispatch } = useQueue(userId, getInitialQueueInfo(), registerLastAction);
 
-  const [items, length, currentIndex, currentItem] = useMemo(() => {
+  const [items, length, currentIndex, currentItem, currentPlaylistItem] = useMemo(() => {
     const index = queue.items.findIndex((i) => i.id === queue.currentId);
-    return [queue.items, queue.items.length, index, queue.items[index]];
+    return [queue.items, queue.items.length, index, queue.items[index], queue.currentPlaylistItem];
   }, [queue]);
 
   const queueRef = useRef(queue);
@@ -110,6 +112,7 @@ const useDesktopQueue = (
       currentIndex,
       currentItem,
       loop: queue.loop,
+      currentPlaylistItem,
     },
     controls,
     updatePlayerState,

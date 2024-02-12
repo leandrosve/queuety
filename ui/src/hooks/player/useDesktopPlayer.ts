@@ -9,6 +9,7 @@ import Logger from '../../utils/Logger';
 import PlayerUtils from '../../utils/PlayerUtils';
 import { usePlayerStatusContext } from '../../context/PlayerStatusContext';
 import { useOnlinePrescenceContext } from '../../context/OnlinePrescenceContext';
+import { YoutubePlaylistItem } from '../../services/api/YoutubeService';
 
 export interface PlayerControls {
   onTimeChange: (time: number) => void;
@@ -24,11 +25,12 @@ export interface PlayerControls {
 const useDesktopPlayer = (
   playerRoomId: string,
   currentItem: QueueItem,
+  currentPlaylistItem: YoutubePlaylistItem | null,
   onVideoEnded: () => void,
-  onStateChanged?: (state: PlayerState) => void
+  onStateChanged?: (state: PlayerState) => void,
 ): { status: PlayerStatus; controls: PlayerControls } => {
   //const { status } = usePlayerStatusContext();
-  const { controls: innerControls, getCurrentPlayerStatus, status } = useYoutubePlayer('player-container', currentItem, onVideoEnded);
+  const { controls: innerControls, getCurrentPlayerStatus, status } = useYoutubePlayer('player-container', currentItem, onVideoEnded, currentPlaylistItem);
   const [lastPlayerAction, setLastPlayerAction] = useState<PlayerStatusAction>();
   const [fullscreen, setFullscreen] = useState<boolean>(false);
   const { updateStatus: updateStatusContext } = usePlayerStatusContext();

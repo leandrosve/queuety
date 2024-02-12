@@ -13,6 +13,7 @@ export default {
       live: 'Live',
       example: 'e.g.',
       goHome: 'Home',
+      videos: 'videos',
     },
     layout: {
       theme: {
@@ -25,10 +26,12 @@ export default {
       playNow: 'Play now',
       playNext: 'Add as next in queue',
       playLast: 'Add to queue',
+      playPlaylistLast: 'Add playlist to queue',
       errors: {
         video_not_found: "Sorry, we couldn't find the request video",
         malformed_url: 'The provided URL does not correspond to a YouTube Video',
         shorts_url: 'Sorry, unfortunately shorts cannot be watched outside of YouTube',
+        mix_url: "Sorry, custom mixes don't work well outside YouTube, you can try with a public playlist instead!",
         unknown: 'Sorry, something went wrong',
       },
     },

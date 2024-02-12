@@ -16,11 +16,13 @@ import { useRef, useState } from 'react';
 import { BsSearch, BsX } from 'react-icons/bs';
 import SearchVideoDetail from './SearchVideoDetail';
 import { useTranslation } from 'react-i18next';
-import YoutubeService, { YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
+import YoutubeService, { YoutubePlaylistDetail, YoutubeVideoDetail } from '../../../../services/api/YoutubeService';
 import GlassModal from '../../../common/glass/GlassModal';
+import SearchPlaylistDetail from './SearchPlaylistDetail';
+import URLUtils from '../../../../utils/URLUtils';
 
 const getErrorCode = (errorCode: string) => {
-  if (['video_not_found', 'malformed_url', 'shorts_url'].includes(errorCode)) return errorCode;
+  if (['video_not_found', 'malformed_url', 'shorts_url', 'mix_url'].includes(errorCode)) return errorCode;
   return 'unknown';
 };
 
@@ -46,20 +48,35 @@ const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props)
       setError('');
       return;
     }
-    var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = url.match(regExp);
-
-    if (!match || match[2].length !== 11) {
-      if (url.includes('/shorts/')) {
-        setError('shorts_url');
-        return;
-      }
-      setError('malformed_url');
+    const { playlistId, videoId, error } = URLUtils.getVideoAndPlaylistId(url);
+    if (playlistId) {
+      getPlaylistDetails(playlistId);
       return;
     }
-    const id = match[2];
+    if (videoId) {
+      getVideoDetails(videoId);
+    }
+    if (error) {
+      setError(error);
+    }
+  };
+
+  const getVideoDetails = async (id: string) => {
     setLoadingDetails(true);
     const res = await YoutubeService.getVideoDetails(id);
+    setLoadingDetails(false);
+    if (res.hasError) {
+      setVideoDetails(null);
+      setError(res.error);
+      return;
+    }
+    setError('');
+    setVideoDetails(res.data);
+  };
+
+  const getPlaylistDetails = async (playlistId: string) => {
+    setLoadingDetails(true);
+    const res = await YoutubeService.getPlaylistDetails(playlistId);
     setLoadingDetails(false);
     if (res.hasError) {
       setVideoDetails(null);
@@ -128,7 +145,7 @@ const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props)
         </Flex>
       )}
 
-      <ScaleFade initialScale={0.9} in={!loadingDetails && !!videoDetails} unmountOnExit>
+      <ScaleFade initialScale={0.9} in={!loadingDetails && (!!videoDetails)} unmountOnExit>
         {!!videoDetails && (
           <SearchVideoDetail
             onClose={() => {

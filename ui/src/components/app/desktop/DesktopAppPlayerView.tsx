@@ -26,6 +26,7 @@ const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal, onGoB
   const { controls: playerControls, status: playerStatus } = useDesktopPlayer(
     playerRoomId,
     queue.currentItem,
+    queue.currentPlaylistItem,
     queueControls.onSkip,
     updatePlayerState
   );
@@ -53,6 +54,8 @@ const DesktopAppPlayerView = ({ playerRoomId, userId, onOpenSettingsModal, onGoB
             onPlay={queueControls.onPlay}
             loop={queue.loop}
             onToggleLoop={queueControls.onToggleLoop}
+            onPlayPlaylistItem={queueControls.onPlayPlaylistItem}
+            currentPlaylistItem={queue.currentPlaylistItem}
           />
         </>
       )}

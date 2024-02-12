@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import QueueItem from '../../model/player/QueueItem';
 import PlayerState from '../../model/player/PlayerState';
 import PlayerStatus from '../../model/player/PlayerStatus';
+import { YoutubePlaylistItem } from '../../services/api/YoutubeService';
 
 interface PlayerInnerStatus extends Omit<PlayerStatus, 'fullscreen'> {}
 const defaultStatus: PlayerInnerStatus = {
@@ -18,21 +19,30 @@ const defaultStatus: PlayerInnerStatus = {
  * @param containerId the ID of the container that will become the iframe
  * @param queueItem the item to play, it's important to differentiate between different items even if they are the same video
  */
-const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnded: () => void) => {
+const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnded: () => void, playlistItem: YoutubePlaylistItem | null) => {
   const playerRef = useRef<YT.Player>();
   const [initialized, setInitialized] = useState<boolean>(false);
   const [status, setStatus] = useState<PlayerInnerStatus>(defaultStatus);
   const [isFocused, setIsFocused] = useState(false);
+  const [playlistInfo, setPlaylistInfo] = useState<{ playlistId: string | null; playlistIndex: number }>({
+    playlistId: null,
+    playlistIndex: 0,
+  });
 
   const initialize = async () => {
+    const video = queueItem.video;
+    const videoId = video.isPlaylist ? undefined : video.id;
+    const playlistId = video.isPlaylist ? video.id : undefined;
     new YT.Player(containerId, {
-      videoId: queueItem.video.id,
+      videoId: videoId,
       playerVars: {
         autoplay: 1,
         start: 0,
         rel: 0,
         loop: 1,
         mute: 0, // N.B. here the mute settings.
+        list: playlistId,
+        listType: 'playlist',
       },
       events: {
         onReady,
@@ -61,6 +71,17 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
   const onStateChange = useCallback(
     (event: YT.OnStateChangeEvent) => {
       const player = event.target;
+
+      setPlaylistInfo((prev) => {
+        // @ts-ignore
+        const list:string = player.getVideoData().list;
+        const index = player.getPlaylistIndex();
+        if (prev.playlistId !== list || prev.playlistIndex !== index) {
+          return { playlistId: list, playlistIndex: index };
+        }
+        return prev;
+      });
+
       let nextStatus: Partial<PlayerInnerStatus> = {
         state: (player.getPlayerState() as PlayerState) ?? PlayerState.UNSTARTED,
         videoId: getVideoIdFromURL(player?.getVideoUrl()),
@@ -171,10 +192,27 @@ const useYoutubePlayer = (containerId: string, queueItem: QueueItem, onVideoEnde
     if (status.isReady && queueItem) {
       setStatus((p) => ({ ...p, currentTime: 0 }));
       playerRef.current?.stopVideo();
-      playerRef.current?.loadVideoById(queueItem.video.id, 0.01);
-      playerRef.current?.playVideo();
+      const video = queueItem.video;
+      const videoId = video.isPlaylist ? undefined : video.id;
+      const playlistId = video.isPlaylist ? video.id : undefined;
+      if (videoId) {
+        playerRef.current?.loadVideoById(videoId, 0.01);
+        playerRef.current?.playVideo();
+      }
+      if (playlistId) {
+        playerRef.current?.loadPlaylist({
+          list: playlistId,
+          listType: 'playlist',
+          startSeconds: 0.01,
+          index: playlistItem?.index ?? 0,
+        });
+      }
     }
-  }, [queueItem]);
+  }, [queueItem, playlistItem]);
+
+  useEffect(() => {
+    console.log('PLAYLIST INDEX CHANGED', playlistInfo);
+  }, [playlistInfo]);
 
   useEffect(() => {
     if (initialized || !queueItem) return;
