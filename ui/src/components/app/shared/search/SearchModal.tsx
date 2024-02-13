@@ -16,7 +16,7 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { BsSearch, BsX } from 'react-icons/bs';
 import SearchVideoDetail from './SearchVideoDetail';
 import { useTranslation } from 'react-i18next';
@@ -97,11 +97,9 @@ const SearchModal = ({ isOpen, onClose, onPlay, onPlayNext, onPlayLast }: Props)
         });
         return;
       }
-      
     },
     [defaultAddToQueue, onPlayLast, onClose]
   );
-
 
   return (
     <GlassModal contentProps={{ width: 700, maxWidth: '95vw' }} bodyProps={{ padding: 4 }} isOpen={isOpen} onClose={onClose}>
