@@ -6,6 +6,7 @@ import GlassModal from '../../../common/glass/GlassModal';
 import AutoAvatar from '../../../common/AutoAvatar';
 import { LuRotateCw } from 'react-icons/lu';
 import BrandIcon from '../../../../assets/images/BrandIcon';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   host: HostData | null;
@@ -20,7 +21,7 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel, isOpen, rejec
   const [resendTimeout, setResendTimeout] = useState(0);
   const [notResponded, setNotResponded] = useState<boolean>(false);
   const [isRestarting, setIsRestarting] = useState<boolean>(false);
-
+  const {t} = useTranslation();
   const handleResend = () => {
     setNotResponded(false);
     onResend();
@@ -85,36 +86,36 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel, isOpen, rejec
         <Text>
           {host && status == MobileAuthStatus.AUTH_REQUEST_PENDING && (
             <>
-              <b>{host.nickname}</b> ha recibido tu solicitud
+              <b>{host.nickname}</b> {t('mobileAuthPendingView.received')}
             </>
           )}
           {host && status == MobileAuthStatus.AUTH_REQUEST_DENIED && (
             <>
-              <b>{host.nickname}</b> ha rechazado tu solicitud
+              <b>{host.nickname}</b> {t('mobileAuthPendingView.denied')}
             </>
           )}
           {host && status == MobileAuthStatus.AUTH_REQUEST_STALED && (
             <>
-              <b>{host.nickname}</b> no ha contestado tu solicitud
+              <b>{host.nickname}</b> {t('mobileAuthPendingView.ignored')}
             </>
           )}
         </Text>
         {!notResponded && status == MobileAuthStatus.SENT_AUTH_REQUEST && (
           <Flex alignItems='center' gap={3}>
             <Spinner size='sm' speed='2s' />
-            <Text>Enviando solicitud</Text>
+            <Text>{t('mobileAuthPendingView.sending')}</Text>
           </Flex>
         )}
         {notResponded && (
           <>
-            <b>Parece que nadie ha recibido tu solicitud...</b>
-            <br /> Verifica que ambos dispositivos tengan acceso a internet, y el código utilizado esté actualizado.
+            <b>{t('mobileAuthPendingView.nonReceived')}</b>
+            <br />{t('mobileAuthPendingView.verifyConnection')}
           </>
         )}
         {status == MobileAuthStatus.AUTH_REQUEST_PENDING && (
           <Flex alignItems='center' gap={3}>
             <Spinner size='sm' speed='2s' />
-            <Text>Esperando confirmación</Text>
+            <Text>{t('mobileAuthPendingView.waitingConfirmation')}</Text>
           </Flex>
         )}
         <Flex justifyContent='space-between' alignSelf='stretch' wrap='wrap' marginTop={3}>
@@ -125,7 +126,7 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel, isOpen, rejec
             onClick={handleCancel}
             isLoading={isRestarting}
           >
-            Cancelar
+            {t('common.cancel')}
           </Button>
           {showResendButton && (
             <Button
@@ -134,12 +135,12 @@ const MobileAuthPendingView = ({ host, status, onResend, onCancel, isOpen, rejec
               onClick={handleResend}
               spinner={
                 <>
-                  Reenviar solicitud <Text as='span' width='2.5rem'>{`(${resendTimeout}s)`}</Text>
+                 {t('mobileAuthPendingView.resend')} <Text as='span' width='2.5rem'>{`(${resendTimeout}s)`}</Text>
                 </>
               }
               leftIcon={<Icon as={LuRotateCw} transform='rotate(-90deg)' />}
             >
-              Reenviar solicitud
+               {t('mobileAuthPendingView.resend')}
             </Button>
           )}
         </Flex>

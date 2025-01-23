@@ -43,7 +43,7 @@ export default {
       moveNext: 'Reproducir a continuación',
       moveLast: 'Mover al final de la cola',
       loop: 'Bucle',
-      clearQueue: { title: 'Limpiar cola de reproducción', description: 'Estas seguro que deseas eliminar todos los elementos de la cola?' },
+      clearQueue: { title: 'Limpiar cola de reproducción', description: '¿Estas seguro que deseas eliminar todos los elementos de la cola?' },
     },
     player: {
       exitFullscreen: 'Salir de pantalla completa',
@@ -183,21 +183,21 @@ export default {
     },
     contact: {
       title: 'Contacto',
-      description: 'Puedes enviarnos cualquier tipo de feedback, o reportar errores o inconsistencias con las que te hayas encontrado.',
+      description: 'Puedes enviarnme cualquier tipo de feedback, o reportar errores o inconsistencias con las que te hayas encontrado.',
       email: {
         label: 'Email',
         placeholder: 'Email',
       },
       message: {
         label: 'Mensaje / Informe de errores',
-        placeholder: 'Deja aqui tu mensaje, puedes indicarnos cosas a mejorar, o cualquier inconveniente con el que te hayas encontrado.',
+        placeholder: 'Deja aqui tu mensaje, puedes indicar cosas a mejorar, o cualquier inconveniente con el que te hayas encontrado.',
       },
       send: 'Enviar',
       errors: {
         empty_message: 'Por favor introduzca un mensaje',
         invalid_email: 'Por favor introduzca un email válido',
         message_too_long: 'El mensaje es demasiado largo',
-        not_sent: 'Lo sentimos, no se ha podido enviar el mensaje 😢. Puedes intentarlo mas tarde.',
+        not_sent: 'Lo siento, no se ha podido enviar el mensaje 😢. Puedes intentarlo mas tarde.',
       },
       messageSent: 'Se ha enviado el mensaje',
       feedbackThanks: '¡Gracias por el feedback!',
@@ -231,5 +231,20 @@ export default {
       erase: 'Borrar datos de navegación',
       notify: 'Notificar problema',
     },
+    startup: {
+      initializing: "Iniciando servidor",
+      wait: "Esto puede demorar aproximadamente 1 minuto.",
+      info: "Esta aplicación está alojada en un servidor gratuito en <0></0> que entra en reposo cuando no está en uso, causando una demora considerable al reiniciarse. ¡Gracias por tu paciencia!"
+    },
+    mobileAuthPendingView:{
+      received:"ha recibido tu solicitud",
+      denied:"ha rechazado tu solicitud",
+      ignored: "no ha contestado tu solicitud",
+      sending:"Enviando solicitud",
+      nonReceived: "Parece que nadie ha recibido tu solicitud...",
+      verifyConnection: "Verifica que ambos dispositivos tengan acceso a internet, y el código utilizado esté actualizado.",
+      waitingConfirmation:"Esperando confirmación",
+      resend:"Reenviar Solicitud"
+    }
   },
 };

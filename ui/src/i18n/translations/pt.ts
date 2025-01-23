@@ -231,5 +231,20 @@ export default {
       erase: 'Excluir dados de navegação',
       notify: 'Relatar problema',
     },
+    startup: {
+      initializing: "Iniciando o servidor",
+      wait: "Isso pode levar aproximadamente 1 minuto.",
+      info: "Este aplicativo está hospedado em um servidor gratuito em <0></0> que entra em repouso quando não está em uso, causando um atraso considerável ao reiniciar. Obrigado pela sua paciência."
+    },
+    mobileAuthPendingView: {
+      received: "recebeu sua solicitação",
+      denied: "negou sua solicitação",
+      ignored: "não respondeu à sua solicitação",
+      sending: "Enviando solicitação",
+      nonReceived: "Parece que ninguém recebeu sua solicitação...",
+      verifyConnection: "Verifique se ambos os dispositivos têm acesso à internet e se o código utilizado está atualizado.",
+      waitingConfirmation: "Aguardando confirmação",
+      resend: "Reenviar Solicitação"
+    }
   },
 };

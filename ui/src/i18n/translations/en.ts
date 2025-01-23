@@ -185,21 +185,21 @@ export default {
     },
     contact: {
       title: 'Contact',
-      description: 'You can send us any type of feedback or report any errors or inconsistencies you have encountered.',
+      description: 'You can send me any type of feedback or report any errors or inconsistencies you have encountered.',
       email: {
         label: 'Email',
         placeholder: 'Email',
       },
       message: {
         label: 'Message / Error Report',
-        placeholder: "Leave your message here. You can let us know things to improve or any issues you've encountered.",
+        placeholder: "Leave your message here. You can let me know things to improve or any issues you've encountered.",
       },
       send: 'Send',
       errors: {
         empty_message: 'Please enter a message',
         invalid_email: 'Please enter a valid email',
         message_too_long: 'The message is too long',
-        not_sent: "We're sorry, the message couldn't be sent 😢. You can try again later.",
+        not_sent: "I'm sorry, the message couldn't be sent 😢. You can try again later.",
       },
       messageSent: 'The message has been sent',
       feedbackThanks: 'Thanks for the feedback!',
@@ -230,5 +230,20 @@ export default {
       erase: 'Delete navigation data',
       notify: 'Report issue',
     },
+    startup: {
+      initializing: "Starting server",
+      wait: "This may take approximately 1 minute.",
+      info: "This application is hosted on a free server at <0></0> which goes to sleep when not in use, causing a significant delay when restarting. Thank you for your patience!"
+    },
+    mobileAuthPendingView: {
+      received: "has received your request",
+      denied: "has denied your request",
+      ignored: "has not responded to your request",
+      sending: "Sending request",
+      nonReceived: "It seems no one has received your request...",
+      verifyConnection: "Make sure both devices have internet access, and the code used is up-to-date.",
+      waitingConfirmation: "Waiting for confirmation",
+      resend: "Resend Request"
+    }
   },
 };
