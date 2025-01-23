@@ -5,6 +5,7 @@ import { PropsWithChildren } from 'react';
 import { BsPlayFill } from 'react-icons/bs';
 import { LuListEnd, LuListStart, LuTrash2 } from 'react-icons/lu';
 import { useTranslation } from 'react-i18next';
+import { IconType } from 'react-icons/lib';
 
 interface Props {
   isOpen: boolean;
@@ -47,7 +48,7 @@ const MobileQueueItemModal = ({ isOpen, onClose, onPlay, onRemove, onMoveLast, o
 
 interface OptionProps extends PropsWithChildren {
   onClick: () => void;
-  icon?: () => JSX.Element;
+  icon?: (() => JSX.Element) | IconType;
 }
 const Option = ({ onClick, icon, children }: OptionProps) => (
   <Button
