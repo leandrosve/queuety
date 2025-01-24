@@ -10,9 +10,9 @@ const useLayoutBackdrop = (show: boolean, picture?: LayoutBackdropPicture) => {
 
   useEffect(() => {
     //Debounce to prevent some images from loading for super low amounts of time
-    let timeout: number;
+    let timeout = 0;
     if (picture) {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         updatePictures(picture);
       }, 300);
     }

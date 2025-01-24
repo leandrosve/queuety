@@ -19,7 +19,7 @@ enum PlayerState {
 
 const PlayerBackdrop = (props: Props) => {
   const { settings } = useSettingsContext();
-  if (!settings.appearance.glassMode) return;
+  if (!settings.appearance.glassMode) return <></>;
   return <Backdrop {...props} />;
 };
 

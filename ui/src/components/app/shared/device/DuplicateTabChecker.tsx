@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
-import { useEffect, useState, PropsWithChildren } from 'react';
+import { useEffect, useState, PropsWithChildren, ReactNode } from 'react';
 import PlayerBackdrop from '../../desktop/player/PlayerBackdrop';
 import backdrop from '../../../../assets/images/background.jpg';
 import { v1 } from 'uuid';
@@ -11,7 +11,7 @@ import BrandIcon from '../../../../assets/images/BrandIcon';
 const OMMIT = false;
 const channel = new BroadcastChannel('tab');
 
-const DuplicateTabChecker = ({ children }: PropsWithChildren) => {
+const DuplicateTabChecker = ({ children }: PropsWithChildren):ReactNode => {
   const [showError, setShowError] = useState(false);
   const [tabId] = useState('tab_' + v1());
   useTranslation();

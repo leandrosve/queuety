@@ -8,6 +8,7 @@ import { MobilePlayerControls } from '../../../../hooks/player/useMobilePlayerSt
 import { useTranslation } from 'react-i18next';
 import { useMobileAuthContext } from '../../../../context/MobileAuthContext';
 import { HostStatus } from '../../../../hooks/connection/useMobileAuth';
+import { IconType } from 'react-icons/lib';
 
 interface Props {
   isOpen: boolean;
@@ -86,7 +87,7 @@ const VisualizerControlOptionsModal = ({ isOpen, onClose, controls, status }: Pr
 
 interface OptionProps extends PropsWithChildren {
   onClick: () => void;
-  icon?: () => JSX.Element;
+  icon?: (() => JSX.Element ) | IconType;
 }
 const Option = ({ onClick, icon, children }: OptionProps) => (
   <Button

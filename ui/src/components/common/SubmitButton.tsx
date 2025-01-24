@@ -17,7 +17,7 @@ const SubmitButton = ({ onSubmit, children, disabledTimeout, iconScaling = [0.8,
   useEffect(() => {
     let timeout: number;
     if (accepted) {
-      setTimeout(() => setAccepted(false), disabledTimeout ?? 2000);
+      timeout = setTimeout(() => setAccepted(false), disabledTimeout ?? 2000);
     }
     return () => clearTimeout(timeout);
   }, [accepted]);

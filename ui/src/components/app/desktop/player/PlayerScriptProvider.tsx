@@ -1,7 +1,7 @@
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { FunctionComponent, PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import Logger from '../../../../utils/Logger';
 
-const PlayerScriptProvider = ({ children }: PropsWithChildren) => {
+const PlayerScriptProvider:FunctionComponent<{ children?: ReactNode; }> = ({ children }: PropsWithChildren) => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const loadIframeAPI = () => {
     if (window.YT) {
